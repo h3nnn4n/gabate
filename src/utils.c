@@ -29,6 +29,17 @@
 #include "disassembler.h"
 #include "cartridge.h"
 #include "display.h"
+#include "lookup3.h"
+
+void check_rom(_cpu_info *cpu) {
+  uint32_t expected_hash_value = 0x18ffd18e;
+  uint32_t hash_value = hashlittle(cpu->mem_controller.rom, get_rom_size(cpu->mem_controller.memory ), 4);
+
+  if (expected_hash_value != hash_value) {
+    printf("rom hash is %x, expected it to be %x\n", hash_value, expected_hash_value);
+    abort();
+  }
+}
 
 void load_rom ( _cpu_info *cpu, const char* fname, uint16_t offset ) {
     FILE *f = NULL;

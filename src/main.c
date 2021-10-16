@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     init_file_control();
 
     load_rom ( &cpu, argv[1], 0x0000 );
+    check_rom( &cpu                  );
 
     /*print_rom_info(&cpu);*/
 
