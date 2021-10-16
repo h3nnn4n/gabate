@@ -758,7 +758,7 @@ void screen_update() {
 
 void other_flip_screen ( ) {
     logic_update();
-    /*screen_update();*/
+    screen_update();
 }
 
 void other_sdl_quit ( ) {
