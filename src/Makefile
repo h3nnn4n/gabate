@@ -66,3 +66,5 @@ $(EXECUTABLE): $(OBJECTS) $(OBJECTS_BIN)
 .PHONY: clean
 clean:
 	$(RM) $(OBJECTS_BIN) $(OBJECTS) $(EXECUTABLE)
+
+rebuild: clean all
