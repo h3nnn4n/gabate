@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2021  Renan S. Silva                                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -17,63 +17,35 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#include <assert.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
-#include <sys/types.h>
+#include <cJSON.h>
 
-#include "agent.h"
-#include "automated_tests.h"
-#include "cartridge.h"
-#include "decoder.h"
-#include "disassembler.h"
-#include "display.h"
-#include "file_control.h"
-#include "graphics.h"
-#include "memory.h"
-#include "other_window.h"
-#include "rev.h"
 #include "settings.h"
-#include "time_keeper.h"
-#include "types.h"
-#include "utils.h"
 
-int main(int argc, char *argv[]) {
-    if (argc < 2)
-        fprintf(stderr, "Missing argument\n");
+_agent_config agent_config;
 
-    if (argc == 3) {
-        load_settings(argv[2]);
+void load_settings(char *setting_str) {
+    const cJSON *object = NULL;
+    cJSON *      json   = cJSON_Parse(setting_str);
+
+    if (json == NULL)
+        abort();
+
+    agent_config.settings = json;
+
+    cJSON *agent   = cJSON_GetObjectItemCaseSensitive(json, "agent");
+    cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
+
+    agent_config.agent_weights = malloc(sizeof(double) * cJSON_GetArraySize(weights));
+
+    unsigned int index = 0;
+    cJSON_ArrayForEach(object, weights) {
+        agent_config.agent_weights[index] = object->valuedouble;
+        index++;
     }
-
-    _cpu_info cpu;
-    sdl_init();
-
-    srand48(mix(clock(), time(NULL), getpid()));
-    srand(mix(clock(), time(NULL), getpid()));
-
-    other_window_init();
-    atexit(sdl_quit);
-
-    init_cpu(&cpu);
-    init_file_control();
-
-    load_rom(&cpu, argv[1], 0x0000);
-    check_rom(&cpu);
-
-    /*print_rom_info(&cpu);*/
-
-    reset_code_and_data();
-
-    // FIXME: This needs a better api I think
-    set_cpu_pointer(&cpu);
-
-    while (1) {
-        decoder(&cpu);
-    }
-
-    return EXIT_SUCCESS;
 }
+
+double *get_agent_weights() { return agent_config.agent_weights; }
