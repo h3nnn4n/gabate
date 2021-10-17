@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "agent.h"
 #include "feature_functions.h"
 #include "feature_set.h"
 #include "ff_controller.h"

@@ -3,6 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "agent.h"
 #include "file_control.h"
 #include "memory.h"
 #include "other_window.h"
