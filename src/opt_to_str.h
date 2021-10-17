@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-void get_opt_str( _cpu_info *cpu, char *str );
+void get_opt_str(_cpu_info *cpu, char *str);
 
 #endif /* OPT_TO_STR_H */

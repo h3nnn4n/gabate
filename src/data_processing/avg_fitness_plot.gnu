@@ -75,12 +75,3 @@ plot \
 'log_LELmark_avg.txt' u (((column(0))/STATS_max_x)*24):2 t 'GABATE'  w l ls 5, \
 'log_ALL_avg.txt'     u (((column(0))/STATS_max_x)*24):2 t 'ALL'     w l ls 6, \
 'log_NDP_avg.txt'     u (((column(0))/STATS_max_x)*24):2 t 'NDP'     w l ls 7
-
-
-
-
-
-
-
-
-

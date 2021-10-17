@@ -19,8 +19,8 @@
  ******************************************************************************/
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "feature_functions.h"
 #include "ff_controller.h"
@@ -31,9 +31,9 @@
 // The sum of all column heights
 double aggregate_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -41,7 +41,7 @@ double aggregate_height() {
         int last = __Y_SIZE;
         int x    = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 last = j;
                 break;
             }
@@ -59,18 +59,18 @@ double aggregate_height() {
 
 // Function n 10*
 // Number of rows that will be cleared
-double complete_rows(){
+double complete_rows() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int j = 0; j < __Y_SIZE; ++j) {
         int ok = 1;
         for (int i = 0; i < __X_SIZE; ++i) {
-            if ( bg_info->data[i][j] == 0 ) {
+            if (bg_info->data[i][j] == 0) {
                 ok = 0;
                 break;
             }
@@ -86,9 +86,9 @@ double complete_rows(){
 // The sum of the height difference between 2 adjacent columns
 double surface_variance() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -97,7 +97,7 @@ double surface_variance() {
     for (int i = 0; i < __X_SIZE; ++i) {
         h[i] = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 h[i] = __Y_SIZE - j;
                 break;
             }
@@ -105,7 +105,7 @@ double surface_variance() {
     }
 
     for (int i = 0; i < __X_SIZE - 1; ++i) {
-        double x = abs(h[i] - h[i+1]);
+        double x = abs(h[i] - h[i + 1]);
         total += x * base[0] + base[1];
     }
 
@@ -116,19 +116,19 @@ double surface_variance() {
 // Number of hole cells weighted by their height
 double covered_cells() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 x = __Y_SIZE - j;
 
                 x = x * base[0] + base[1];
@@ -142,23 +142,23 @@ double covered_cells() {
 
 // Function n 14
 // Number of well cells, also can be used as total well depth
-double max_well_depth(){
+double max_well_depth() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
-    double x = 0;
+    double x     = 0;
 
     for (int i = 1; i < 9; ++i) {
         x = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] == 0 && bg_info->data[i-1][j] >= 1 && bg_info->data[i+1][j] >= 1  ) {
+            if (bg_info->data[i][j] == 0 && bg_info->data[i - 1][j] >= 1 && bg_info->data[i + 1][j] >= 1) {
                 /*total += x * base[0] + base[1];*/
-                x ++;
-            } else if ( bg_info->data[i][j] >= 1 ) {
-                if ( x > total ) {
+                x++;
+            } else if (bg_info->data[i][j] >= 1) {
+                if (x > total) {
                     total = x;
                 }
                 break;
@@ -167,12 +167,12 @@ double max_well_depth(){
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1  ) {
-            x ++;
+        if (bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1) {
+            x++;
             /*double x = 1;*/
             /*total += x * base[0] + base[1];*/
-        } else if ( bg_info->data[9][j] >= 1 ) {
-            if ( x > total ) {
+        } else if (bg_info->data[9][j] >= 1) {
+            if (x > total) {
                 total = x;
             }
             break;
@@ -180,12 +180,12 @@ double max_well_depth(){
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1  ) {
-            x ++;
+        if (bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1) {
+            x++;
             /*double x = 1;*/
             /*total += x * base[0] + base[1];*/
-        } else if ( bg_info->data[0][j] >= 1 ) {
-            if ( x > total ) {
+        } else if (bg_info->data[0][j] >= 1) {
+            if (x > total) {
                 total = x;
             }
             break;
@@ -197,42 +197,42 @@ double max_well_depth(){
 
 // Function n 14**
 // Number of wells
-double number_of_wells(){
+double number_of_wells() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < 9; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] == 0 && bg_info->data[i-1][j] >= 1 && bg_info->data[i+1][j] >= 1  ) {
+            if (bg_info->data[i][j] == 0 && bg_info->data[i - 1][j] >= 1 && bg_info->data[i + 1][j] >= 1) {
                 double x = 1;
                 total += x * base[0] + base[1];
                 break;
-            } else if ( bg_info->data[i][j] >= 1 ) {
+            } else if (bg_info->data[i][j] >= 1) {
                 break;
             }
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1  ) {
+        if (bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
             break;
-        } else if ( bg_info->data[9][j] >= 1 ) {
+        } else if (bg_info->data[9][j] >= 1) {
             break;
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1  ) {
+        if (bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
             break;
-        } else if ( bg_info->data[0][j] >= 1 ) {
+        } else if (bg_info->data[0][j] >= 1) {
             break;
         }
     }
@@ -242,39 +242,39 @@ double number_of_wells(){
 
 // Function n 16* and 13*
 // Number of well cells, also can be used as total well depth, duplicated for completeness sake
-double total_well_depth(){ // total well depth
+double total_well_depth() {  // total well depth
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < 9; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] == 0 && bg_info->data[i-1][j] >= 1 && bg_info->data[i+1][j] >= 1  ) {
+            if (bg_info->data[i][j] == 0 && bg_info->data[i - 1][j] >= 1 && bg_info->data[i + 1][j] >= 1) {
                 double x = 1;
                 total += x * base[0] + base[1];
-            } else if ( bg_info->data[i][j] >= 1 ) {
+            } else if (bg_info->data[i][j] >= 1) {
                 break;
             }
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1  ) {
+        if (bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[9][j] >= 1 ) {
+        } else if (bg_info->data[9][j] >= 1) {
             break;
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1  ) {
+        if (bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[0][j] >= 1 ) {
+        } else if (bg_info->data[0][j] >= 1) {
             break;
         }
     }
@@ -284,39 +284,39 @@ double total_well_depth(){ // total well depth
 
 // Function n 16* and 13*
 // Number of well cells, also can be used as total well depth
-double well_cells(){ // total well depth
+double well_cells() {  // total well depth
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < 9; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] == 0 && bg_info->data[i-1][j] >= 1 && bg_info->data[i+1][j] >= 1  ) {
+            if (bg_info->data[i][j] == 0 && bg_info->data[i - 1][j] >= 1 && bg_info->data[i + 1][j] >= 1) {
                 double x = 1;
                 total += x * base[0] + base[1];
-            } else if ( bg_info->data[i][j] >= 1 ) {
+            } else if (bg_info->data[i][j] >= 1) {
                 break;
             }
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1  ) {
+        if (bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[9][j] >= 1 ) {
+        } else if (bg_info->data[9][j] >= 1) {
             break;
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1  ) {
+        if (bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1) {
             double x = 1;
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[0][j] >= 1 ) {
+        } else if (bg_info->data[0][j] >= 1) {
             break;
         }
     }
@@ -326,24 +326,24 @@ double well_cells(){ // total well depth
 
 // Function n 5
 // Number of completed rows weighted by their height
-double complete_rows_weighted(){
+double complete_rows_weighted() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int j = 0; j < __Y_SIZE; ++j) {
         int ok = 1;
         for (int i = 0; i < __X_SIZE; ++i) {
-            if ( bg_info->data[i][j] == 0 ) {
+            if (bg_info->data[i][j] == 0) {
                 ok = 0;
                 break;
             }
         }
 
-        if ( ok ) {
+        if (ok) {
             total += 17 - j;
         }
     }
@@ -353,18 +353,18 @@ double complete_rows_weighted(){
 
 // Function n 18*
 // The lock height (Y position of where the piece was placed
-double lock_heigth(){
+double lock_heigth() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] > 1 ) {
-                total += base[0] * (__Y_SIZE -j) + base[1];
+            if (bg_info->data[i][j] > 1) {
+                total += base[0] * (__Y_SIZE - j) + base[1];
             }
         }
     }
@@ -376,38 +376,38 @@ double lock_heigth(){
 // Number of empty blocks below the highest hole
 double burried_cells() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     int highest = 0;
-    int pos = 0;
-    int clear = 1;
+    int pos     = 0;
+    int clear   = 1;
 
     // This finds the highest hole
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] > 1 && !found ) {
+            if (bg_info->data[i][j] > 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 clear = 0;
-                if ( (__Y_SIZE - j) > highest ) {
-                    pos = j;
+                if ((__Y_SIZE - j) > highest) {
+                    pos     = j;
                     highest = __Y_SIZE - j;
                 }
             }
         }
     }
 
-    if ( clear ) {
+    if (clear) {
         total = 0;
     } else {
         for (int i = 0; i < __X_SIZE; ++i) {
             for (int j = pos; j < __Y_SIZE; ++j) {
-                if ( bg_info->data[i][j] == 0 ) {
+                if (bg_info->data[i][j] == 0) {
                     total += 1 * base[0] + base[1];
                 }
             }
@@ -421,9 +421,9 @@ double burried_cells() {
 // The hiighest cell on the board
 double highest_cell() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -431,7 +431,7 @@ double highest_cell() {
         int last = __Y_SIZE;
         int x    = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 last = j;
                 break;
             }
@@ -439,30 +439,30 @@ double highest_cell() {
 
         x = __Y_SIZE - last;
 
-        if ( x > total ) {
+        if (x > total) {
             total = x;
         }
     }
 
-    return (total * base[0] + base[1] );
+    return (total * base[0] + base[1]);
 }
 
 // Function n 12*
 // the bigegst height difference between 2 columns
 double height_delta() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double min = 10000;
-    double max =-10000;
+    double max = -10000;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int last = __Y_SIZE;
         int x    = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 last = j;
                 break;
             }
@@ -474,22 +474,22 @@ double height_delta() {
         min = min < x ? min : x;
     }
 
-    return ((max - min) * base[0] + base[1] );
+    return ((max - min) * base[0] + base[1]);
 }
 
 // Function n 24*
 // aka verical transitions
 double vertical_roughness() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 1; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] != bg_info->data[i][j - 1] ) {
+            if (bg_info->data[i][j] != bg_info->data[i][j - 1]) {
                 total += base[0] * (1) + base[1];
             }
         }
@@ -502,15 +502,15 @@ double vertical_roughness() {
 // Same as above, but for horizontal changes
 double horizontal_roughness() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] != bg_info->data[i - 1][j] ) {
+            if (bg_info->data[i][j] != bg_info->data[i - 1][j]) {
                 total += base[0] * (1) + base[1];
             }
         }
@@ -523,15 +523,15 @@ double horizontal_roughness() {
 // same as f10 but weighted
 double vertical_roughness_w() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 1; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] != bg_info->data[i][j - 1] ) {
+            if (bg_info->data[i][j] != bg_info->data[i][j - 1]) {
                 total += base[0] * (17 - j) + base[1];
             }
         }
@@ -544,15 +544,15 @@ double vertical_roughness_w() {
 // same as f11 but weighted
 double horizontal_roughness_w() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] != bg_info->data[i - 1][j] ) {
+            if (bg_info->data[i][j] != bg_info->data[i - 1][j]) {
                 total += base[0] * (17 - j) + base[1];
             }
         }
@@ -563,11 +563,11 @@ double horizontal_roughness_w() {
 
 // Function n 9*
 // The height of a single column
-double column_height( int pos ) {
+double column_height(int pos) {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -576,7 +576,7 @@ double column_height( int pos ) {
     int last = __Y_SIZE;
     int x    = 0;
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[i][j] >= 1 ) {
+        if (bg_info->data[i][j] >= 1) {
             last = j;
             break;
         }
@@ -593,11 +593,11 @@ double column_height( int pos ) {
 
 // Function n 31*
 // the height difference between 2 adjacent columns
-double height_difference( int pos ) { // Column Difference
+double height_difference(int pos) {  // Column Difference
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -606,7 +606,7 @@ double height_difference( int pos ) { // Column Difference
     for (int i = 0; i < __X_SIZE; ++i) {
         h[i] = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 h[i] = __Y_SIZE - j;
                 break;
             }
@@ -615,7 +615,7 @@ double height_difference( int pos ) { // Column Difference
 
     int i = pos;
 
-    double x = abs(h[i] - h[i+1]);
+    double x = abs(h[i] - h[i + 1]);
     total += x * base[0] + base[1];
 
     return total;
@@ -625,9 +625,9 @@ double height_difference( int pos ) { // Column Difference
 // the mean column height
 double mean_column_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -636,7 +636,7 @@ double mean_column_height() {
     for (int i = 0; i < __X_SIZE; ++i) {
         h[i] = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 h[i] = __Y_SIZE - j;
                 break;
             }
@@ -653,9 +653,9 @@ double mean_column_height() {
 // max - mean column height
 double max_mean_column_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -666,7 +666,7 @@ double max_mean_column_height() {
     for (int i = 0; i < __X_SIZE; ++i) {
         h[i] = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 h[i] = __Y_SIZE - j;
                 break;
             }
@@ -684,9 +684,9 @@ double max_mean_column_height() {
 // mean - min column height
 double min_mean_column_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
@@ -697,7 +697,7 @@ double min_mean_column_height() {
     for (int i = 0; i < __X_SIZE; ++i) {
         h[i] = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 h[i] = __Y_SIZE - j;
                 break;
             }
@@ -715,27 +715,28 @@ double min_mean_column_height() {
 // mean hole depth
 double mean_hole_depth() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
-    int total = 0;
+    int total  = 0;
     int nholes = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 total += __Y_SIZE - j;
-                nholes ++;
+                nholes++;
             }
         }
     }
 
-    if ( nholes != 0 ) {
-        total = (total / nholes) * base[0] + base[1];;
+    if (nholes != 0) {
+        total = (total / nholes) * base[0] + base[1];
+        ;
     } else {
         total = 0;
     }
@@ -747,16 +748,16 @@ double mean_hole_depth() {
 // The number of blocks in the board
 double free_blocks() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
-                total ++;
+            if (bg_info->data[i][j] >= 1) {
+                total++;
             }
         }
     }
@@ -770,15 +771,15 @@ double free_blocks() {
 // The number of blocks in the board
 double blocks() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 total += base[0] * 1 + base[1];
             }
         }
@@ -791,16 +792,16 @@ double blocks() {
 // The number of blocks in the board, but a block on the i-th row counts i times as much
 double blocks_weighted() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
-        int x    = 0;
+        int x = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 x = __Y_SIZE - j;
                 x = base[0] * x + base[1];
                 total += base[0] * x + base[1];
@@ -815,30 +816,30 @@ double blocks_weighted() {
 // Eroded pieces
 double eroded_pieces() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
-    double total = 0;
-    int missing = 4;
-    int cleared = 0;
+    double total   = 0;
+    int    missing = 4;
+    int    cleared = 0;
 
     // Checks for cleared lines
     for (int j = 0; j < __Y_SIZE; ++j) {
         int ok = 1;
         for (int i = 0; i < __X_SIZE; ++i) {
-            if ( bg_info->data[i][j] == 0 ) {
+            if (bg_info->data[i][j] == 0) {
                 ok = 0;
                 break;
             }
         }
 
-        if ( ok ) {
-            cleared ++;
+        if (ok) {
+            cleared++;
             // Counts the number of blocks to be removed
             for (int i = 0; i < __X_SIZE; ++i) {
-                if ( bg_info->data[i][j] == 2 ) {
-                    missing --;
+                if (bg_info->data[i][j] == 2) {
+                    missing--;
                 }
             }
         }
@@ -851,39 +852,39 @@ double eroded_pieces() {
 
 // Function n 17*
 // Number of well cells, also can be used as total well depth, weighted
-double well_cells_weigthed(){ // total well depth
+double well_cells_weigthed() {  // total well depth
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double total = 0;
 
     for (int i = 1; i < 9; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] == 0 && bg_info->data[i-1][j] >= 1 && bg_info->data[i+1][j] >= 1  ) {
+            if (bg_info->data[i][j] == 0 && bg_info->data[i - 1][j] >= 1 && bg_info->data[i + 1][j] >= 1) {
                 double x = (__Y_SIZE - j);
                 total += x * base[0] + base[1];
-            } else if ( bg_info->data[i][j] >= 1 ) {
+            } else if (bg_info->data[i][j] >= 1) {
                 break;
             }
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1  ) {
+        if (bg_info->data[9][j] == 0 && bg_info->data[8][j] >= 1) {
             double x = (__Y_SIZE - j);
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[9][j] >= 1 ) {
+        } else if (bg_info->data[9][j] >= 1) {
             break;
         }
     }
 
     for (int j = 0; j < __Y_SIZE; ++j) {
-        if ( bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1  ) {
+        if (bg_info->data[0][j] == 0 && bg_info->data[1][j] >= 1) {
             double x = (__Y_SIZE - j);
             total += x * base[0] + base[1];
-        } else if ( bg_info->data[0][j] >= 1 ) {
+        } else if (bg_info->data[0][j] >= 1) {
             break;
         }
     }
@@ -894,29 +895,30 @@ double well_cells_weigthed(){ // total well depth
 // functon n 33*
 double rows_with_a_hole() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int holes[__Y_SIZE];
 
-    for (int i = 0; i < __Y_SIZE; ++i) holes[i] = 0;
+    for (int i = 0; i < __Y_SIZE; ++i)
+        holes[i] = 0;
 
     int total = 0;
 
     for (int j = 0; j < __Y_SIZE; ++j) {
         int found = 0;
         for (int i = 0; i < __X_SIZE; ++i) {
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
-                holes[j] ++;
+            } else if (bg_info->data[i][j] == 0 && found) {
+                holes[j]++;
             }
         }
     }
 
     for (int i = 0; i < __Y_SIZE; ++i) {
-        if ( holes[i] > 0 ) {
+        if (holes[i] > 0) {
             total += base[0] * 1 + base[1];
         }
     }
@@ -928,24 +930,24 @@ double rows_with_a_hole() {
 // The sum of the number of occupied pieces above each hole
 double hole_depth() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
             }
 
-            if ( found ) {
+            if (found) {
                 total += 1;
             }
 
-            if ( bg_info->data[i][j] == 0 && found ) {
+            if (bg_info->data[i][j] == 0 && found) {
                 break;
             }
         }
@@ -958,18 +960,18 @@ double hole_depth() {
 // minimum height
 double min_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double min = 10000;
-    double max =-10000;
+    double max = -10000;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int last = __Y_SIZE;
         int x    = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 last = j;
                 break;
             }
@@ -981,25 +983,25 @@ double min_height() {
         min = min < x ? min : x;
     }
 
-    return ((min) * base[0] + base[1] );
+    return ((min)*base[0] + base[1]);
 }
 
 // Function n 1*
 // Maximum height
 double max_height() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     double min = 10000;
-    double max =-10000;
+    double max = -10000;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int last = __Y_SIZE;
         int x    = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 last = j;
                 break;
             }
@@ -1011,26 +1013,26 @@ double max_height() {
         min = min < x ? min : x;
     }
 
-    return ((max) * base[0] + base[1] );
+    return ((max)*base[0] + base[1]);
 }
 
 // Function n 7*
 // Number of vertically connected holes
 double holes_vertical() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE - 1; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && bg_info->data[i][j+1] == 0 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && bg_info->data[i][j + 1] == 0 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && bg_info->data[i][j+1] >= 1 && found ) {
+            } else if (bg_info->data[i][j] == 0 && bg_info->data[i][j + 1] >= 1 && found) {
                 /*x = __Y_SIZE - j;*/
                 x = 1;
 
@@ -1047,9 +1049,9 @@ double holes_vertical() {
 // Number of holes
 double holes() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
@@ -1057,40 +1059,41 @@ double holes() {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
             /*int x    = 0;*/
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 /*x = __Y_SIZE - j;*/
                 /*x = 1;*/
 
                 /*x = x * base[0] + base[1];*/
-                total ++;
+                total++;
             }
         }
     }
 
-    return total * base[0] + base[1];;
+    return total * base[0] + base[1];
+    ;
 }
 
 // Function n 29*
 // Highest hole
 double potential_rows() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 x = __Y_SIZE - j;
-                if ( x > total ) {
+                if (x > total) {
                     total = x;
                 }
             }
@@ -1100,13 +1103,13 @@ double potential_rows() {
     for (int j = 0; j < total; ++j) {
         int c = 0;
         for (int i = 0; i < __X_SIZE; ++i) {
-            if ( bg_info->data[i][j] >= 1 ) {
-                c ++;
+            if (bg_info->data[i][j] >= 1) {
+                c++;
             }
         }
 
-        if ( c >= 8 ) {
-            total ++;
+        if (c >= 8) {
+            total++;
         }
     }
 
@@ -1119,22 +1122,22 @@ double potential_rows() {
 // blocks above highest hole wighted
 double blocks_above_highest_hole_w() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
-    int top = 0;
+    int top   = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 x = __Y_SIZE - j;
-                if ( x > total ) {
+                if (x > total) {
                     total = x;
                 }
             }
@@ -1145,8 +1148,8 @@ double blocks_above_highest_hole_w() {
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < top; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
-                total += __Y_SIZE - j; // weight is here
+            if (bg_info->data[i][j] >= 1) {
+                total += __Y_SIZE - j;  // weight is here
             }
         }
     }
@@ -1160,22 +1163,22 @@ double blocks_above_highest_hole_w() {
 // Highest hole
 double blocks_above_highest_hole() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
-    int top = 0;
+    int top   = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 x = __Y_SIZE - j;
-                if ( x > total ) {
+                if (x > total) {
                     total = x;
                 }
             }
@@ -1186,8 +1189,8 @@ double blocks_above_highest_hole() {
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < top; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
-                total ++;
+            if (bg_info->data[i][j] >= 1) {
+                total++;
             }
         }
     }
@@ -1201,21 +1204,21 @@ double blocks_above_highest_hole() {
 // Highest hole
 double highest_hole() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int total = 0;
 
     for (int i = 0; i < __X_SIZE; ++i) {
         int found = 0;
         for (int j = 0; j < __Y_SIZE; ++j) {
-            int x    = 0;
-            if ( bg_info->data[i][j] >= 1 && !found ) {
+            int x = 0;
+            if (bg_info->data[i][j] >= 1 && !found) {
                 found = 1;
-            } else if ( bg_info->data[i][j] == 0 && found ) {
+            } else if (bg_info->data[i][j] == 0 && found) {
                 x = __Y_SIZE - j;
-                if ( x > total ) {
+                if (x > total) {
                     total = x;
                 }
             }
@@ -1230,9 +1233,9 @@ double highest_hole() {
 // Function n 35*
 double pattern_diversity() {
     _bg_info *bg_info = get_bg_info_pointer();
-    int fid           = ff_ctrl_current();
-    _brain* brain     = get_brain_pointer();
-    double *base      = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
+    int       fid     = ff_ctrl_current();
+    _brain *  brain   = get_brain_pointer();
+    double *  base    = &brain->population[brain->current].weight[fid * GEN_P_FUNCTION];
 
     int hash[__Y_SIZE];
     int used[__Y_SIZE * __Y_SIZE];
@@ -1249,18 +1252,18 @@ double pattern_diversity() {
 
     for (int i = 0; i < __X_SIZE; ++i) {
         for (int j = 0; j < __Y_SIZE; ++j) {
-            if ( bg_info->data[i][j] >= 1 ) {
+            if (bg_info->data[i][j] >= 1) {
                 hash[j] = pow(2, i);
             }
         }
     }
 
     for (int i = 0; i < __Y_SIZE; ++i) {
-        if ( used[hash[i]] ) {
-            total --;
+        if (used[hash[i]]) {
+            total--;
         }
 
-        used[hash[i]] ++;
+        used[hash[i]]++;
     }
 
     return total * base[0] + base[1];

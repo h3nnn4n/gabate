@@ -67,8 +67,8 @@
 #define N_GENES (N_FUNCTION * GEN_P_FUNCTION)
 
 #define MAX_SPRITE 1000
-#define __X_SIZE 10
-#define __Y_SIZE 17
+#define __X_SIZE   10
+#define __Y_SIZE   17
 
 #define NRUNS 7
 
@@ -84,13 +84,13 @@ typedef struct {
     _point d;
 } _piece;
 
-typedef enum {SQUARE, Ja, Jb, Jc, Jd, La, Lb, Lc, Ld, Ia, Ib, Sa, Sb, Za, Zb, Ta, Tb, Tc, Td, Unknow} _piece_type;
+typedef enum { SQUARE, Ja, Jb, Jc, Jd, La, Lb, Lc, Ld, Ia, Ib, Sa, Sb, Za, Zb, Ta, Tb, Tc, Td, Unknow } _piece_type;
 
 typedef struct {
     double cost[N_GENES];
     double weight[N_GENES];
-    int fitness;
-    int worst;
+    int    fitness;
+    int    worst;
 
     int lines_cleared_total;
     int pieces_spawned_total;
@@ -110,35 +110,35 @@ typedef struct {
     double min[N_GENES];
     double max[N_GENES];
 
-    int current;
-    int runs;
-    int max_runs;
+    int        current;
+    int        runs;
+    int        max_runs;
     _obj_costs population[POP_SIZE];
-    double mutation_chance;
-    double crossover_chance;
+    double     mutation_chance;
+    double     crossover_chance;
 
     int elapsed_generations;
     int most_lines_cleared;
     int worst_lines_cleared;
 
     double diversity;
-    int new_piece;
+    int    new_piece;
 
     int rng;
 
     int suicide;
 
-    int round_has_cleaned_lines;
+    int      round_has_cleaned_lines;
     _bg_info bg_info_copy;
 } _brain;
 
 typedef struct {
-    _point coord;
-    _piece blocks;
+    _point      coord;
+    _piece      blocks;
     _piece_type type;
-    int set;
-    int nrotations;
-    _obj_costs parameters;
+    int         set;
+    int         nrotations;
+    _obj_costs  parameters;
 } _best_piece;
 
 typedef struct {
@@ -149,7 +149,7 @@ typedef struct {
 
 typedef struct {
     _sprite_list sprite_list[MAX_SPRITE];
-    int used_sprites;
+    int          used_sprites;
 } _sprite_t_info;
 
 typedef struct {
@@ -157,7 +157,7 @@ typedef struct {
     int wait_rotation;
 } _move_queue;
 
-typedef enum {BOOTING, INGAME, GAMEOVER} _game_state;
+typedef enum { BOOTING, INGAME, GAMEOVER } _game_state;
 
 typedef struct {
     _game_state game_state;

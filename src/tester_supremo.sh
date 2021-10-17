@@ -26,4 +26,3 @@ for name in $TESTS; do
     (./"main_$name" tetris.gb > $path/$now) & disown %
     echo "./"main_$name" tetris.gb > $path/$now"
 done
-

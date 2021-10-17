@@ -17,43 +17,43 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
-#include "rev.h"
-#include "other_window.h"
-#include "types.h"
 #include "opt_to_str.h"
+#include "other_window.h"
+#include "rev.h"
+#include "types.h"
 
 static _rev_data rev_data;
 
 static uint8_t memory_1[0x10000];
 static uint8_t memory_2[0x10000];
 
-void reset_code_and_data(){
+void reset_code_and_data() {
     for (int i = 0; i < MEM_SIZE; ++i) {
         for (int j = 0; j < TEXT_SIZE; ++j) {
             rev_data.code_and_data[i][j] = '\0';
-            rev_data.is_executed[i] = 0;
+            rev_data.is_executed[i]      = 0;
         }
     }
 }
 
-void write_executed_code (_cpu_info *cpu) {
-    if ( rev_data.is_executed[cpu->pc] == 0 ) {
+void write_executed_code(_cpu_info *cpu) {
+    if (rev_data.is_executed[cpu->pc] == 0) {
         rev_data.is_executed[cpu->pc] = 1;
         get_opt_str(cpu, rev_data.code_and_data[cpu->pc]);
         /*printf("wrote: %s\n", rev_data.code_and_data[cpu->pc]);*/
-    } else if  ( rev_data.is_executed[cpu->pc] != 1 ) {
+    } else if (rev_data.is_executed[cpu->pc] != 1) {
         abort();
     }
 }
 
 void dump_to_file() {
     static int number = 0;
-    char name[256];
+    char       name[256];
 
     sprintf(name, "periodic_dump_%08d.txt", number++);
 
@@ -61,7 +61,7 @@ void dump_to_file() {
 
     for (int i = 0; i < MEM_SIZE; ++i) {
         /*if ( rev_data.is_executed == 1 ) {*/
-            fprintf(f, "%s\n", rev_data.code_and_data[i]);
+        fprintf(f, "%s\n", rev_data.code_and_data[i]);
         /*}*/
     }
 
@@ -80,10 +80,10 @@ void mem_find_start() {
 
     printf("mem_find_start was running? %s\n", started == 0 ? "no" : "yes");
 
-    if ( started == 0 ) {
-        started ++;
+    if (started == 0) {
+        started++;
 
-        _cpu_info* cpu = get_cpu_pointer();
+        _cpu_info *cpu = get_cpu_pointer();
         for (int i = 0; i < 0x10000; ++i) {
             memory_1[i] = cpu->mem_controller.memory[i];
         }
@@ -92,11 +92,12 @@ void mem_find_start() {
 
 void mem_find_mark_exact() {
     printf("mem_find_mark_exact\n");
-    _cpu_info* cpu = get_cpu_pointer();
-    int d;
-    if ( !scanf("%d", &d) ) abort();
+    _cpu_info *cpu = get_cpu_pointer();
+    int        d;
+    if (!scanf("%d", &d))
+        abort();
     for (int i = 0; i < 0x10000; ++i) {
-        if ( d == cpu->mem_controller.memory[i] ) {
+        if (d == cpu->mem_controller.memory[i]) {
             memory_1[i] = cpu->mem_controller.memory[i];
             memory_2[i] = 1;
         } else {
@@ -109,9 +110,9 @@ void mem_find_mark_exact() {
 
 void mem_find_mark_diff() {
     printf("mem_find_find\n");
-    _cpu_info* cpu = get_cpu_pointer();
+    _cpu_info *cpu = get_cpu_pointer();
     for (int i = 0; i < 0x10000; ++i) {
-        if ( memory_1[i] == cpu->mem_controller.memory[i] ) {
+        if (memory_1[i] == cpu->mem_controller.memory[i]) {
             memory_2[i] = 1;
         } else {
             memory_1[i] = cpu->mem_controller.memory[i];
@@ -123,9 +124,9 @@ void mem_find_mark_diff() {
 
 void mem_find_mark_equal() {
     printf("mem_find_find\n");
-    _cpu_info* cpu = get_cpu_pointer();
+    _cpu_info *cpu = get_cpu_pointer();
     for (int i = 0; i < 0x10000; ++i) {
-        if ( memory_1[i] != cpu->mem_controller.memory[i] ) {
+        if (memory_1[i] != cpu->mem_controller.memory[i]) {
             memory_2[i] = 1;
         } else {
             memory_1[i] = cpu->mem_controller.memory[i];
@@ -137,7 +138,7 @@ void mem_find_mark_equal() {
 
 void mem_find_dump() {
     static int number = 0;
-    char name[256];
+    char       name[256];
 
     sprintf(name, "mem_dump_%08d.txt", number++);
 
@@ -146,7 +147,7 @@ void mem_find_dump() {
     FILE *f = fopen(name, "wt");
 
     for (int i = 0; i < 0x10000; ++i) {
-        if ( memory_2[i] == 0 ) {
+        if (memory_2[i] == 0) {
             fprintf(f, "%4x: %2x %4d\n", i, memory_1[i], memory_1[i]);
         }
     }

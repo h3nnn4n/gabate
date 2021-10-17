@@ -24,11 +24,11 @@
 
 #include "types.h"
 
-uint32_t *get_frame_buffer (                ) ;
-void     flip_screen       ( _cpu_info *cpu ) ;
-void     sdl_init          (                ) ;
-void     input_update      ( _cpu_info *cpu ) ;
-void     sdl_quit          (                ) ;
+uint32_t *get_frame_buffer();
+void      flip_screen(_cpu_info *cpu);
+void      sdl_init();
+void      input_update(_cpu_info *cpu);
+void      sdl_quit();
 
 void draw_rectangle_overlay(int x, int y, int x2, int y2, int r, int g, int b);
 void draw_text_overlay(char *text, int x, int y, int r, int g, int b);

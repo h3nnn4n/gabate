@@ -68,12 +68,3 @@ plot \
 'log_HA_avg.txt'      u (column(0)):2 t 'HA'      w l ls 3, \
 'log_LELmark_avg.txt' u (column(0)):2 t 'LELmark' w l ls 5, \
 'log_ALL_avg.txt'     u (column(0)):2 t 'ALL'     w l ls 6
-
-
-
-
-
-
-
-
-

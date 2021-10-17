@@ -17,30 +17,30 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <time.h>
-#include <assert.h>
+#include <unistd.h>
 
 #include <sys/types.h>
 
-#include "rev.h"
-#include "utils.h"
-#include "types.h"
-#include "memory.h"
-#include "cartridge.h"
-#include "other_window.h"
-#include "decoder.h"
-#include "graphics.h"
-#include "display.h"
-#include "disassembler.h"
-#include "time_keeper.h"
-#include "file_control.h"
 #include "automated_tests.h"
+#include "cartridge.h"
+#include "decoder.h"
+#include "disassembler.h"
+#include "display.h"
+#include "file_control.h"
+#include "graphics.h"
+#include "memory.h"
+#include "other_window.h"
+#include "rev.h"
+#include "time_keeper.h"
+#include "types.h"
+#include "utils.h"
 
 int main(int argc, char *argv[]) {
-    if ( argc < 2 )
+    if (argc < 2)
         fprintf(stderr, "Missing argument\n");
 
     _cpu_info cpu;
@@ -55,17 +55,17 @@ int main(int argc, char *argv[]) {
     init_cpu(&cpu);
     init_file_control();
 
-    load_rom ( &cpu, argv[1], 0x0000 );
-    check_rom( &cpu                  );
+    load_rom(&cpu, argv[1], 0x0000);
+    check_rom(&cpu);
 
     /*print_rom_info(&cpu);*/
 
     reset_code_and_data();
 
-    set_cpu_pointer( &cpu );
+    set_cpu_pointer(&cpu);
 
-    while ( 1 ) {
-        decoder        ( &cpu );
+    while (1) {
+        decoder(&cpu);
     }
 
     return 0;
