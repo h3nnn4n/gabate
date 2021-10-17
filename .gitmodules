@@ -4,3 +4,6 @@
 [submodule "deps/Unity"]
 	path = deps/Unity
 	url = https://github.com/ThrowTheSwitch/Unity
+[submodule "deps/cJSON"]
+	path = deps/cJSON
+	url = https://github.com/DaveGamble/cJSON
