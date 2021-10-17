@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "agent.h"
 #include "cartridge.h"
 #include "display.h"
 #include "graphics.h"

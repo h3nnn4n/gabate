@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "agent.h"
 #include "opt_to_str.h"
 #include "other_window.h"
 #include "rev.h"

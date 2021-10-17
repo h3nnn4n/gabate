@@ -25,6 +25,7 @@
 
 #include <sys/types.h>
 
+#include "agent.h"
 #include "automated_tests.h"
 #include "cartridge.h"
 #include "decoder.h"
@@ -62,6 +63,7 @@ int main(int argc, char *argv[]) {
 
     reset_code_and_data();
 
+    // FIXME: This needs a better api I think
     set_cpu_pointer(&cpu);
 
     while (1) {

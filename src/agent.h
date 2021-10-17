@@ -17,30 +17,27 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#ifndef OTHER_WINDOW_H
-#define OTHER_WINDOW_H
+
+#ifndef SRC_AGENT_H_
+#define SRC_AGENT_H_
 
 #include "lelmark.h"
-#include "tetris.h"
 #include "trainer.h"
 #include "types.h"
 
-void      sprite_info_add(int posx, int posy, int id);
-void      sprite_info_reset();
-_bg_info *get_bg_info_pointer();
+extern _best_piece best_piece;
+extern _move_queue move_queue;
+extern _ai_state   ai_state;
 
-void draw_text(char *text, int x, int y, int r, int g, int b);
-void draw_square(int x, int y, int r, int g, int b);
+_best_piece *get_best_piece_pointer();
 
-void screen_update();
+void       set_cpu_pointer(_cpu_info *cpu);
+_cpu_info *get_cpu_pointer();
 
-void      other_window_init();
-void      other_sdl_quit();
-void      other_flip_screen();
-uint32_t *other_get_frame_buffer();
-uint32_t *other_get_frame_buffer_vision();
-void      draw_rectangle(int x, int y, int x2, int y2, int r, int g, int b);
-void      draw_text(char *text, int x, int y, int r, int g, int b);
-void      draw_square(int x, int y, int r, int g, int b);
+void logic_update();
 
-#endif /* OTHER_WINDOW_H */
+int  piece_moved();
+void start_game_hook();
+void joystick_hook();
+
+#endif  // SRC_AGENT_H_
