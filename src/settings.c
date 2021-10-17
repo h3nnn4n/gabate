@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2021  Renan S. Silva                                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -17,30 +17,44 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#ifndef OTHER_WINDOW_H
-#define OTHER_WINDOW_H
 
-#include "lelmark.h"
-#include "tetris.h"
-#include "trainer.h"
-#include "types.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-void      sprite_info_add(int posx, int posy, int id);
-void      sprite_info_reset();
-_bg_info *get_bg_info_pointer();
+#include <cJSON.h>
 
-void draw_text(char *text, int x, int y, int r, int g, int b);
-void draw_square(int x, int y, int r, int g, int b);
+#include "settings.h"
 
-void screen_update();
+_agent_config agent_config;
 
-void      other_window_init();
-void      other_sdl_quit();
-void      other_flip_screen();
-uint32_t *other_get_frame_buffer();
-uint32_t *other_get_frame_buffer_vision();
-void      draw_rectangle(int x, int y, int x2, int y2, int r, int g, int b);
-void      draw_text(char *text, int x, int y, int r, int g, int b);
-void      draw_square(int x, int y, int r, int g, int b);
+void load_settings(char *setting_str) {
+    const cJSON *object = NULL;
+    cJSON *      json   = cJSON_Parse(setting_str);
 
-#endif /* OTHER_WINDOW_H */
+    if (json == NULL)
+        abort();
+
+    agent_config.settings = json;
+
+    cJSON *agent   = cJSON_GetObjectItemCaseSensitive(json, "agent");
+    cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
+
+    if (weights != NULL) {
+        agent_config.agent_weights = malloc(sizeof(double) * cJSON_GetArraySize(weights));
+
+        unsigned int index = 0;
+        cJSON_ArrayForEach(object, weights) {
+            agent_config.agent_weights[index] = object->valuedouble;
+            index++;
+        }
+    }
+
+    cJSON *train = cJSON_GetObjectItem(json, "train");
+    if (train != NULL) {
+        agent_config.train = cJSON_IsTrue(train);
+    }
+}
+
+double *get_agent_weights() { return agent_config.agent_weights; }
+
+bool get_train() { return agent_config.train; }

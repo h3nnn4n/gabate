@@ -18,10 +18,12 @@
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "agent.h"
 #include "graphics.h"
 #include "lelmark.h"
 #include "other_window.h"
@@ -75,7 +77,7 @@ int cleaned_any_row() {
     return 0;
 }
 
-int piece_touched_the_ground(_piece piece, int dx, int dy) {
+bool piece_touched_the_ground(_piece piece, int dx, int dy) {
     int x = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
     int y = get_cpu_pointer()->mem_controller.memory[0xff93] - 16;
 
@@ -93,12 +95,12 @@ int piece_touched_the_ground(_piece piece, int dx, int dy) {
     max_y *= 8;
 
     if (y + dy + max_y >= 142)
-        return 1;
+        return true;
 
-    return 0;
+    return false;
 }
 
-int is_inside_bounds(_piece piece, int dx, int dy) {
+bool is_inside_bounds(_piece piece, int dx, int dy) {
     int x = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
     int y = get_cpu_pointer()->mem_controller.memory[0xff93] - 16;
 
@@ -123,12 +125,13 @@ int is_inside_bounds(_piece piece, int dx, int dy) {
     max_x *= 8;
 
     if (x + dx + min_x < 16 || x + dx + max_x > 88) {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
+// FIXME: This most likely doesnt need a return value
 int add_piece(_piece piece, int dx, int dy) {
     int       x  = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
     int       y  = get_cpu_pointer()->mem_controller.memory[0xff93] - 16;
@@ -156,7 +159,7 @@ int add_piece(_piece piece, int dx, int dy) {
     return 1;
 }
 
-int can_fit(_piece piece, int dx, int dy) {
+bool can_fit(_piece piece, int dx, int dy) {
     int       x  = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
     int       y  = get_cpu_pointer()->mem_controller.memory[0xff93] - 16;
     _bg_info *bg = get_bg_info_pointer();
@@ -168,27 +171,27 @@ int can_fit(_piece piece, int dx, int dy) {
     yy = (y + dy + piece.a.y * 8) / 8 - 1;
 
     if (bg->data[xx][yy] == 1)
-        return 0;
+        return false;
 
     xx = (x + dx + piece.b.x * 8) / 8 - 2;
     yy = (y + dy + piece.b.y * 8) / 8 - 1;
 
     if (bg->data[xx][yy] == 1)
-        return 0;
+        return false;
 
     xx = (x + dx + piece.c.x * 8) / 8 - 2;
     yy = (y + dy + piece.c.y * 8) / 8 - 1;
 
     if (bg->data[xx][yy] == 1)
-        return 0;
+        return false;
 
     xx = (x + dx + piece.d.x * 8) / 8 - 2;
     yy = (y + dy + piece.d.y * 8) / 8 - 1;
 
     if (bg->data[xx][yy] == 1)
-        return 0;
+        return false;
 
-    return 1;
+    return true;
 }
 
 void clear_lines() {
@@ -275,70 +278,6 @@ void reset_bg() {
         for (int j = 0; j < __Y_SIZE; j++) {
             bg_info->data[i][j] = 0;
         }
-    }
-}
-
-void get_best_move() {
-    double       best_cost  = -999999;
-    _best_piece *best_piece = get_best_piece_pointer();
-
-    best_piece->set = 0;
-
-    _piece_type piece_type = get_current_piece();
-    _piece      piece      = get_piece_coord_from_id(piece_type);
-
-    int x = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
-    int y = get_cpu_pointer()->mem_controller.memory[0xff93] - 24;
-
-    for (int n_totation = 0; n_totation < get_piece_rotation(piece_type); ++n_totation) {
-        for (int dx = -80; dx < 96; dx += 8) {
-            if (is_inside_bounds(piece, dx, 16)) {
-                int first = 0;
-                for (int dy = 24; dy < 8 * 20; dy += 8) {
-                    if (can_fit(piece, dx, dy)) {
-                        first = 1;
-                    } else if (first) {
-                        save_bg();
-                        add_piece(piece, dx, dy - 8);
-                        evaluate_cost();
-                        if (best_cost < get_cost()) {
-                            best_cost              = get_cost();
-                            best_piece->coord.x    = dx + x;
-                            best_piece->coord.y    = dy + y;
-                            best_piece->type       = piece_type;
-                            best_piece->blocks     = piece;
-                            best_piece->set        = 1;
-                            best_piece->nrotations = n_totation;
-                            best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
-                        }
-
-                        restore_bg();
-                        break;
-                    } else {
-                        break;
-                    }
-
-                    if (piece_touched_the_ground(piece, dx, dy)) {
-                        save_bg();
-                        add_piece(piece, dx, dy - 8);
-                        evaluate_cost();
-                        best_cost              = get_cost();
-                        best_piece->coord.x    = dx + x;
-                        best_piece->coord.y    = dy + y;
-                        best_piece->type       = piece_type;
-                        best_piece->blocks     = piece;
-                        best_piece->set        = 1;
-                        best_piece->nrotations = n_totation;
-                        best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
-                        restore_bg();
-                        break;
-                    }
-                }
-            }
-        }
-
-        piece_type = rotate_piece(piece_type);
-        piece      = get_rotated_piece(piece_type);
     }
 }
 

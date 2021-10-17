@@ -8,23 +8,23 @@ TESTDIR = $(abspath $(CURDIR)/test)
 
 OPTIONS =
 
-INCLUDES = -Isrc \
+INCLUDES = -Isrc/ \
            -Ideps/cJSON/ \
-           -Ideps/Unity/src \
+           -Ideps/Unity/src/ \
            -Ideps/jenkins_hash/ \
-           -Ideps/pcg-c/include \
-           -Ideps/pcg-c/extras
+           -Ideps/pcg-c/include/ \
+           -Ideps/pcg-c/extras/
 
 
 OPTIMIZATION=-O3
 
-LDFLAGS += -lpcg_random  -Ldeps/cJSON/build/
+LDFLAGS += -lpcg_random -lcjson -Ldeps/cJSON/build/
 CFLAGS += -Wall -Wextra -Werror -pedantic -std=gnu11 $(OPTIMIZATION) $(OPTIONS) $(INCLUDES)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
   ECHOFLAGS = -e
-  LDFLAGS += -Wl,-Ldeps/Unity/build/,-Ldeps/pcg-c/src/
+  LDFLAGS += -Wl,-Ldeps/Unity/build/
 endif
 ifeq ($(UNAME_S),Darwin)
   CFLAGS += -Wno-unused-command-line-argument

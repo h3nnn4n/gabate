@@ -25,6 +25,7 @@
 
 #include <sys/types.h>
 
+#include "agent.h"
 #include "automated_tests.h"
 #include "cartridge.h"
 #include "decoder.h"
@@ -35,6 +36,7 @@
 #include "memory.h"
 #include "other_window.h"
 #include "rev.h"
+#include "settings.h"
 #include "time_keeper.h"
 #include "types.h"
 #include "utils.h"
@@ -42,6 +44,10 @@
 int main(int argc, char *argv[]) {
     if (argc < 2)
         fprintf(stderr, "Missing argument\n");
+
+    if (argc == 3) {
+        load_settings(argv[2]);
+    }
 
     _cpu_info cpu;
     sdl_init();
@@ -62,11 +68,12 @@ int main(int argc, char *argv[]) {
 
     reset_code_and_data();
 
+    // FIXME: This needs a better api I think
     set_cpu_pointer(&cpu);
 
     while (1) {
         decoder(&cpu);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

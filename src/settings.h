@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2021  Renan S. Silva                                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -17,30 +17,22 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#ifndef OTHER_WINDOW_H
-#define OTHER_WINDOW_H
 
-#include "lelmark.h"
-#include "tetris.h"
-#include "trainer.h"
-#include "types.h"
+#ifndef SRC_SETTINGS_H_
+#define SRC_SETTINGS_H_
 
-void      sprite_info_add(int posx, int posy, int id);
-void      sprite_info_reset();
-_bg_info *get_bg_info_pointer();
+#include <stdbool.h>
 
-void draw_text(char *text, int x, int y, int r, int g, int b);
-void draw_square(int x, int y, int r, int g, int b);
+#include <cJSON.h>
 
-void screen_update();
+typedef struct {
+    cJSON * settings;
+    double *agent_weights;
+    bool    train;
+} _agent_config;
 
-void      other_window_init();
-void      other_sdl_quit();
-void      other_flip_screen();
-uint32_t *other_get_frame_buffer();
-uint32_t *other_get_frame_buffer_vision();
-void      draw_rectangle(int x, int y, int x2, int y2, int r, int g, int b);
-void      draw_text(char *text, int x, int y, int r, int g, int b);
-void      draw_square(int x, int y, int r, int g, int b);
+void    load_settings(char *setting_str);
+double *get_agent_weights();
+bool    get_train();
 
-#endif /* OTHER_WINDOW_H */
+#endif  // SRC_SETTINGS_H_
