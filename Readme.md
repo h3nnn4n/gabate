@@ -26,6 +26,13 @@ Features
  - For each individual, the game is played a fixed number of times and the
    worst run is used as fitness, to ensure consistency.
 
+Local Setup
+===========
+
+Run:
+ - `git config blame.ignoreRevsFile .git-blame-ignore-revs`
+ - `pre-commit install -t pre-push`
+
 License
 =======
 See `LICENSE` for more info.
