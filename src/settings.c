@@ -39,13 +39,22 @@ void load_settings(char *setting_str) {
     cJSON *agent   = cJSON_GetObjectItemCaseSensitive(json, "agent");
     cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
 
-    agent_config.agent_weights = malloc(sizeof(double) * cJSON_GetArraySize(weights));
+    if (weights != NULL) {
+        agent_config.agent_weights = malloc(sizeof(double) * cJSON_GetArraySize(weights));
 
-    unsigned int index = 0;
-    cJSON_ArrayForEach(object, weights) {
-        agent_config.agent_weights[index] = object->valuedouble;
-        index++;
+        unsigned int index = 0;
+        cJSON_ArrayForEach(object, weights) {
+            agent_config.agent_weights[index] = object->valuedouble;
+            index++;
+        }
+    }
+
+    cJSON *train = cJSON_GetObjectItem(json, "train");
+    if (train != NULL) {
+        agent_config.train = cJSON_IsTrue(train);
     }
 }
 
 double *get_agent_weights() { return agent_config.agent_weights; }
+
+bool get_train() { return agent_config.train; }

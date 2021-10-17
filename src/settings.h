@@ -21,14 +21,18 @@
 #ifndef SRC_SETTINGS_H_
 #define SRC_SETTINGS_H_
 
+#include <stdbool.h>
+
 #include <cJSON.h>
 
 typedef struct {
     cJSON * settings;
     double *agent_weights;
+    bool    train;
 } _agent_config;
 
 void    load_settings(char *setting_str);
 double *get_agent_weights();
+bool    get_train();
 
 #endif  // SRC_SETTINGS_H_

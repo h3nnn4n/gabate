@@ -103,12 +103,10 @@ void initialize_pop() {
     const double *agent_weights = get_agent_weights();
     for (int i = 0; i < POP_SIZE; ++i) {
         for (int j = 0; j < N_GENES; ++j) {
-#ifdef TRAIN
-            /*brain.population[i].weight[j] = ( drand48() * 2.0 - 1.0 ) * 50.0;*/
-            brain.population[i].weight[j] = (drand48() * 2.0 - 1.0) * 7.5;
-#else
-            brain.population[i].weight[j] = agent_weights[j];
-#endif
+            if (get_train())
+                brain.population[i].weight[j] = (drand48() * 2.0 - 1.0) * 7.5;
+            else
+                brain.population[i].weight[j] = agent_weights[j];
 
             brain.population[i].min[j]  = DBL_MAX;
             brain.population[i].max[j]  = -DBL_MAX;
@@ -283,13 +281,13 @@ void evolutionary_step() {
 
 void boot_brain() {
     brain.current = 0;
-#ifdef TRAIN
-    brain.mutation_chance  = 0.04;
-    brain.crossover_chance = 0.85;
-#else
-    brain.mutation_chance = 0.0;
-    brain.crossover_chance = 0.0;
-#endif
+    if (get_train()) {
+        brain.mutation_chance  = 0.04;
+        brain.crossover_chance = 0.85;
+    } else {
+        brain.mutation_chance  = 0.0;
+        brain.crossover_chance = 0.0;
+    }
     brain.max_runs            = NRUNS;
     brain.runs                = 0;
     brain.worst_lines_cleared = 0;
