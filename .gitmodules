@@ -1,0 +1,6 @@
+[submodule "deps/pcg-c"]
+	path = deps/pcg-c
+	url = https://github.com/imneme/pcg-c/
+[submodule "deps/Unity"]
+	path = deps/Unity
+	url = https://github.com/ThrowTheSwitch/Unity
