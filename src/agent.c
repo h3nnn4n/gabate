@@ -26,6 +26,7 @@
 #include "agent.h"
 #include "file_control.h"
 #include "stats.h"
+#include "tetris.h"
 
 // TODO: This should be a setting
 #define fast_training 1
@@ -249,5 +250,69 @@ void logic_update() {
 
     if (cpu_info->mem_controller.memory[0xffe1] == 0x0000) {
         new_piece_on_screen_hook();
+    }
+}
+
+void get_best_move() {
+    double       best_cost  = -999999;
+    _best_piece *best_piece = get_best_piece_pointer();
+
+    best_piece->set = 0;
+
+    _piece_type piece_type = get_current_piece();
+    _piece      piece      = get_piece_coord_from_id(piece_type);
+
+    int x = get_cpu_pointer()->mem_controller.memory[0xff92] - 8;
+    int y = get_cpu_pointer()->mem_controller.memory[0xff93] - 24;
+
+    for (int n_totation = 0; n_totation < get_piece_rotation(piece_type); ++n_totation) {
+        for (int dx = -80; dx < 96; dx += 8) {
+            if (is_inside_bounds(piece, dx, 16)) {
+                int first = 0;
+                for (int dy = 24; dy < 8 * 20; dy += 8) {
+                    if (can_fit(piece, dx, dy)) {
+                        first = 1;
+                    } else if (first) {
+                        save_bg();
+                        add_piece(piece, dx, dy - 8);
+                        evaluate_cost();
+                        if (best_cost < get_cost()) {
+                            best_cost              = get_cost();
+                            best_piece->coord.x    = dx + x;
+                            best_piece->coord.y    = dy + y;
+                            best_piece->type       = piece_type;
+                            best_piece->blocks     = piece;
+                            best_piece->set        = 1;
+                            best_piece->nrotations = n_totation;
+                            best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
+                        }
+
+                        restore_bg();
+                        break;
+                    } else {
+                        break;
+                    }
+
+                    if (piece_touched_the_ground(piece, dx, dy)) {
+                        save_bg();
+                        add_piece(piece, dx, dy - 8);
+                        evaluate_cost();
+                        best_cost              = get_cost();
+                        best_piece->coord.x    = dx + x;
+                        best_piece->coord.y    = dy + y;
+                        best_piece->type       = piece_type;
+                        best_piece->blocks     = piece;
+                        best_piece->set        = 1;
+                        best_piece->nrotations = n_totation;
+                        best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
+                        restore_bg();
+                        break;
+                    }
+                }
+            }
+        }
+
+        piece_type = rotate_piece(piece_type);
+        piece      = get_rotated_piece(piece_type);
     }
 }

@@ -20,11 +20,16 @@
 #ifndef TETRIS_H
 #define TETRIS_H
 
+#include <stdbool.h>
+
 #include "lelmark.h"
 
 _piece get_piece_coord_from_id();
 
-void get_best_move();
+bool is_inside_bounds(_piece piece, int dx, int dy);
+bool can_fit(_piece piece, int dx, int dy);
+int  add_piece(_piece piece, int dx, int dy);
+bool piece_touched_the_ground(_piece piece, int dx, int dy);
 
 int  cleaned_any_row();
 void clear_lines();
