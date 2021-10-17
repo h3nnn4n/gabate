@@ -9,6 +9,7 @@ TESTDIR = $(abspath $(CURDIR)/test)
 OPTIONS =
 
 INCLUDES = -Isrc \
+           -Ideps/cJSON/ \
            -Ideps/Unity/src \
            -Ideps/jenkins_hash/ \
            -Ideps/pcg-c/include \
@@ -17,7 +18,7 @@ INCLUDES = -Isrc \
 
 OPTIMIZATION=-O3
 
-LDFLAGS += -lpcg_random
+LDFLAGS += -lpcg_random  -Ldeps/cJSON/build/
 CFLAGS += -Wall -Wextra -Werror -pedantic -std=gnu11 $(OPTIMIZATION) $(OPTIONS) $(INCLUDES)
 
 UNAME_S := $(shell uname -s)
