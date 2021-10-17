@@ -97,4 +97,3 @@ if __name__ == '__main__':
                 comp = "-"
 
         print("%8s & %8d & %8.2f $\pm$ %8.2f & %16.8f & %8s \\\\ \hline" % (k, mcl, mean, std, wilcox, comp))
-
