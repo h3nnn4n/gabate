@@ -25,8 +25,6 @@
 #include "tetris.h"
 #include "types.h"
 
-#define TRAIN
-
 double get_cost();
 
 void mutation(_obj_costs *individual);

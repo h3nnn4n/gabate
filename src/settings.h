@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2021  Renan S. Silva                                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -17,63 +17,18 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
-#include <sys/types.h>
+#ifndef SRC_SETTINGS_H_
+#define SRC_SETTINGS_H_
 
-#include "agent.h"
-#include "automated_tests.h"
-#include "cartridge.h"
-#include "decoder.h"
-#include "disassembler.h"
-#include "display.h"
-#include "file_control.h"
-#include "graphics.h"
-#include "memory.h"
-#include "other_window.h"
-#include "rev.h"
-#include "settings.h"
-#include "time_keeper.h"
-#include "types.h"
-#include "utils.h"
+#include <cJSON.h>
 
-int main(int argc, char *argv[]) {
-    if (argc < 2)
-        fprintf(stderr, "Missing argument\n");
+typedef struct {
+    cJSON * settings;
+    double *agent_weights;
+} _agent_config;
 
-    if (argc == 3) {
-        load_settings(argv[2]);
-    }
+void    load_settings(char *setting_str);
+double *get_agent_weights();
 
-    _cpu_info cpu;
-    sdl_init();
-
-    srand48(mix(clock(), time(NULL), getpid()));
-    srand(mix(clock(), time(NULL), getpid()));
-
-    other_window_init();
-    atexit(sdl_quit);
-
-    init_cpu(&cpu);
-    init_file_control();
-
-    load_rom(&cpu, argv[1], 0x0000);
-    check_rom(&cpu);
-
-    /*print_rom_info(&cpu);*/
-
-    reset_code_and_data();
-
-    // FIXME: This needs a better api I think
-    set_cpu_pointer(&cpu);
-
-    while (1) {
-        decoder(&cpu);
-    }
-
-    return EXIT_SUCCESS;
-}
+#endif  // SRC_SETTINGS_H_

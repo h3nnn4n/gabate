@@ -21,8 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <cJSON.h>
-
 #include "agent.h"
 #include "file_control.h"
 #include "stats.h"
