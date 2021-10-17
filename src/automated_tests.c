@@ -17,10 +17,13 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <lookup3.h>
 
 #include "automated_tests.h"
 #include "cartridge.h"
@@ -28,7 +31,6 @@
 #include "disassembler.h"
 #include "display.h"
 #include "graphics.h"
-#include "lookup3.h"
 #include "memory.h"
 #include "time_keeper.h"
 #include "types.h"

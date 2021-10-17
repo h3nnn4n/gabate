@@ -1,4 +1,7 @@
 *.tar
-.*.tar
-roms
 *.gb
+
+gabate
+
+roms/
+build/
