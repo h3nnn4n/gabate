@@ -20,35 +20,33 @@
 #ifndef OTHER_WINDOW_H
 #define OTHER_WINDOW_H
 
-#include "types.h"
-#include "tetris.h"
 #include "lelmark.h"
+#include "tetris.h"
 #include "trainer.h"
+#include "types.h"
 
-void sprite_info_add(int posx, int posy, int id);
-void sprite_info_reset();
-_bg_info* get_bg_info_pointer();
+void         sprite_info_add(int posx, int posy, int id);
+void         sprite_info_reset();
+_bg_info *   get_bg_info_pointer();
 _best_piece *get_best_piece_pointer();
 
-void draw_text(char *text, int x, int y, int r, int g, int b) ;
-void draw_square(int x, int y, int r, int g, int b) ;
-
-void set_cpu_pointer(_cpu_info *cpu);
-_cpu_info *get_cpu_pointer();
-
-void joystick_hook() ;
-void start_game_hook();
-void screen_update();
-
-void other_window_init ( ) ;
-void other_sdl_quit ( ) ;
-void other_flip_screen ( ) ;
-uint32_t *other_get_frame_buffer () ;
-uint32_t *other_get_frame_buffer_vision () ;
-void draw_rectangle(int x, int y, int x2, int y2, int r, int g, int b);
 void draw_text(char *text, int x, int y, int r, int g, int b);
 void draw_square(int x, int y, int r, int g, int b);
 
+void       set_cpu_pointer(_cpu_info *cpu);
+_cpu_info *get_cpu_pointer();
 
+void joystick_hook();
+void start_game_hook();
+void screen_update();
+
+void      other_window_init();
+void      other_sdl_quit();
+void      other_flip_screen();
+uint32_t *other_get_frame_buffer();
+uint32_t *other_get_frame_buffer_vision();
+void      draw_rectangle(int x, int y, int x2, int y2, int r, int g, int b);
+void      draw_text(char *text, int x, int y, int r, int g, int b);
+void      draw_square(int x, int y, int r, int g, int b);
 
 #endif /* OTHER_WINDOW_H */

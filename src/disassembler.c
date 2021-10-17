@@ -21,14 +21,15 @@
 #include <stdlib.h>
 
 #include "disassembler.h"
-#include "types.h"
 #include "memory.h"
+#include "types.h"
 
-unsigned short int disassembler( _cpu_info *cpu ) {
+unsigned short int disassembler(_cpu_info *cpu) {
     unsigned short int op_size = 1;
-    uint16_t pc = cpu->pc;
+    uint16_t           pc      = cpu->pc;
 
-    switch ( _read_byte(cpu, pc) ) {
+    switch (_read_byte(cpu, pc)) {
+        // clang-format off
         case 0x00:   printf ( " %04x : %02x      """"    NOP                     "  , pc, _read_byte(cpu, pc)                                                          ); op_size = 1; break;
         case 0x01:   printf ( " %04x : %02x %02x %02x    LD BC, 0x%02x%02x           ",pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1), _read_byte(cpu, pc+2) , _read_byte(cpu, pc+1), _read_byte(cpu, pc+2) ); op_size = 3; break;
         case 0x02:   printf ( " %04x : %02x      """"    LD (BC), A              "  , pc, _read_byte(cpu, pc)                                                          ); op_size = 1; break;
@@ -573,12 +574,11 @@ unsigned short int disassembler( _cpu_info *cpu ) {
                 case 0xFD: printf ( " %04x : %02x %02x   ""    SET 7, L                ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          ); op_size = 1; break;
                 case 0xFE: printf ( " %04x : %02x %02x   ""    SET 7, (HL)             ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          ); op_size = 1; break;
                 case 0xFF: printf ( " %04x : %02x %02x   ""    SET 7, A                ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          ); op_size = 1; break;
+                    // clang-format on
             }
             break;
 
-        default:
-            printf ( " %04x is not implemented " , _read_byte(cpu, pc) );
-            break;
+        default: printf(" %04x is not implemented ", _read_byte(cpu, pc)); break;
     }
 
     return op_size;

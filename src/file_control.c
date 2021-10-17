@@ -4,9 +4,9 @@
 #include <unistd.h>
 
 #include "file_control.h"
+#include "memory.h"
 #include "other_window.h"
 #include "types.h"
-#include "memory.h"
 
 static _file_control file_control;
 
@@ -19,9 +19,7 @@ static void clear_files() {
     }
 }
 
-_file_control* get_file_control_pointer() {
-    return &file_control;
-}
+_file_control *get_file_control_pointer() { return &file_control; }
 
 void reset_file_control() {
     clear_files();
@@ -30,31 +28,23 @@ void reset_file_control() {
     file_control.can_write = 0;
 }
 
-void set_can_write_file_control(){
+void set_can_write_file_control() {
     /*file_control.can_write = 1;*/
     file_control.can_write = 0;
 }
 
-int can_write_file_control(){
-    return file_control.can_write;
-}
+int can_write_file_control() { return file_control.can_write; }
 
-void bump_file_control() {
-    file_control.frames ++;
-}
+void bump_file_control() { file_control.frames++; }
 
-int get_frame_number_file_control(){
-    return file_control.frames;
-}
+int get_frame_number_file_control() { return file_control.frames; }
 
 void init_file_control() {
     reset_file_control();
     file_control.seed = time(NULL);
 }
 
-int get_seed_file_control(){
-    return file_control.seed;
-}
+int get_seed_file_control() { return file_control.seed; }
 
 void check_stop_condition() {
     int a = get_cpu_pointer()->mem_controller.memory[0x9951];
@@ -67,12 +57,12 @@ void check_stop_condition() {
     c = c == 0x2f ? 0 : c;
     d = d == 0x2f ? 0 : d;
 
-    int best =  a  * 1 + b * 10 + c * 100 + d * 1000;
+    int best = a * 1 + b * 10 + c * 100 + d * 1000;
 
-    if ( file_control.can_write == 1 ) {
+    if (file_control.can_write == 1) {
         printf("Finished game with %4d lines cleared\n", best);
 
-        if ( best > 441 ) {
+        if (best > 441) {
             exit(0);
         }
     }

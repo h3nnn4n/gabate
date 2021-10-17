@@ -26,9 +26,9 @@ typedef struct {
 } _ff_controller;
 
 void ff_ctrl_reset();
-int ff_ctrl_ngens();
-int ff_ctrl_next();
-int ff_ctrl_current();
-int ff_ctrl_current_plus();
+int  ff_ctrl_ngens();
+int  ff_ctrl_next();
+int  ff_ctrl_current();
+int  ff_ctrl_current_plus();
 
 #endif /* FF_CONTROLLER_H */

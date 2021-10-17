@@ -26,22 +26,23 @@ _piece get_piece_coord_from_id();
 
 void get_best_move();
 
-int cleaned_any_row();
+int  cleaned_any_row();
 void clear_lines();
 void restore_bg();
 void save_bg();
 void dump_bg();
 void reset_bg();
 
-void initialize_weight ();
+void initialize_weight();
 
-int get_piece_rotation ( _piece_type piece_type ) ;
-_piece_type rotate_piece (_piece_type piece_type ) ;
-_piece get_rotated_piece (_piece_type piece_type ) ;
+int         get_piece_rotation(_piece_type piece_type);
+_piece_type rotate_piece(_piece_type piece_type);
+_piece      get_rotated_piece(_piece_type piece_type);
 
 _piece_type get_current_piece();
 
-int try_and_fit(double *best_cost, int *first, int *found, int dx, int dy, int x, int y, _piece piece, _piece_type piece_type, int n_totation );
+int try_and_fit(double *best_cost, int *first, int *found, int dx, int dy, int x, int y, _piece piece,
+                _piece_type piece_type, int n_totation);
 int has_invalid_position();
 
 #endif /* TETRIS_H */

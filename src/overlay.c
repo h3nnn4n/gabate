@@ -1,19 +1,19 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
+#include "graphics.h"
 #include "lelmark.h"
+#include "other_window.h"
+#include "overlay.h"
 #include "tetris.h"
 #include "types.h"
-#include "overlay.h"
-#include "graphics.h"
-#include "other_window.h"
 
 void draw_array(_cpu_info *cpu, uint16_t base, uint8_t offset, int x, int y, int r, int g, int b) {
     char text[512];
     text[0] = '\0';
 
-    for (uint16_t addr = base; addr < base+offset; ++addr) {
+    for (uint16_t addr = base; addr < base + offset; ++addr) {
         char text2[256];
         sprintf(text2, "%2x ", cpu->mem_controller.memory[addr]);
         strcat(text, text2);
@@ -23,7 +23,7 @@ void draw_array(_cpu_info *cpu, uint16_t base, uint8_t offset, int x, int y, int
 }
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void overlay_main( _cpu_info *cpu ) {
+void overlay_main(_cpu_info *cpu) {
 #if 0
     char text[256];
     int posx = 0;

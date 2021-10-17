@@ -20,16 +20,16 @@
 #ifndef TRAINER_H
 #define TRAINER_H
 
-#include "types.h"
-#include "tetris.h"
 #include "lelmark.h"
 #include "other_window.h"
+#include "tetris.h"
+#include "types.h"
 
 #define TRAIN
 
 double get_cost();
 
-void mutation ( _obj_costs *individual );
+void mutation(_obj_costs *individual);
 void print_pop();
 void boot_brain();
 void evaluate_cost();
@@ -38,6 +38,6 @@ void update_fitness();
 void update_diversity();
 void print_piece();
 
-_brain* get_brain_pointer();
+_brain *get_brain_pointer();
 
 #endif /* TRAINER_H */

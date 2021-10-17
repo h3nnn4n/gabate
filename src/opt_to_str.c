@@ -21,13 +21,14 @@
 #include <stdlib.h>
 
 #include "disassembler.h"
-#include "types.h"
 #include "memory.h"
+#include "types.h"
 
-void get_opt_str( _cpu_info *cpu, char *str ) {
+void get_opt_str(_cpu_info *cpu, char *str) {
     uint16_t pc = cpu->pc;
 
-    switch ( _read_byte(cpu, pc) ) {
+    switch (_read_byte(cpu, pc)) {
+        // clang-format off
         case 0x00:   sprintf (str,  " %04x : %02x      """"    NOP                     "  , pc, _read_byte(cpu, pc)                                                          );  break;
         case 0x01:   sprintf (str,  " %04x : %02x %02x %02x    LD BC, 0x%02x%02x           ",pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1), _read_byte(cpu, pc+2) , _read_byte(cpu, pc+1), _read_byte(cpu, pc+2) );  break;
         case 0x02:   sprintf (str,  " %04x : %02x      """"    LD (BC), A              "  , pc, _read_byte(cpu, pc)                                                          );  break;
@@ -572,12 +573,11 @@ void get_opt_str( _cpu_info *cpu, char *str ) {
                 case 0xFD: sprintf (str,  " %04x : %02x %02x   ""    SET 7, L                ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          );  break;
                 case 0xFE: sprintf (str,  " %04x : %02x %02x   ""    SET 7, (HL)             ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          );  break;
                 case 0xFF: sprintf (str,  " %04x : %02x %02x   ""    SET 7, A                ", pc, _read_byte(cpu, pc), _read_byte(cpu, pc+1)                                                          );  break;
+                    // clang-format on
             }
             break;
 
-        default:
-            sprintf (str,  " %04x is not implemented " , _read_byte(cpu, pc) );
-            break;
+        default: sprintf(str, " %04x is not implemented ", _read_byte(cpu, pc)); break;
     }
 
     return;
