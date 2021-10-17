@@ -26,7 +26,6 @@
 #include "agent.h"
 #include "file_control.h"
 #include "stats.h"
-#include "utils_dev.h"
 
 // TODO: This should be a setting
 #define fast_training 1
@@ -169,102 +168,6 @@ int piece_moved() {
     y = y2;
 
     return ret;
-}
-
-void mem_fiddling() {
-    if (cpu_info->mem_controller.memory[0xffe1] == 0x0000) {
-        char text[256];
-        int  index;
-        int  pos = 140;
-
-        sprintf(text, "0xff80 = %04x " BYTE_TO_BINARY_PATTERN, cpu_info->mem_controller.memory[0xff80],
-                BYTE_TO_BINARY(cpu_info->mem_controller.memory[0xff80]));
-        draw_text(text, 400, 20, 0x2a, 0x90, 0xf5);
-
-        sprintf(text, "0xff81 = %04x " BYTE_TO_BINARY_PATTERN, cpu_info->mem_controller.memory[0xff81],
-                BYTE_TO_BINARY(cpu_info->mem_controller.memory[0xff81]));
-        draw_text(text, 400, 40, 0x2a, 0x90, 0xf5);
-
-        index = 0xff93;
-        sprintf(text, "y: 0x%04x = %02d ", index, cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, 60, 0x2a, 0x90, 0xf5);
-
-        index = 0xff92;
-        sprintf(text, "x: 0x%04x = %02d ", index, cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, 80, 0x2a, 0x90, 0xf5);
-
-        ////////////////////
-
-        sprintf(text, "Most Cleared: %5d", get_brain_pointer()->most_lines_cleared);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "Worst Cleared: %4d", get_brain_pointer()->worst_lines_cleared);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        /*sprintf(text, "best: %3d , %3d ", best_piece.coord.x, best_piece.coord.y);*/
-        /*draw_text(text, 40, pos, 0x2a, 0x90, 0xf5);*/
-        /*pos += 20;*/
-
-        _brain *brain = get_brain_pointer();
-
-        sprintf(text, "Lines Cleared: %4d", brain->population[brain->current].fitness);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "Least Cleared: %4d", get_brain_pointer()->population[get_brain_pointer()->current].worst);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        index = 0x994e;
-        sprintf(text, "0x%04x = %02d %02x ", index, cpu_info->mem_controller.memory[index],
-                cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        index = 0x994f;
-        sprintf(text, "0x%04x = %02d %02x ", index, cpu_info->mem_controller.memory[index],
-                cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        index = 0x9950;
-        sprintf(text, "0x%04x = %02d %02x ", index, cpu_info->mem_controller.memory[index],
-                cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        index = 0x9951;
-        sprintf(text, "0x%04x = %02d %02x ", index, cpu_info->mem_controller.memory[index],
-                cpu_info->mem_controller.memory[index]);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-
-        ////////////////////
-        /*sprintf(text, "best: %3d , %3d ", best_piece.coord.x, best_piece.coord.y);*/
-        /*draw_text(text, 20, pos, 0xff, 0x00, 0x00);*/
-        ////////////////////
-
-        pos = 0;
-
-        sprintf(text, "diversity:   %f", get_brain_pointer()->diversity);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "generations: %3d", get_brain_pointer()->elapsed_generations);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "current:     %3d/%d", get_brain_pointer()->current, POP_SIZE);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "runs:        %3d/%d", get_brain_pointer()->runs, get_brain_pointer()->max_runs);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        ////////////////////
-    }
 }
 
 void new_piece_on_screen_hook() {
