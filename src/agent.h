@@ -35,6 +35,7 @@ void       set_cpu_pointer(_cpu_info *cpu);
 _cpu_info *get_cpu_pointer();
 
 void logic_update();
+void get_best_move();
 
 int  piece_moved();
 void start_game_hook();
