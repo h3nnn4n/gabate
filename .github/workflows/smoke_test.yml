@@ -1,0 +1,21 @@
+name: Build Smoke Test
+
+on: push
+
+jobs:
+  run-benchmarks:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+          submodules: true
+
+      - name: Build
+        run: make
