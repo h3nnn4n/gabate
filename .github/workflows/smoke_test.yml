@@ -13,10 +13,23 @@ jobs:
           fetch-depth: 1
           submodules: true
 
-      - name: Setup deps
+      - name: Install system deps
         run: |
           sudo apt update
           sudo apt install -y libsdl2-dev libsdl2-ttf-dev
 
+      - name: Build cJSON
+        run: |
+          mkdir -vp deps/cJSON/build
+          cd deps/cJSON/build
+          cmake ..
+          make -j
+
+      - name: Build pcg
+        run: |
+          mkdir -vp deps/pcg-c
+          cd deps/pcg-c
+          make -j
+
       - name: Build
-        run: make
+        run: make -j
