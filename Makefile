@@ -18,18 +18,20 @@ INCLUDES = -Isrc/ \
 
 OPTIMIZATION=-O3
 
-LDFLAGS += -lpcg_random -lcjson -Ldeps/cJSON/build/
-CFLAGS += -Wall -Wextra -Werror -pedantic -std=gnu11 $(OPTIMIZATION) $(OPTIONS) $(INCLUDES)
+LDFLAGS += -lpcg_random -lcjson -lm -lSDL2_ttf `sdl2-config --libs`
+CFLAGS += -Wall -Wextra -pedantic -std=gnu11 $(OPTIMIZATION) $(OPTIONS) $(INCLUDES)
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
   ECHOFLAGS = -e
-  LDFLAGS += -Wl,-Ldeps/Unity/build/
+  LDFLAGS += -Wl,-Ldeps/Unity/build/,-Ldeps/pcg-c/src/,-Ldeps/cJSON/build/
 endif
 ifeq ($(UNAME_S),Darwin)
   CFLAGS += -Wno-unused-command-line-argument
-  LDFLAGS += -Wl,-Ldeps/pcg-c/src/
+  LDFLAGS += -Wl,-Ldeps/pcg-c/src/,-Ldeps/cJSON/build/
 endif
+
+CFLAGS += `sdl2-config --cflags`
 
 CC = gcc
 
