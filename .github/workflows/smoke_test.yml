@@ -4,18 +4,18 @@ on: push
 
 jobs:
   run-benchmarks:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 5
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@master
         with:
           fetch-depth: 1
           submodules: true
+
+      - name: Setup deps
+        run: |
+          apt install -y libsdl2-dev libsdl2-ttf-dev
 
       - name: Build
         run: make
