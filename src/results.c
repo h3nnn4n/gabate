@@ -24,6 +24,7 @@
 #include <cJSON.h>
 
 #include "results.h"
+#include "settings.h"
 
 _agent_results agent_results;
 
@@ -57,9 +58,15 @@ void register_piece_spawned(char piece) {
     cJSON_AddItemToArray(pieces, piece_json);
 }
 
+// FIXME: This shouldn't have any side effect, but it does. Changing the json
+// blob to print what we want is much easier than doing it without changing
+// anything. Simple fix would be to operate on a copy
 void print_agent_results() {
     if (agent_results.results == NULL)
         return;
+
+    _agent_config *agent_config = get_agent_config();
+    cJSON_AddItemToObject(agent_results.results, "settings", agent_config->settings);
 
     char *string = cJSON_Print(agent_results.results);
     printf("%s\n", string);
