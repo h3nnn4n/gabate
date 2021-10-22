@@ -58,3 +58,5 @@ void load_settings(char *setting_str) {
 double *get_agent_weights() { return agent_config.agent_weights; }
 
 bool get_train() { return agent_config.train; }
+
+_agent_config *get_agent_config() { return &agent_config; }

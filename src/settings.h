@@ -31,8 +31,9 @@ typedef struct {
     bool    train;
 } _agent_config;
 
-void    load_settings(char *setting_str);
-double *get_agent_weights();
-bool    get_train();
+void           load_settings(char *setting_str);
+double *       get_agent_weights();
+bool           get_train();
+_agent_config *get_agent_config();
 
 #endif  // SRC_SETTINGS_H_
