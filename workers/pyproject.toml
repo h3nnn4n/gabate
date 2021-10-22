@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "gabate_brain"
+version = "0.1.0"
+description = "The brains behind GABATE"
+authors = ["h3nnn4n <uber.renan@gmail.com>"]
+license = "GPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+celery = "^5.1.2"
+redis = "^3.5.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
