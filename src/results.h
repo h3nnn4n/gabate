@@ -27,6 +27,9 @@ typedef struct {
     cJSON *results;
 } _agent_results;
 
+void set_lines_cleared(int lines_cleared);
+void set_pieces_spawned(int pieces_spawned);
+void register_piece_spawned(char piece);
 void print_agent_results();
 
 #endif  // SRC_RESULTS_H_

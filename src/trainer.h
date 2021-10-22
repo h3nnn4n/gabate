@@ -34,7 +34,7 @@ void evaluate_cost();
 void finished_evaluating_individual();
 void update_fitness();
 void update_diversity();
-void print_piece();
+void store_piece();
 
 _brain *get_brain_pointer();
 

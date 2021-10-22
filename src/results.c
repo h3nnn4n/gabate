@@ -27,6 +27,36 @@
 
 _agent_results agent_results;
 
+void set_lines_cleared(int lines_cleared) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(agent_results.results, "lines_cleared", lines_cleared);
+}
+
+void set_pieces_spawned(int pieces_spawned) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(agent_results.results, "pieces_spawned", pieces_spawned);
+}
+
+void register_piece_spawned(char piece) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
+
+    cJSON *pieces = NULL;
+
+    pieces = cJSON_GetObjectItem(agent_results.results, "pieces");
+    if (pieces == NULL)
+        pieces = cJSON_AddArrayToObject(agent_results.results, "pieces");
+
+    char piece_str[16];
+    snprintf(piece_str, 16, "%c", piece);
+    cJSON *piece_json = cJSON_CreateString(piece_str);
+    cJSON_AddItemToArray(pieces, piece_json);
+}
+
 void print_agent_results() {
     if (agent_results.results == NULL)
         return;
