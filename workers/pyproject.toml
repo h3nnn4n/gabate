@@ -9,6 +9,7 @@ license = "GPLv3"
 python = "^3.10"
 celery = "^5.1.2"
 redis = "^3.5.3"
+python-dotenv = "^0.19.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

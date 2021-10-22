@@ -277,6 +277,17 @@ python-versions = "*"
 celery = ">=4.4.0"
 
 [[package]]
+name = "python-dotenv"
+version = "0.19.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "pytz"
 version = "2021.3"
 description = "World timezone definitions, modern and historical"
@@ -330,7 +341,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "bcb890d65b858d70da0235206ae7da51367b4fc835d048850c4e2483f5ec7c0c"
+content-hash = "66988e5e23368246b0a55485c9f257f0f1febf0e6bf027bd1e905cc79afb86d9"
 
 [metadata.files]
 amqp = [
@@ -412,6 +423,10 @@ pytest = [
 pytest-celery = [
     {file = "pytest-celery-0.0.0.tar.gz", hash = "sha256:cfd060fc32676afa1e4f51b2938f903f7f75d952186b8c6cf631628c4088f406"},
     {file = "pytest_celery-0.0.0-py2.py3-none-any.whl", hash = "sha256:63dec132df3a839226ecb003ffdbb0c2cb88dd328550957e979c942766578060"},
+]
+python-dotenv = [
+    {file = "python-dotenv-0.19.1.tar.gz", hash = "sha256:14f8185cc8d494662683e6914addcb7e95374771e707601dfc70166946b4c4b8"},
+    {file = "python_dotenv-0.19.1-py2.py3-none-any.whl", hash = "sha256:bbd3da593fc49c249397cbfbcc449cf36cb02e75afc8157fcc6a81df6fb7750a"},
 ]
 pytz = [
     {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},
