@@ -1,11 +1,12 @@
-from tasks import run_agent
+import tasks
 
 
 def main():
     results = []
 
     for i in range(5):
-        results.append(run_agent.delay())
+        results.append(tasks.a_plus_b.delay(i, i + 1))
+        results.append(tasks.run_agent_task.delay())
 
     for result in results:
         print(result.get())

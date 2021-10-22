@@ -11,6 +11,9 @@ celery = "^5.1.2"
 redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+mock = "^4.0.3"
+celery = {extras = ["pytest"], version = "^5.1.2"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

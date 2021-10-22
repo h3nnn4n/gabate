@@ -1,11 +1,13 @@
-from subprocess import Popen, PIPE
-
 from worker import worker
+
+from services import run_agent
 
 
 @worker.task
-def run_agent():
-    with Popen(["ls", "-l"], stdout=PIPE, shell=True) as proc:
-        output = proc.stdout.read()
+def a_plus_b(a, b):
+    return a + b
 
-    return output.decode()
+
+@worker.task
+def run_agent_task():
+    run_agent()
