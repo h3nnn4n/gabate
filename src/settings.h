@@ -29,6 +29,8 @@ typedef struct {
     cJSON * settings;
     double *agent_weights;
     bool    train;
+    char *  run_id;
+    char *  agent_id;
 } _agent_config;
 
 void           load_settings(char *setting_str);
