@@ -2,9 +2,14 @@ from tasks import add
 
 
 def main():
-    result = add.delay(4, 4)
+    results = []
 
-    print(result.get())
+    for x in range(10):
+        for y in range(10):
+            results.append(add.delay(x, y))
+
+    for result in results:
+        print(result.get())
 
 
 if __name__ == '__main__':
