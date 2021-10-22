@@ -7,6 +7,6 @@ def run_agent(agent_settings):
     args = ["../gabate", "../roms/tetris.gb", payload]
 
     with Popen(args, stdout=PIPE) as proc:
-        output = proc.stdout.read()
+        output_stdout = proc.stdout.read()
 
-    return output.decode()
+    return output_stdout.decode()

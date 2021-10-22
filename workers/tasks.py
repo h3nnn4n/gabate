@@ -10,4 +10,4 @@ def a_plus_b(a, b):
 
 @worker.task
 def run_agent_task(agent_settings):
-    run_agent(agent_settings)
+    return run_agent(agent_settings)
