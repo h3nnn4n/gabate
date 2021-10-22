@@ -52,7 +52,6 @@ void load_settings(char *setting_str) {
 
         unsigned int index = 0;
         cJSON_ArrayForEach(object, weights) {
-            printf("%d %f\n", index, object->valuedouble);
             agent_config.agent_weights[index] = object->valuedouble;
             index++;
         }
