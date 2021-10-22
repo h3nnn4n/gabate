@@ -18,6 +18,7 @@
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,22 +32,32 @@ void load_settings(char *setting_str) {
     const cJSON *object = NULL;
     cJSON *      json   = cJSON_Parse(setting_str);
 
-    if (json == NULL)
+    if (json == NULL) {
+        fprintf(stderr, "Failed to parse agent settings\n");
         abort();
+    }
 
     agent_config.settings = json;
 
-    cJSON *agent   = cJSON_GetObjectItemCaseSensitive(json, "agent");
+    cJSON *agent = cJSON_GetObjectItemCaseSensitive(json, "agent");
+    if (agent == NULL) {
+        fprintf(stderr, "\"agent\" key not found. Can't run an agent without it");
+    }
+
     cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
 
     if (weights != NULL) {
-        agent_config.agent_weights = malloc(sizeof(double) * cJSON_GetArraySize(weights));
+        agent_config.agent_weights = (double *)malloc(sizeof(double) * cJSON_GetArraySize(weights));
+        assert(agent_config.agent_weights);
 
         unsigned int index = 0;
         cJSON_ArrayForEach(object, weights) {
+            printf("%d %f\n", index, object->valuedouble);
             agent_config.agent_weights[index] = object->valuedouble;
             index++;
         }
+    } else {
+        fprintf(stderr, "\"weights\" key not found. Can't run an agent without it");
     }
 
     cJSON *train = cJSON_GetObjectItem(json, "train");
@@ -55,7 +66,11 @@ void load_settings(char *setting_str) {
     }
 }
 
-double *get_agent_weights() { return agent_config.agent_weights; }
+double *get_agent_weights() {
+    assert(agent_config.agent_weights != NULL);
+
+    return agent_config.agent_weights;
+}
 
 bool get_train() { return agent_config.train; }
 
