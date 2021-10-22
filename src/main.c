@@ -43,12 +43,10 @@
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
-    if (argc < 2)
+    if (argc < 3)
         fprintf(stderr, "Missing argument\n");
 
-    if (argc == 3) {
-        load_settings(argv[2]);
-    }
+    load_settings(argv[2]);
 
     _cpu_info cpu;
     sdl_init();

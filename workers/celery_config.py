@@ -1,8 +1,15 @@
-broker_url = 'pyamqp://guest@localhost'
-result_backend = 'redis://localhost'
+import os
 
-task_serializer = 'json'
-result_serializer = 'json'
-accept_content = ['json']
-timezone = 'America/Sao_Paulo'
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+broker_url = os.environ.get("BROKER_URL", "pyamqp://guest@localhost")
+result_backend = os.environ.get("RESULT_BACKEND", "redis://localhost")
+
+task_serializer = "json"
+result_serializer = "json"
+accept_content = ["json"]
+timezone = "America/Sao_Paulo"
 enable_utc = True
