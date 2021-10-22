@@ -68,6 +68,15 @@ void print_agent_results() {
     _agent_config *agent_config = get_agent_config();
     cJSON_AddItemToObject(agent_results.results, "settings", agent_config->settings);
 
+    cJSON *agent  = cJSON_GetObjectItemCaseSensitive(agent_config->settings, "agent");
+    cJSON *run_id = cJSON_GetObjectItem(agent, "run_id");
+    if (run_id != NULL)
+        cJSON_AddItemToObject(agent_results.results, "run_id", run_id);
+
+    cJSON *agent_id = cJSON_GetObjectItem(agent, "agent_id");
+    if (agent_id != NULL)
+        cJSON_AddItemToObject(agent_results.results, "agent_id", agent_id);
+
     char *string = cJSON_Print(agent_results.results);
     printf("%s\n", string);
 }
