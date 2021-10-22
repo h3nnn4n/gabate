@@ -29,6 +29,7 @@
 #include "ff_controller.h"
 #include "ia.h"
 #include "other_window.h"
+#include "results.h"
 #include "settings.h"
 #include "stats.h"
 #include "tester.h"
@@ -36,9 +37,9 @@
 #include "trainer.h"
 #include "types.h"
 
-#define print_ga_status
-#define print_piece_sequence
-#define print_piece_stats
+/*#define print_ga_status*/
+/*#define print_piece_sequence*/
+/*#define print_piece_stats*/
 
 // FIXME: This should be a setting
 /*#define TRAIN*/
@@ -310,50 +311,58 @@ void update_fitness() {
     c = c == 0x2f ? 0 : c;
     d = d == 0x2f ? 0 : d;
 
-    int best = a + b * 10 + c * 100 + d * 1000;
+    int fitness = a + b * 10 + c * 100 + d * 1000;
 
-    brain.population[brain.current].fitness = best;
+    brain.population[brain.current].fitness = fitness;
 
-    brain.most_lines_cleared = best > brain.most_lines_cleared ? best : brain.most_lines_cleared;
+    brain.most_lines_cleared = fitness > brain.most_lines_cleared ? fitness : brain.most_lines_cleared;
 }
 
-void print_piece() {
+void _store_piece(char piece) {
+#ifdef print_piece_sequence
+    printf("%c", piece);
+#endif
+
+    register_piece_spawned(piece);
+}
+
+void store_piece() {
     static int counter = 0;
     switch (get_cpu_pointer()->mem_controller.memory[0xc203]) {
         case 0x0c:
         case 0x0d:
         case 0x0e:
-        case 0x0f: printf("O"); break;
+        case 0x0f: _store_piece('O'); break;
 
         case 0x04:
         case 0x05:
         case 0x06:
-        case 0x07: printf("J"); break;
+        case 0x07: _store_piece('J'); break;
 
         case 0x00:
         case 0x01:
         case 0x02:
-        case 0x03: printf("L"); break;
+        case 0x03: _store_piece('L'); break;
 
         case 0x08:
         case 0x0a:
         case 0x09:
-        case 0x0b: printf("I"); break;
+        case 0x0b: _store_piece('I'); break;
 
         case 0x14:
         case 0x16:
         case 0x15:
-        case 0x17: printf("S"); break;
+        case 0x17: _store_piece('S'); break;
 
         case 0x10:
         case 0x12:
         case 0x11:
-        case 0x13: printf("Z"); break;
+        case 0x13: _store_piece('Z'); break;
 
         case 0x18:
         case 0x19:
         case 0x1a:
-        case 0x1b: printf("T"); break;
+        case 0x1b: _store_piece('T'); break;
 
         default: fprintf(stderr, "Invalid piece in get_current_piece\n"); abort();
     }
@@ -370,6 +379,9 @@ void finished_evaluating_individual() {
     if (brain.population[brain.current].fitness < brain.population[brain.current].worst || brain.runs == 0) {
         brain.population[brain.current].worst = brain.population[brain.current].fitness;
     }
+
+    set_lines_cleared(brain.population[brain.current].fitness);
+    set_pieces_spawned(brain.population[brain.current].pieces_spawned[0]);
 
 #ifdef print_piece_sequence
     printf("\n");

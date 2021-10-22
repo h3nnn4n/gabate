@@ -191,7 +191,7 @@ void new_piece_on_screen_hook() {
         /*brain->suicide = 1;*/
         /*}*/
 
-        print_piece();
+        store_piece();
 
         brain->new_piece = 0;
         /*evaluate_cost();*/
