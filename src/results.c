@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2021  Renan S. Silva                                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -17,66 +17,50 @@
  *    misrepresented as being the original software.                          *
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
-#include <assert.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
-#include <sys/types.h>
+#include <cJSON.h>
 
-#include "agent.h"
-#include "automated_tests.h"
-#include "cartridge.h"
-#include "decoder.h"
-#include "disassembler.h"
-#include "display.h"
-#include "file_control.h"
-#include "graphics.h"
-#include "memory.h"
-#include "other_window.h"
 #include "results.h"
-#include "rev.h"
-#include "settings.h"
-#include "time_keeper.h"
-#include "types.h"
-#include "utils.h"
 
-int main(int argc, char *argv[]) {
-    if (argc < 2)
-        fprintf(stderr, "Missing argument\n");
+_agent_results agent_results;
 
-    if (argc == 3) {
-        load_settings(argv[2]);
-    }
+void set_lines_cleared(int lines_cleared) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
 
-    _cpu_info cpu;
-    sdl_init();
+    cJSON_AddNumberToObject(agent_results.results, "lines_cleared", lines_cleared);
+}
 
-    srand48(mix(clock(), time(NULL), getpid()));
-    srand(mix(clock(), time(NULL), getpid()));
+void set_pieces_spawned(int pieces_spawned) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
 
-    other_window_init();
-    atexit(sdl_quit);
+    cJSON_AddNumberToObject(agent_results.results, "pieces_spawned", pieces_spawned);
+}
 
-    init_cpu(&cpu);
-    init_file_control();
+void register_piece_spawned(char piece) {
+    if (agent_results.results == NULL)
+        agent_results.results = cJSON_CreateObject();
 
-    load_rom(&cpu, argv[1], 0x0000);
-    check_rom(&cpu);
+    cJSON *pieces = NULL;
 
-    /*print_rom_info(&cpu);*/
+    pieces = cJSON_GetObjectItem(agent_results.results, "pieces");
+    if (pieces == NULL)
+        pieces = cJSON_AddArrayToObject(agent_results.results, "pieces");
 
-    reset_code_and_data();
+    char piece_str[16];
+    snprintf(piece_str, 16, "%c", piece);
+    cJSON *piece_json = cJSON_CreateString(piece_str);
+    cJSON_AddItemToArray(pieces, piece_json);
+}
 
-    // FIXME: This needs a better api I think
-    set_cpu_pointer(&cpu);
+void print_agent_results() {
+    if (agent_results.results == NULL)
+        return;
 
-    while (ai_state.game_state != GAMEOVER) {
-        decoder(&cpu);
-    }
-
-    print_agent_results();
-
-    return EXIT_SUCCESS;
+    char *string = cJSON_Print(agent_results.results);
+    printf("%s\n", string);
 }
