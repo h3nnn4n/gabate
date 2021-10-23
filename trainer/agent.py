@@ -29,5 +29,6 @@ class Agent:
         ]
 
     def get_fitness(self):
-        values = [result.get() for result in self.pending_results]
-        return statistics.median(values)
+        values = [json.loads(result.get()) for result in self.pending_results]
+        scores = [value.get("lines_cleared") for value in values]
+        return statistics.median(scores)
