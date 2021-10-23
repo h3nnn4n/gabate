@@ -20,7 +20,12 @@ class Individual:
         self._agent.trigger_eval()
 
     def get_fitness(self):
-        return self._agent.get_fitness()["max"]
+        result = self._agent.get_fitness()
+
+        if result["min"] == 0:
+            return 0
+
+        return result["max"]
 
     def clone(self):
         new = Individual()
