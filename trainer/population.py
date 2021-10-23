@@ -54,7 +54,7 @@ class Population:
         print(" ".join([str(individual.get_fitness()) for individual in self.population]))
 
     def selection(self):
-        _new_pop = [self.get_elite_individual()]
+        _new_pop = [self.get_elite_individual().clone()]
 
         while len(_new_pop) < self.population_size:
             p1 = choice(self.population)
