@@ -1,6 +1,7 @@
 from copy import copy
-from agent import Agent
 from random import choice, random, uniform
+
+from agent import Agent
 
 
 class Individual:
@@ -48,9 +49,9 @@ class Population:
         print(" ".join([str(individual.get_fitness()) for individual in self.population]))
 
     def selection(self):
-        _new_pop = []
+        _new_pop = [self.get_elite_individual()]
 
-        for _ in range(self.population_size):
+        while len(_new_pop) < self.population_size:
             p1 = choice(self.population)
             p2 = choice(self.population)
 
@@ -60,6 +61,9 @@ class Population:
                 _new_pop.append(p2.clone())
 
         self.population = _new_pop
+
+    def get_elite_individual(self):
+        return max(self.population, key=lambda individual: individual.get_fitness())
 
     def crossover(self):
         pass
