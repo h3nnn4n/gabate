@@ -1,5 +1,6 @@
 import json
 import statistics
+from uuid import uuid4
 from random import randrange
 
 from worker import worker
@@ -11,6 +12,9 @@ class Agent:
         self.n_evals = 7
         self.settings = {}
         self.set_random_weights()
+        self.id = uuid4()
+
+        self.settings["agent_id"] = self.id
 
         self.pending_results = []
 
