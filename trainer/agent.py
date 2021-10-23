@@ -22,7 +22,7 @@ class Agent:
         self.settings["weights"] = [randrange(-5, 5) for _ in range(self.n_weights)]
 
     def get_agent_data(self):
-        return{"agent": self.settings}
+        return {"agent": self.settings}
 
     def trigger_eval(self):
         data = self.get_agent_data()
