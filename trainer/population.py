@@ -51,7 +51,7 @@ class Population:
             individual.trigger_fitness_evaluation()
 
     def print_pop_state(self):
-        print(" ".join([str(individual.get_fitness()) for individual in self.population]))
+        print(" ".join([f"{individual.get_fitness():4}" for individual in self.population]))
 
     def selection(self):
         _new_pop = [self.get_elite_individual().clone()]
