@@ -40,7 +40,7 @@ void load_settings(char *setting_str) {
 
     cJSON *ping = cJSON_GetObjectItemCaseSensitive(json, "ping");
     if (ping)
-        pong();
+        agent_config.ping_mode = true;
 
     agent_config.settings = json;
 
@@ -92,8 +92,10 @@ bool get_train() { return agent_config.train; }
 
 _agent_config *get_agent_config() { return &agent_config; }
 
-// FIXME: Having this exit the prog is probably dumb, but it works
-void pong() {
+bool pong() {
+    if (!agent_config.ping_mode)
+        return false;
+
     printf("{\"pong\": \"foo bar\"}\n");
-    exit(EXIT_SUCCESS);
+    return true;
 }

@@ -70,6 +70,9 @@ int main(int argc, char *argv[]) {
     // FIXME: This needs a better api I think
     set_cpu_pointer(&cpu);
 
+    if (pong())
+        exit(EXIT_SUCCESS);
+
     while (ai_state.game_state != GAMEOVER) {
         decoder(&cpu);
     }
