@@ -16,7 +16,7 @@ def get_n_workers():
 def ping():
     _, n_workers = get_n_workers()
     data = dict(ping="foobar")
-    results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(n_workers)]
+    results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(n_workers * 4)]
 
     for result in results:
         parsed_response = json.loads(result.get())
