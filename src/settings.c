@@ -42,7 +42,7 @@ void load_settings(char *setting_str) {
 
     cJSON *agent = cJSON_GetObjectItemCaseSensitive(json, "agent");
     if (agent == NULL) {
-        fprintf(stderr, "\"agent\" key not found. Can't run an agent without it");
+        fprintf(stderr, "\"agent\" key not found. Can't run an agent without it\n");
     }
 
     cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
@@ -57,7 +57,7 @@ void load_settings(char *setting_str) {
             index++;
         }
     } else {
-        fprintf(stderr, "\"weights\" key not found. Can't run an agent without it");
+        fprintf(stderr, "\"weights\" key not found. Can't run an agent without it\n");
     }
 
     cJSON *train = cJSON_GetObjectItem(json, "train");
