@@ -1,15 +1,52 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.2.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
+  - id: check-byte-order-marker
+  - id: check-case-conflict
+  - id: check-merge-conflict
+  - id: check-symlinks
 
--   repo: git://github.com/doublify/pre-commit-clang-format
-    rev: 62302476d0da01515660132d76902359bed0f782
-    hooks:
-    -   id: clang-format
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  rev: v3.2.0
+  hooks:
+    - id: check-added-large-files
+      args: ['--maxkb=500']
+    - id: detect-private-key
+    - id: debug-statements
+      language_version: python3
+
+- repo: git://github.com/doublify/pre-commit-clang-format
+  rev: 62302476d0da01515660132d76902359bed0f782
+  hooks:
+  - id: clang-format
+
+- repo: https://github.com/timothycrosley/isort
+  rev: 4.3.21
+  hooks:
+    - id: isort
+      entry: isort -c --check-only -s
+      language_version: python3
+      exclude: deps
+
+- repo: https://github.com/psf/black
+  rev: 21.9b0
+  hooks:
+    - id: black
+      language_version: python3
+      entry: black --fast --check
+      exclude: deps
+
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 3.7.8
+  hooks:
+    - id: flake8
+      language_version: python3
+      args: ['--config=trainer/.flake8']
+      exclude: src/
