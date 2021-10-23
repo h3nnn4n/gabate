@@ -1,16 +1,14 @@
 from agent import Agent
-from utils import get_n_workers
-from worker import worker
+from utils import get_n_workers, ping
 
 
 def main():
-    # Basic sanity check
-    x = worker.send_task("tasks.a_plus_b", args=[1, 2])
-    assert x.get() == 3
-
     n_nodes, n_workers = get_n_workers()
     print(f"running with {n_nodes} nodes and {n_workers} workers")
 
+    assert ping()
+
+    return
     agents = [Agent() for _ in range(50)]
 
     for agent in agents:

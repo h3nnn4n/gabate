@@ -38,6 +38,12 @@ void load_settings(char *setting_str) {
         abort();
     }
 
+    cJSON *ping = cJSON_GetObjectItemCaseSensitive(json, "ping");
+    if (ping) {
+        agent_config.ping_mode = true;
+        return;
+    }
+
     agent_config.settings = json;
 
     cJSON *agent = cJSON_GetObjectItemCaseSensitive(json, "agent");
@@ -79,6 +85,11 @@ void load_settings(char *setting_str) {
 }
 
 double *get_agent_weights() {
+    if (agent_config.ping_mode && agent_config.agent_weights == NULL) {
+        // HACK: This should be enough for the forseable future
+        agent_config.agent_weights = (double *)malloc(sizeof(double) * 1000);
+    }
+
     assert(agent_config.agent_weights != NULL);
 
     return agent_config.agent_weights;
@@ -87,3 +98,11 @@ double *get_agent_weights() {
 bool get_train() { return agent_config.train; }
 
 _agent_config *get_agent_config() { return &agent_config; }
+
+bool pong() {
+    if (!agent_config.ping_mode)
+        return false;
+
+    printf("{\"pong\": \"foo bar\"}\n");
+    return true;
+}
