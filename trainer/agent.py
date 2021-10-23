@@ -35,4 +35,4 @@ class Agent:
     def get_fitness(self):
         values = [json.loads(result.get()) for result in self.pending_results]
         scores = [value.get("lines_cleared") for value in values]
-        return statistics.median(scores)
+        return min(scores), statistics.median(scores), max(scores)
