@@ -17,22 +17,11 @@ class Agent:
     def set_random_weights(self):
         self.settings["weights"] = [randrange(-5, 5) for _ in range(self.n_weights)]
 
-    def to_json(self):
-        data = {"agent": self.settings}
-
-        return json.dumps(data)
-
     def get_agent_data(self):
         return{"agent": self.settings}
 
     def trigger_eval(self):
-        x = worker.send_task("tasks.a_plus_b", args=[1, 2])
-        print(x.get())
-
         data = self.get_agent_data()
-        x = worker.send_task("tasks.evaluate_agent", args=[data])
-        print(x.get())
-        return
 
         self.pending_results = [
             worker.send_task("tasks.evaluate_agent", args=[data])
