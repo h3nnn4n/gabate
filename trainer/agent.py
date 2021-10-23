@@ -1,6 +1,6 @@
 import json
 import statistics
-from random import randrange
+from random import uniform
 from uuid import uuid4
 
 from worker import worker
@@ -19,7 +19,7 @@ class Agent:
         self.pending_results = []
 
     def set_random_weights(self):
-        self.settings["weights"] = [randrange(-5, 5) for _ in range(self.n_weights)]
+        self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
 
     def get_agent_data(self):
         return {"agent": self.settings}

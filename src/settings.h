@@ -33,6 +33,7 @@ typedef struct {
     char *  agent_id;
 } _agent_config;
 
+void           pong();
 void           load_settings(char *setting_str);
 double *       get_agent_weights();
 bool           get_train();
