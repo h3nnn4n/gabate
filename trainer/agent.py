@@ -2,7 +2,7 @@ import json
 import statistics
 from random import randrange
 
-from .tasks import evaluate_agent
+from worker import worker
 
 
 class Agent:
@@ -22,11 +22,21 @@ class Agent:
 
         return json.dumps(data)
 
+    def get_agent_data(self):
+        return{"agent": self.settings}
+
     def trigger_eval(self):
-        data = self.to_json()
+        x = worker.send_task("tasks.a_plus_b", args=[1, 2])
+        print(x.get())
+
+        data = self.get_agent_data()
+        x = worker.send_task("tasks.evaluate_agent", args=[data])
+        print(x.get())
+        return
 
         self.pending_results = [
-            evaluate_agent.delay(data) for _ in range(self.n_evals)
+            worker.send_task("tasks.evaluate_agent", args=[data])
+            for _ in range(self.n_evals)
         ]
 
     def get_fitness(self):

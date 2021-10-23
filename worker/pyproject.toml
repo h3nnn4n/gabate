@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "gabate_worker"
+version = "0.1.0"
+description = "The workhorse behind GABATE"
+authors = ["h3nnn4n <uber.renan@gmail.com>"]
+license = "GPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+celery = "^5.1.2"
+redis = "^3.5.3"
+python-dotenv = "^0.19.1"
+
+[tool.poetry.dev-dependencies]
+celery = {extras = ["pytest"], version = "^5.1.2"}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
