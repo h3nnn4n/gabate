@@ -60,7 +60,7 @@ class Population:
             p1 = choice(self.population)
             p2 = choice(self.population)
 
-            if random() * p1.get_fitness() > random() * p2.get_fitness():
+            if uniform(0.7, 1) * p1.get_fitness() > uniform(0.7, 1) * p2.get_fitness():
                 _new_pop.append(p1.clone())
             else:
                 _new_pop.append(p2.clone())
