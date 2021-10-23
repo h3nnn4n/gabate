@@ -13,15 +13,15 @@ def pack_data(names):
         with open(name) as f:
             lines = f.readlines()
             for k, line in enumerate(lines):
-                d = line.split('\n')[0].split(',')
+                d = line.split("\n")[0].split(",")
 
-                if d[0] == 'DIVERSITY':
+                if d[0] == "DIVERSITY":
                     pass
-                elif 'double' in d[0]:
+                elif "double" in d[0]:
                     pass
-                elif 'O:' in d[0]:
+                elif "O:" in d[0]:
                     pass
-                elif ':' not in line and ',' not in line:
+                elif ":" not in line and "," not in line:
                     pass
                 else:
                     runs = int(d[5])
@@ -35,6 +35,6 @@ def pack_data(names):
         print(n, line_dist[n])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     names = sys.argv[1:]
     pack_data(names)

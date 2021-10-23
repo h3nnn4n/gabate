@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from random import shuffle
 import sys
+from random import shuffle
 
 
 def main(names):
-    pieces = ['O', 'I', 'T', 'J', 'L', 'S', 'Z']
+    pieces = ["O", "I", "T", "J", "L", "S", "Z"]
     piece_count = {}
     p2 = {}
 
@@ -20,9 +20,9 @@ def main(names):
             last = None
 
             for line_number, line in enumerate(lines):
-                d = line.split('\n')[0].split(',')
-                if 'O: ' in d[0]:
-                    data = ' '.join(d[0].replace(':', '').split()).split(' ')
+                d = line.split("\n")[0].split(",")
+                if "O: " in d[0]:
+                    data = " ".join(d[0].replace(":", "").split()).split(" ")
                     if last is None:
                         for k, v in zip(data[::2], data[1::2]):
                             piece_count[k].append(int(v))
@@ -39,14 +39,14 @@ def main(names):
         shuffle(piece_count[p])
 
     for i in range(l):
-        print(i, end=' ')
+        print(i, end=" ")
         for p in pieces:
             p2[p] += piece_count[p][i]
-            print(p2[p], end=' ')
+            print(p2[p], end=" ")
 
         print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     names = sys.argv[1:]
     main(names)
