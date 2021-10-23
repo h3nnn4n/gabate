@@ -6,6 +6,7 @@ import sys
 
 INTERPOLATE_DATA = False
 
+
 def pack_data(name):
     ngens = 0
     data = []
@@ -19,25 +20,25 @@ def pack_data(name):
     with open(name) as f:
         lines = f.readlines()
         for k, line in enumerate(lines):
-            d = line.split('\n')[0].split(',')
+            d = line.split("\n")[0].split(",")
 
-            #print(d[0])
+            # print(d[0])
 
-            if d[0] == 'DIVERSITY':
+            if d[0] == "DIVERSITY":
                 diver = float(d[1])
                 diversity.append(diver)
-            elif 'double' in d[0]:
+            elif "double" in d[0]:
                 pass
-            elif 'O:' in d[0]:
+            elif "O:" in d[0]:
                 pass
-            elif ':' not in line and ',' not in line:
+            elif ":" not in line and "," not in line:
                 pass
             else:
-                gen     = int(d[1])
+                gen = int(d[1])
                 current = int(d[3])
-                runs    = int(d[5])
-                ps      = int(d[6].split(':')[1])
-                lc      = int(d[8])
+                runs = int(d[5])
+                ps = int(d[6].split(":")[1])
+                lc = int(d[8])
                 r = (gen, current, runs, ps, lc)
 
                 if oldgen != gen:
@@ -48,12 +49,11 @@ def pack_data(name):
                 else:
                     geninfo.append(r)
 
-
     for generation in data:
         best_ps = 0
         best_lc = 0
-        avg     = 0
-        ss      = 0
+        avg = 0
+        ss = 0
 
         for step in generation:
             gen, current, runs, ps, lc = step
@@ -76,43 +76,43 @@ def get_maxlen(name):
     with open(name) as f:
         lines = f.readlines()
         for k, line in enumerate(lines):
-            d = line.split('\n')[0].split(',')
+            d = line.split("\n")[0].split(",")
 
-            if d[0] == 'DIVERSITY':
+            if d[0] == "DIVERSITY":
                 pass
-            elif d[0] == 'double':
+            elif d[0] == "double":
                 pass
-            elif '0:' in d[0]:
+            elif "0:" in d[0]:
                 pass
-            elif ':' not in line and ',' not in line:
+            elif ":" not in line and "," not in line:
                 pass
             else:
-                gen     = int(d[1])
+                gen = int(d[1])
                 maxlen = max(gen, maxlen)
 
     return maxlen - 1
 
 
 def main(mode, names, lenght=0):
-    if mode == 'avg1':
+    if mode == "avg1":
         _, avg_guy = pack_data(names[0])
         return enumerate(avg_guy)
 
-    elif mode == 'most_cleared_lines1':
+    elif mode == "most_cleared_lines1":
         best_guy, _ = pack_data(names[0])
         return [(0, max([(lambda x: x[1])(i) for i in best_guy]))]
 
-    elif mode == 'best1':
+    elif mode == "best1":
         best_guy, _ = pack_data(names[0])
         return enumerate([(lambda x: x[1])(i) for i in best_guy])
 
-    elif mode == 'avg_all':
+    elif mode == "avg_all":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
         maxlen = max([(lambda x: len(x))(values) for values in means_data])
 
-        means = [ 0 for _ in range(0, maxlen)]
-        ns    = [ 0 for _ in range(0, maxlen)]
+        means = [0 for _ in range(0, maxlen)]
+        ns = [0 for _ in range(0, maxlen)]
         for i in range(0, len(means_data)):
             for j in range(0, len(means_data[i])):
                 means[j] += means_data[i][j][1]
@@ -123,7 +123,7 @@ def main(mode, names, lenght=0):
 
         return enumerate(means)
 
-    elif mode == 'avg':
+    elif mode == "avg":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
 
@@ -136,19 +136,19 @@ def main(mode, names, lenght=0):
 
         return enumerate(means)
 
-    elif mode == 'best_all':
+    elif mode == "best_all":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
         maxlen = max([(lambda x: len(x))(values) for values in means_data])
 
-        best = [ 0 for _ in range(0, maxlen)]
+        best = [0 for _ in range(0, maxlen)]
         for i in range(0, len(means_data)):
             for j in range(0, len(means_data[i])):
                 best[j] = max(best[j], means_data[i][j][1])
 
         return enumerate(best)
 
-    elif mode == 'best':
+    elif mode == "best":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
 
@@ -161,19 +161,21 @@ def main(mode, names, lenght=0):
 
         return enumerate(best)
 
-    elif mode == 'avg_scaled':
+    elif mode == "avg_scaled":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
-        #maxlen = max([(lambda x: len(x))(values) for values in means_data])
+        # maxlen = max([(lambda x: len(x))(values) for values in means_data])
         maxlen = lenght
 
         data = [[-1 for j in range(maxlen)] for i in range(len(means_data))]
 
-        means = [ 0 for _ in range(0, maxlen)]
-        ns    = [ 0 for _ in range(0, maxlen)]
+        means = [0 for _ in range(0, maxlen)]
+        ns = [0 for _ in range(0, maxlen)]
         for i in range(0, len(means_data)):
             for j in range(0, len(means_data[i])):
-                x, y = ((j+1) * maxlen/(len(means_data[i]))) - 1, means_data[i][j][1]
+                x, y = ((j + 1) * maxlen / (len(means_data[i]))) - 1, means_data[i][j][
+                    1
+                ]
                 data[i][int(round(x))] = y
 
         for d in data:
@@ -220,19 +222,21 @@ def main(mode, names, lenght=0):
 
         return enumerate(means)
 
-    elif mode == 'best_scaled':
+    elif mode == "best_scaled":
         means_data = [(lambda x: x[0])(pack_data(name)) for name in names]
         minlen = min([(lambda x: len(x))(values) for values in means_data])
-        #maxlen = max([(lambda x: len(x))(values) for values in means_data])
+        # maxlen = max([(lambda x: len(x))(values) for values in means_data])
         maxlen = lenght
 
         data = [[-1 for j in range(maxlen)] for i in range(len(means_data))]
 
-        means = [ 0 for _ in range(0, maxlen)]
-        ns    = [ 0 for _ in range(0, maxlen)]
+        means = [0 for _ in range(0, maxlen)]
+        ns = [0 for _ in range(0, maxlen)]
         for i in range(0, len(means_data)):
             for j in range(0, len(means_data[i])):
-                x, y = ((j+1) * maxlen/(len(means_data[i]))) - 1, means_data[i][j][1]
+                x, y = ((j + 1) * maxlen / (len(means_data[i]))) - 1, means_data[i][j][
+                    1
+                ]
                 data[i][int(round(x))] = y
 
         for d in data:
@@ -276,7 +280,7 @@ def main(mode, names, lenght=0):
         return enumerate(means)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     mode = sys.argv[1]
     names = sys.argv[2:]
     for k, v in main(mode, names):
