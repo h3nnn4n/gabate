@@ -8,7 +8,6 @@ def main():
 
     assert ping()
 
-    return
     agents = [Agent() for _ in range(50)]
 
     for agent in agents:
