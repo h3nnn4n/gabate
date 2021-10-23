@@ -31,9 +31,8 @@ repos:
   rev: 4.3.21
   hooks:
     - id: isort
-      entry: isort -c --check-only -s
+      entry: isort -c --check-only --skip=deps
       language_version: python3
-      exclude: deps
 
 - repo: https://github.com/psf/black
   rev: 21.9b0
