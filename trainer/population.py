@@ -1,3 +1,4 @@
+from copy import copy
 from agent import Agent
 from random import choice, random, uniform
 
@@ -19,6 +20,13 @@ class Individual:
 
     def get_fitness(self):
         return self._agent.get_fitness()["max"]
+
+    def clone(self):
+        new = Individual()
+        new.n_genes = self.n_genes
+        new.genes = copy(self.genes)
+
+        return new
 
 
 class Population:
@@ -47,9 +55,9 @@ class Population:
             p2 = choice(self.population)
 
             if random() * p1.get_fitness() > random() * p2.get_fitness():
-                _new_pop.append(p1)
+                _new_pop.append(p1.clone())
             else:
-                _new_pop.append(p2)
+                _new_pop.append(p2.clone())
 
         self.population = _new_pop
 
