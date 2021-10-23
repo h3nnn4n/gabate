@@ -27,7 +27,10 @@ class Agent:
     def trigger_eval(self):
         data = self.get_agent_data()
 
-        self.pending_results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(self.n_evals)]
+        self.pending_results = [
+            worker.send_task("tasks.evaluate_agent", args=[data])
+            for _ in range(self.n_evals)
+        ]
 
     def get_fitness(self):
         values = [json.loads(result.get()) for result in self.pending_results]
