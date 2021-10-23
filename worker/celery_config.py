@@ -2,7 +2,6 @@ import os
 
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 broker_url = os.environ.get("BROKER_URL", "pyamqp://guest@localhost")

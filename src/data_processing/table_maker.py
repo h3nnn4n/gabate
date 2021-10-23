@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import reader
 import os
-import numpy
 import sys
 from math import sqrt
+
+import numpy
+import reader
 import scipy
 from scipy import stats
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from random import shuffle
 import sys
+from random import shuffle
 
 
 def main(names):

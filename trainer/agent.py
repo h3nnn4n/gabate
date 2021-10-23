@@ -1,7 +1,7 @@
 import json
 import statistics
-from uuid import uuid4
 from random import randrange
+from uuid import uuid4
 
 from worker import worker
 

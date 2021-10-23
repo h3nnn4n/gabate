@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import reader
 import os
+
+import reader
 
 TESTS = ["CMA", "KBR", "FBDP", "NDP", "HA", "LELmark", "ALL"]
 TEST_FOLDER = "tests_folder"

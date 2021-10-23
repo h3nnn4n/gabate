@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy
 import sys
+
+import numpy
 
 INTERPOLATE_DATA = False
 
