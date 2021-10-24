@@ -12,40 +12,21 @@ packages:
   - git
   - vim
   - neovim
-  - gcc
-  - make
-  - cmake
-  - libsdl2-dev
-  - libsdl2-ttf-dev
+  - gnupg
+  - redis-server
 runcmd:
   - cd /home/devops
   - touch $HOME/I_WAS_HERE
-  - su devops -c "echo 'PATH=/home/devops/.local/bin:$PATH' > ~/.bashrc"
 
-    # Python 3.10 setup
-  - apt install software-properties-common -y
-  - add-apt-repository ppa:deadsnakes/ppa -y
-  - apt update
-  - apt install python3.10-full -y
+    # mongo
+  - wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+  - echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+  - apt-get update
+  - apt-get install -y mongodb-org
 
-    # Get gabate
-  - git clone 'https://github.com/h3nnn4n/gabate'
-  - chown -R devops:devops gabate
-  - cd gabate
+    # rabbitmq
+  - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | bash
+  - apt-get update
+  - apt-get install -y rabbitmq-server
 
-    ## Gabate deps
-  #- git submodule update --init --recursive
-  #- cd deps/pcg-c/ && make -j 4 && cd -
-  #- cd deps/cJSON/ && mkdir build && cd build && cmake .. && make -j 4 && cd ../../../
-
-    ## Build gabate
-  #- make -j 4
-
-    # Worker setup
-  - cd worker
-
-  - python3.10 -m ensurepip --upgrade
-  - python3.10 -m pip install poetry
-  - python3.10 -m poetry install
-
-  - su devops -l -c "cd /home/devops/gabate/worker/ && python3.10 -m poetry run celery -A tasks worker --loglevel=INFO --detach"
+    # redis
