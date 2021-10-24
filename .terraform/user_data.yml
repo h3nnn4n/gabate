@@ -20,22 +20,41 @@ packages:
 runcmd:
   - cd /home/devops
   - touch $HOME/I_WAS_HERE
+
+    # Pyenv setup
   - git clone https://github.com/pyenv/pyenv.git .pyenv
+  - chown -R devops:devops .pyenv
   - echo 'export PYENV_ROOT="$HOME/.pyenv"' >> .bashrc
   - echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
-  - echo 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init --path)"; fi' >> .bashrc
-  - source .bashrc
+  - echo 'eval "$(pyenv init --path)"' >> .bashrc
+  - echo 'eval "$(pyenv init -)"' >> .bashrc
+
+    # Get gabate
   - git clone 'https://github.com/h3nnn4n/gabate'
-  - cd gabate
-  - git submodule update --init --recursive
-  - cd deps/pcg-c/ && make -j 4 && cd -
-  - cd deps/cJSON/ && mkdir build && cd build && cmake .. && make -j 4 && cd ../../../
-  - make -j 4
-  - cd /home/devops
   - chown -R devops:devops gabate
-  - cd gabate/worker
-  - pyenv install 3.10.0
-  - python -m pip install poetry
-  - pyenv rehash
-  - poetry install
-  - poetry run celery -A tasks worker --loglevel=INFO
+  - cd gabate
+
+    ## Gabate deps
+  #- git submodule update --init --recursive
+  #- cd deps/pcg-c/ && make -j 4 && cd -
+  #- cd deps/cJSON/ && mkdir build && cd build && cmake .. && make -j 4 && cd ../../../
+
+    ## Build gabate
+  #- make -j 4
+
+    # Worker setup
+  - cd worker
+
+  - echo "#/bin/bash" > setup_python
+  - echo 'export PYENV_ROOT="$HOME/.pyenv"' >> setup_python
+  - echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> setup_python
+  - echo 'eval "$(pyenv init --path)"' >> setup_python
+  - echo 'eval "$(pyenv init -)"' >> setup_python
+  - echo "pyenv install 3.10.0" >> setup_python
+  - echo "python -m pip install poetry" >> setup_python
+  - echo "pyenv rehash" >> setup_python
+  - echo "poetry install" >> setup_python
+  - echo "poetry run celery -A tasks worker --loglevel=INFO --detach" >> setup_python
+  - chown devops:devops setup_python
+  - su devops - ./setup_python
+  - su devops -l -c "./setup_python"
