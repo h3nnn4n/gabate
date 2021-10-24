@@ -1,3 +1,7 @@
+data "template_file" "user_data" {
+  template = file("user_data.yml")
+}
+
 resource "hcloud_server" "worker" {
   count       = var.instances
   name        = "worker-${count.index}"
@@ -8,5 +12,5 @@ resource "hcloud_server" "worker" {
   labels = {
     type = "workers"
   }
-  user_data = file("user_data.yml")
+  user_data = data.template_file.user_data.rendered
 }
