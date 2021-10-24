@@ -25,8 +25,14 @@ runcmd:
   - apt-get install -y mongodb-org
 
     # rabbitmq
+  - wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
+  - echo "deb https://packages.erlang-solutions.com/ubuntu focal contrib" | tee /etc/apt/sources.list.d/rabbitmq.list
   - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | bash
   - apt-get update
-  - apt-get install -y rabbitmq-server
+  - apt-get install -y rabbitmq-server --fix-missing
+  - sudo systemctl start rabbitmq-server
+  - sudo systemctl enable rabbitmq-server
+  - sudo systemctl status rabbitmq-server
 
     # redis
+    # ¯\_(ツ)_/¯
