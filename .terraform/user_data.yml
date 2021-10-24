@@ -10,11 +10,32 @@ package_update: true
 package_upgrade: true
 packages:
   - git
-  - nvim
+  - vim
+  - neovim
+  - gcc
+  - make
+  - cmake
+  - libsdl2-dev
+  - libsdl2-ttf-dev
 runcmd:
-  - curl https://pyenv.run | bash
-  - echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-  - echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-  - echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init --path)"\nfi' >> ~/.bashrc
-  - source ~/.bashrc
+  - cd /home/devops
+  - touch $HOME/I_WAS_HERE
+  - git clone https://github.com/pyenv/pyenv.git .pyenv
+  - echo 'export PYENV_ROOT="$HOME/.pyenv"' >> .bashrc
+  - echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> .bashrc
+  - echo 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init --path)"; fi' >> .bashrc
+  - source .bashrc
+  - git clone 'https://github.com/h3nnn4n/gabate'
+  - cd gabate
+  - git submodule update --init --recursive
+  - cd deps/pcg-c/ && make -j 4 && cd -
+  - cd deps/cJSON/ && mkdir build && cd build && cmake .. && make -j 4 && cd ../../../
+  - make -j 4
+  - cd /home/devops
+  - chown -R devops:devops gabate
+  - cd gabate/worker
   - pyenv install 3.10.0
+  - python -m pip install poetry
+  - pyenv rehash
+  - poetry install
+  - poetry run celery -A tasks worker --loglevel=INFO
