@@ -44,9 +44,9 @@ runcmd:
     # Worker setup
   - cd worker
 
-  - python3.10 -m ensurepip --upgrade
-  - python3.10 -m pip install --upgrade pip
-  - python3.10 -m pip install poetry
+  - su devops -c "python3.10 -m ensurepip --upgrade"
+  - su devops -c "python3.10 -m pip install --upgrade pip"
+  - su devops -c "python3.10 -m pip install poetry"
 
   - su devops -l -c "cd /home/devops/gabate/worker/ && python3.10 -m poetry install"
   - su devops -l -c "cd /home/devops/gabate/worker/ && python3.10 -m poetry run celery -A tasks worker --loglevel=INFO --detach"
