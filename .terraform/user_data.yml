@@ -19,7 +19,9 @@ packages:
   - libsdl2-ttf-dev
 runcmd:
   - cd /home/devops
-  - touch $HOME/I_WAS_HERE
+  - touch I_WAS_HERE
+  - echo "sudo tail -f /var/log/cloud-init-output.log" > tail_log.sh
+  - echo "sudo less /var/log/cloud-init-output.log" > less_log.sh
   - su devops -c "echo 'PATH=/home/devops/.local/bin:$PATH' > ~/.bashrc"
 
     # Python 3.10 setup
