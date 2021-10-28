@@ -19,7 +19,7 @@ data "template_cloudinit_config" "config" {
     content_type = "text/x-shellscript"
     content      = <<-EOF
     #!/bin/bash
-    echo 'instance_target_host="${hcloud_server.db_server.ipv4_address}"' > /opt/db_server_ip
+    echo '${hcloud_server.db_server.ipv4_address}' > /opt/db_server_ip
     EOF
   }
 
