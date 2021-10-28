@@ -19,17 +19,20 @@ runcmd:
   - touch I_WAS_HERE
   - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
   - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
+  - echo "started runcmd" >> /var/log/bootstrap
 
     # redis
     # FIXME: Add basic redis auth here
   - echo "protected-mode no" > /etc/redis/redis.conf
   - systemctl restart redis
+  - echo "finished settingup redis" >> /var/log/bootstrap
 
     # mongo
   - wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
   - echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
   - apt-get update
   - apt-get install -y mongodb-org
+  - echo "finished installing mongo" >> /var/log/bootstrap
 
     # rabbitmq
   - wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
@@ -37,17 +40,11 @@ runcmd:
   - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | bash
   - apt-get update
   - apt-get install -y rabbitmq-server --fix-missing
-  - sudo systemctl start rabbitmq-server
-  - sudo systemctl enable rabbitmq-server
-  - sudo systemctl status rabbitmq-server
+  - echo "finished installing rabbitmq-server" >> /var/log/bootstrap
 
   - echo "[{rabbit,[{loopback_users,[]},{tcp_listeners,[5672]}]}]." > /etc/rabbitmq/rabbitmq.config
-  - echo "NODENAME=db-server" > /etc/rabbitmq/rabbitmq-env.conf
-  - echo "NODE_IP_ADDRESS=0.0.0.0" >> /etc/rabbitmq/rabbitmq-env.conf
-  - echo "NODE_PORT=5672" >> /etc/rabbitmq/rabbitmq-env.conf
+  - echo "finished settingup rabbitmq" >> /var/log/bootstrap
 
-    # FIXME use a proper secret manager here. Also, review the settings, we are
-    # probably giving too much access to a simple message broker user
-  - rabbitmqctl add_user gabate PASSWD_HERE
-  - rabbitmqctl set_user_tags gabate administrator
-  - rabbitmqctl set_permissions -p / gabate ".*" ".*" ".*"
+  - systemctl restart rabbitmq-server
+  - systemctl status rabbitmq-server
+  - echo "restarted rabbitmq" >> /var/log/bootstrap
