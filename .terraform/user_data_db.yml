@@ -16,7 +16,7 @@ packages:
   - redis-server
 runcmd:
   - cd /home/devops
-  - touch $HOME/I_WAS_HERE
+  - touch I_WAS_HERE
 
     # mongo
   - wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
@@ -34,5 +34,10 @@ runcmd:
   - sudo systemctl enable rabbitmq-server
   - sudo systemctl status rabbitmq-server
 
+  - echo "[{rabbit,[{loopback_users,[]},{tcp_listeners,[5672]}]}]." > /etc/rabbitmq/rabbitmq.config
+  - echo "NODENAME=db_server" > /etc/rabbitmq/rabbitmq-env.conf
+  - echo "NODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
+  - echo "NODE_PORT=5672" > /etc/rabbitmq/rabbitmq-env.conf
+
     # redis
-    # ¯\_(ツ)_/¯
+  - echo "protected-mode no" > /etc/redis.conf
