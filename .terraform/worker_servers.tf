@@ -11,6 +11,11 @@ data "template_cloudinit_config" "config" {
   base64_encode = false
 
   part {
+    content_type = "text/cloud-config"
+    content      = data.template_file.user_data.rendered
+  }
+
+  part {
     content_type = "text/x-shellscript"
     content      = <<-EOF
     #!/bin/bash
