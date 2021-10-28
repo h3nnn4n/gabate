@@ -52,6 +52,3 @@ runcmd:
     # Instal poetry and worker deps
   - su devops -c "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.10 - "
   - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry install"
-
-    # Run celery
-  - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO --detach -f celery.logs"
