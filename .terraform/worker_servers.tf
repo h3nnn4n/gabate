@@ -1,5 +1,27 @@
 data "template_file" "user_data" {
-  template = file("user_data.yml")
+  template = file("worker_user_data/user_data.yml")
+}
+
+data "template_file" "start_worker" {
+  template = file("worker_user_data/start_worker.sh")
+}
+
+data "template_cloudinit_config" "config" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = <<-EOF
+    #!/bin/bash
+    echo 'instance_target_host="${hcloud_server.db_server.ipv4_address}"' > /opt/db_server_ip
+    EOF
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.start_worker.rendered
+  }
 }
 
 resource "hcloud_server" "worker" {
@@ -12,5 +34,5 @@ resource "hcloud_server" "worker" {
   labels = {
     type = "workers"
   }
-  user_data = data.template_file.user_data.rendered
+  user_data = data.template_cloudinit_config.config.rendered
 }
