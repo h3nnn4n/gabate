@@ -17,6 +17,13 @@ packages:
 runcmd:
   - cd /home/devops
   - touch I_WAS_HERE
+  - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
+  - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
+
+    # redis
+    # FIXME: Add basic redis auth here
+  - echo "protected-mode no" > /etc/redis/redis.conf
+  - systemctl restart redis
 
     # mongo
   - wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
@@ -35,9 +42,12 @@ runcmd:
   - sudo systemctl status rabbitmq-server
 
   - echo "[{rabbit,[{loopback_users,[]},{tcp_listeners,[5672]}]}]." > /etc/rabbitmq/rabbitmq.config
-  - echo "NODENAME=db_server" > /etc/rabbitmq/rabbitmq-env.conf
-  - echo "NODE_IP_ADDRESS=0.0.0.0" > /etc/rabbitmq/rabbitmq-env.conf
-  - echo "NODE_PORT=5672" > /etc/rabbitmq/rabbitmq-env.conf
+  - echo "NODENAME=db-server" > /etc/rabbitmq/rabbitmq-env.conf
+  - echo "NODE_IP_ADDRESS=0.0.0.0" >> /etc/rabbitmq/rabbitmq-env.conf
+  - echo "NODE_PORT=5672" >> /etc/rabbitmq/rabbitmq-env.conf
 
-    # redis
-  - echo "protected-mode no" > /etc/redis.conf
+    # FIXME use a proper secret manager here. Also, review the settings, we are
+    # probably giving too much access to a simple message broker user
+  - rabbitmqctl add_user gabate PASSWD_HERE
+  - rabbitmqctl set_user_tags gabate administrator
+  - rabbitmqctl set_permissions -p / gabate ".*" ".*" ".*"
