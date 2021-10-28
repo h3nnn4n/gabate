@@ -3,7 +3,6 @@ data "template_file" "user_data_db" {
 }
 
 resource "hcloud_server" "db_server" {
-  count       = var.instances
   name        = "db-server"
   image       = var.os_type
   server_type = var.server_type
