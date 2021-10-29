@@ -2,18 +2,9 @@ data "template_file" "db_user_data" {
   template = file("db_user_data/user_data.yml")
 }
 
-data "template_file" "setup_rabbitmq_creds" {
-  template = file("db_user_data/setup_rabbitmq_creds.sh")
-}
-
 data "template_cloudinit_config" "db_config" {
   gzip          = false
   base64_encode = false
-
-  part {
-    content_type = "text/cloud-config"
-    content      = data.template_file.db_user_data.rendered
-  }
 
   part {
     content_type = "text/x-shellscript"
@@ -25,8 +16,8 @@ data "template_cloudinit_config" "db_config" {
   }
 
   part {
-    content_type = "text/x-shellscript"
-    content      = data.template_file.setup_rabbitmq_creds.rendered
+    content_type = "text/cloud-config"
+    content      = data.template_file.db_user_data.rendered
   }
 }
 
