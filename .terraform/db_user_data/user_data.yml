@@ -13,41 +13,43 @@ packages:
   - vim
   - neovim
   - gnupg
-  - redis-server
 runcmd:
   - cd /home/devops
   - touch I_WAS_HERE
   - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
   - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
-  - echo "started runcmd" >> /var/log/bootstrap
 
     # redis
-    # FIXME: Add basic redis auth here
+  - add-apt-repository -y ppa:chris-lea/redis-server
+  - apt update
+  - apt install redis-server -y
+  - redis-server --version > /home/devops/redis_version
+  - echo PING | redis-cli >> redis_ping
   - echo "protected-mode no" > /etc/redis/redis.conf
-  - systemctl restart redis
-  - echo "finished settingup redis" >> /var/log/bootstrap
+  - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands >$(cat /opt/redis_passwd)" | redis-cli
+  - systemctl enable redis-server.service
+  - systemctl restart redis-server.service
+  - systemctl status redis-server.service
+  - echo PING | redis-cli >> redis_ping
 
     # mongo
   #- wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
   #- echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-  #- apt-get update
-  #- apt-get install -y mongodb-org
+  #- apt update
+  #- apt install -y mongodb-org
 
     # rabbitmq
   - wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
   - echo "deb https://packages.erlang-solutions.com/ubuntu focal contrib" | tee /etc/apt/sources.list.d/rabbitmq.list
   - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | bash
-  - apt-get update
-  - apt-get install -y rabbitmq-server --fix-missing
-  - rabbitmqctl status > /var/log/rabbitmqctl_status 2> /var/log/rabbitmqctl_status_error
-  - echo "finished installing rabbitmq-server" >> /var/log/bootstrap
+  - apt update
+  - apt install -y rabbitmq-server --fix-missing
 
   - echo "[{rabbit,[{loopback_users,[]},{tcp_listeners,[5672]}]}]." > /etc/rabbitmq/rabbitmq.config
-  - echo "finished settingup rabbitmq" >> /var/log/bootstrap
 
+  - systemctl enable rabbitmq-server
   - systemctl restart rabbitmq-server
   - systemctl status rabbitmq-server
-  - echo "restarted rabbitmq" >> /var/log/bootstrap
   - rabbitmqctl add_user $(cat /opt/rabbitmq_user) $(cat /opt/rabbitmq_passwd)
   - rabbitmqctl set_user_tags $(cat /opt/rabbitmq_user) administrator
   - rabbitmqctl set_permissions -p / $(cat /opt/rabbitmq_user) ".*" ".*" ".*"

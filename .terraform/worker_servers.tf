@@ -17,6 +17,8 @@ data "template_cloudinit_config" "config" {
     echo '${hcloud_server.db_server.ipv4_address}' > /opt/db_server_ip
     echo '${local.db_creds.rabbitmq_user}' > /opt/rabbitmq_user
     echo '${local.db_creds.rabbitmq_passwd}' > /opt/rabbitmq_passwd
+    echo '${local.db_creds.redis_user}' > /opt/redis_user
+    echo '${local.db_creds.redis_passwd}' > /opt/redis_passwd
     EOF
   }
 
