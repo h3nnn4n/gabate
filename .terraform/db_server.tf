@@ -2,6 +2,10 @@ data "template_file" "db_user_data" {
   template = file("db_user_data/user_data.yml")
 }
 
+data "template_file" "setup_rabbitmq_creds" {
+  template = file("db_user_data/setup_rabbitmq_creds.sh")
+}
+
 data "template_cloudinit_config" "db_config" {
   gzip          = false
   base64_encode = false
@@ -14,11 +18,15 @@ data "template_cloudinit_config" "db_config" {
   part {
     content_type = "text/x-shellscript"
     content      = <<-EOF
-    #!/bin/bash
-    sudo rabbitmqctl add_user ${local.db_creds.rabbitmq_user} ${local.db_creds.rabbitmq_passwd}
-    sudo rabbitmqctl set_user_tags ${local.db_creds.rabbitmq_user} administrator
-    sudo rabbitmqctl set_permissions -p / ${local.db_creds.rabbitmq_user} ".*" ".*" ".*"
+    #!/bin/sh
+    echo '${local.db_creds.rabbitmq_user}' > /opt/rabbitmq_user
+    echo '${local.db_creds.rabbitmq_passwd}' > /opt/rabbitmq_passwd
     EOF
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.setup_rabbitmq_creds.rendered
   }
 }
 
