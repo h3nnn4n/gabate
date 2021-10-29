@@ -40,6 +40,7 @@ runcmd:
   - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | bash
   - apt-get update
   - apt-get install -y rabbitmq-server --fix-missing
+  - rabbitmqctl status > /var/log/rabbitmqctl_status 2> /var/log/rabbitmqctl_status_error
   - echo "finished installing rabbitmq-server" >> /var/log/bootstrap
 
   - echo "[{rabbit,[{loopback_users,[]},{tcp_listeners,[5672]}]}]." > /etc/rabbitmq/rabbitmq.config
