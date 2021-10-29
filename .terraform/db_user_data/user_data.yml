@@ -28,11 +28,10 @@ runcmd:
   - echo "finished settingup redis" >> /var/log/bootstrap
 
     # mongo
-  - wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
-  - echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-  - apt-get update
-  - apt-get install -y mongodb-org
-  - echo "finished installing mongo" >> /var/log/bootstrap
+  #- wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+  #- echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+  #- apt-get update
+  #- apt-get install -y mongodb-org
 
     # rabbitmq
   - wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | apt-key add -
