@@ -49,3 +49,6 @@ runcmd:
   - systemctl restart rabbitmq-server
   - systemctl status rabbitmq-server
   - echo "restarted rabbitmq" >> /var/log/bootstrap
+  - rabbitmqctl add_user $(cat /opt/rabbitmq_user) $(cat /opt/rabbitmq_passwd)
+  - rabbitmqctl set_user_tags $(cat /opt/rabbitmq_user) administrator
+  - rabbitmqctl set_permissions -p / $(cat /opt/rabbitmq_user) ".*" ".*" ".*"

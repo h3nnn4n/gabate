@@ -2,8 +2,8 @@ data "template_file" "user_data" {
   template = file("worker_user_data/user_data.yml")
 }
 
-data "template_file" "start_worker" {
-  template = file("worker_user_data/start_worker.sh")
+data "template_file" "setup_worker_env" {
+  template = file("worker_user_data/setup_worker_env.sh")
 }
 
 data "template_cloudinit_config" "config" {
@@ -11,21 +11,23 @@ data "template_cloudinit_config" "config" {
   base64_encode = false
 
   part {
-    content_type = "text/cloud-config"
-    content      = data.template_file.user_data.rendered
-  }
-
-  part {
     content_type = "text/x-shellscript"
     content      = <<-EOF
     #!/bin/bash
     echo '${hcloud_server.db_server.ipv4_address}' > /opt/db_server_ip
+    echo '${local.db_creds.rabbitmq_user}' > /opt/rabbitmq_user
+    echo '${local.db_creds.rabbitmq_passwd}' > /opt/rabbitmq_passwd
     EOF
   }
 
   part {
     content_type = "text/x-shellscript"
-    content      = data.template_file.start_worker.rendered
+    content      = data.template_file.setup_worker_env.rendered
+  }
+
+  part {
+    content_type = "text/cloud-config"
+    content      = data.template_file.user_data.rendered
   }
 }
 
