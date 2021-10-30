@@ -30,6 +30,8 @@ runcmd:
   - echo PING | redis-cli >> redis_ping
   - sleep 1 # wtf ?
   - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands on >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl 2>> redis_errors
+  - echo "CONFIG REWRITE" | redis-cli >> redis_acl 2>> redis_errors
+  - systemctl restart redis-server.service
   - echo ACL LIST | redis-cli >> redis_acl
   - echo PING | redis-cli >> redis_ping
 
