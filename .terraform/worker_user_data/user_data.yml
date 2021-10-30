@@ -21,6 +21,7 @@ packages:
 runcmd:
   - cd /home/devops
   - touch BOOTSTRAP_STARTED
+  - echo "tail -f -n25 /home/devops/gabate/worker/celery.log" > ./tail_celery_log.sh
   - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
   - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
   - su devops -c "echo 'PATH=/home/devops/.local/bin:$PATH' >> ~/.bashrc"
