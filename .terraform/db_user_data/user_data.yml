@@ -28,10 +28,12 @@ runcmd:
   - echo "protected-mode no" > /etc/redis/redis.conf
   - systemctl restart redis-server.service
   - echo PING | redis-cli >> redis_ping
-  - sleep 1 # wtf ?
+  - sleep 1 # These seem to somehow help?
   - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands on >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl 2>> redis_errors
   - echo "CONFIG REWRITE" | redis-cli >> redis_acl 2>> redis_errors
+  - sleep 1 # These seem to somehow help?
   - systemctl restart redis-server.service
+  - sleep 1 # These seem to somehow help?
   - echo ACL LIST | redis-cli >> redis_acl
   - echo PING | redis-cli >> redis_ping
 
