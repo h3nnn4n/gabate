@@ -32,7 +32,7 @@ jobs:
       - name: Decrypt image
         run: |
           echo ${{ secrets.GPG_KEY }} > key
-          gpg --passphrase-file key --batch --yes --decrypt tetris.gb.gpg > tetris.gb
+          gpg --passphrase-file key --batch --yes --decrypt ./roms/tetris.gb.gpg > ./roms/tetris.gb
 
       - name: Build cJSON
         run: |
