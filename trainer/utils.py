@@ -21,6 +21,5 @@ def ping():
     for n, result in enumerate(results):
         parsed_response = json.loads(result.get())
         assert parsed_response["pong"] == "foo bar"
-        print(f"GOT PING {n:3}/{len(results):3}")
 
     return True
