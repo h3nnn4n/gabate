@@ -26,7 +26,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Get test image
-        runs: |
+        run: |
           aws s3 cp s3://gabate-roms/games/tetris.gb.gpg ./roms/tetris.gb.gpg
 
       - name: Decrypt image
