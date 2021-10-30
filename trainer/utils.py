@@ -18,8 +18,9 @@ def ping():
     data = dict(ping="foobar")
     results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(n_workers * 4)]
 
-    for result in results:
+    for n, result in enumerate(results):
         parsed_response = json.loads(result.get())
         assert parsed_response["pong"] == "foo bar"
+        print(f"GOT PING {n:3}/{len(results):3}")
 
     return True
