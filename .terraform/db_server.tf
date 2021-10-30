@@ -26,7 +26,7 @@ data "template_cloudinit_config" "db_config" {
 resource "hcloud_server" "db_server" {
   name        = "db-server"
   image       = var.os_type
-  server_type = var.server_type
+  server_type = var.db_server_type
   location    = var.location
   ssh_keys    = [hcloud_ssh_key.default.id]
   labels = {

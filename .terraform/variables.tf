@@ -20,8 +20,12 @@ variable "instances" {
   default = "1"
 }
 
-variable "server_type" {
+variable "db_server_type" {
   default = "cx11"
+}
+
+variable "server_type" {
+  default = "cpx11"
 }
 
 variable "os_type" {
