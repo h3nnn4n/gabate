@@ -15,7 +15,7 @@ packages:
   - gnupg
 runcmd:
   - cd /home/devops
-  - touch I_WAS_HERE
+  - touch BOOTSTRAP_STARTED
   - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
   - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
 
@@ -53,3 +53,5 @@ runcmd:
   - rabbitmqctl add_user $(cat /opt/rabbitmq_user) $(cat /opt/rabbitmq_passwd)
   - rabbitmqctl set_user_tags $(cat /opt/rabbitmq_user) administrator
   - rabbitmqctl set_permissions -p / $(cat /opt/rabbitmq_user) ".*" ".*" ".*"
+
+  - touch /home/devops/BOOTSTRAP_DONE
