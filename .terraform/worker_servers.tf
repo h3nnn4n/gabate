@@ -15,10 +15,17 @@ data "template_cloudinit_config" "config" {
     content      = <<-EOF
     #!/bin/bash
     echo '${hcloud_server.db_server.ipv4_address}' > /opt/db_server_ip
+
     echo '${local.db_creds.rabbitmq_user}' > /opt/rabbitmq_user
     echo '${local.db_creds.rabbitmq_passwd}' > /opt/rabbitmq_passwd
+
     echo '${local.db_creds.redis_user}' > /opt/redis_user
     echo '${local.db_creds.redis_passwd}' > /opt/redis_passwd
+
+    echo '${local.db_creds.rom_gpg_key}' > /opt/rom_gpg_key
+
+    echo '${local.db_creds.aws_api_key}' > /opt/aws_api_key
+    echo '${local.db_creds.aws_secret_key}' > /opt/aws_secret_key
     EOF
   }
 

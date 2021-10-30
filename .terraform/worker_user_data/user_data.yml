@@ -15,11 +15,12 @@ packages:
   - gcc
   - make
   - cmake
+  - awscli
   - libsdl2-dev
   - libsdl2-ttf-dev
 runcmd:
   - cd /home/devops
-  - touch I_WAS_HERE
+  - touch BOOTSTRAP_STARTED
   - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
   - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
   - su devops -c "echo 'PATH=/home/devops/.local/bin:$PATH' >> ~/.bashrc"
@@ -46,6 +47,12 @@ runcmd:
     ## Build gabate
   - make -j 4
 
+    # Get rom
+  - cd roms
+  - su devops -c "aws s3 sync s3://gabate-roms/games/ ."
+  - gpg --passphrase-file /opt/rom_gpg_key --batch --yes --decrypt tetris.gb.gpg > tetris.gb
+  - cd ..
+
     # Worker setup
   - cd worker
 
@@ -56,3 +63,4 @@ runcmd:
     # Start worker
   - cp -v /home/devops/.env .env
   - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO --detach -f celery.logs"
+  - touch /home/devops/BOOTSTRAP_DONE
