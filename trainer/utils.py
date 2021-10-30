@@ -18,8 +18,11 @@ def ping():
     data = dict(ping="foobar")
     results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(n_workers * 4)]
 
-    for n, result in enumerate(results):
+    passed = 0
+    for result in results:
         parsed_response = json.loads(result.get())
         assert parsed_response["pong"] == "foo bar"
+        passed += 1
 
+    print(f"PING health check passed {passed} / {len(result)}")
     return True
