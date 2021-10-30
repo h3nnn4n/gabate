@@ -39,7 +39,7 @@ void load_settings(char *setting_str) {
     }
 
     cJSON *ping = cJSON_GetObjectItemCaseSensitive(json, "ping");
-    if (ping) {
+    if (strcmp(ping->valuestring, "foobar") == 0) {
         agent_config.ping_mode = true;
         return;
     }
