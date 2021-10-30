@@ -1,4 +1,4 @@
-from agent import Agent
+from population import Population
 from utils import get_n_workers, ping
 
 
@@ -8,24 +8,19 @@ def main():
 
     assert ping()
 
-    agents = [Agent() for _ in range(50)]
+    population = Population()
 
-    for agent in agents:
-        agent.trigger_eval()
+    for generation in range(10):
+        print(f"starting gen {generation}")
+        population.evaluate_population_fitness()
+        population.print_pop_state()
+        population.selection()
+        population.crossover()
+        population.mutation()
 
-    agents = sorted(agents, key=lambda x: x.get_fitness()[0], reverse=True)
-    print(agents[0].get_fitness())
-    agents = sorted(agents, key=lambda x: x.get_fitness()[1], reverse=True)
-    print(agents[0].get_fitness())
-    agents = sorted(agents, key=lambda x: x.get_fitness()[2], reverse=True)
-    print(agents[0].get_fitness())
-
-    agents = [x for x in agents if x.get_fitness()[0] > 0]
-
-    agents = sorted(agents, key=lambda x: x.get_fitness()[1], reverse=True)
-    print(agents[0].get_fitness())
-    agents = sorted(agents, key=lambda x: x.get_fitness()[2], reverse=True)
-    print(agents[0].get_fitness())
+    print("finished")
+    population.evaluate_population_fitness()
+    population.print_pop_state()
 
 
 if __name__ == "__main__":

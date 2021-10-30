@@ -1,5 +1,6 @@
 import json
 import statistics
+from copy import copy
 from random import uniform
 from uuid import uuid4
 
@@ -21,6 +22,10 @@ class Agent:
     def set_random_weights(self):
         self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
 
+    def set_weights(self, weights):
+        assert len(weights) == len(self.weights)
+        self.weights = copy(weights)
+
     def get_agent_data(self):
         return {"agent": self.settings}
 
@@ -32,4 +37,12 @@ class Agent:
     def get_fitness(self):
         values = [json.loads(result.get()) for result in self.pending_results]
         scores = [value.get("lines_cleared") for value in values]
-        return min(scores), statistics.median(scores), max(scores)
+
+        fitness = {
+            "min": min(scores),
+            "median": statistics.median(scores),
+            "max": max(scores),
+            "raw": sorted(scores),
+        }
+
+        return fitness
