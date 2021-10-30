@@ -1,0 +1,70 @@
+#cloud-config
+users:
+  - name: devops
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC7E75JwR78Zj0AGf0Hk9VqAs9e37+yOPNNssEdbHM3Uh15BvoHqDTfr8zRO3OsiWBeFmIR0KH8qdwraj1DGGsvnDAwDbi1mQH6V4e/9U269oBFJWKiLAxLUStyRGwK2EZOJvKjT6coic0Hck6I+LUp8QQRMZT8B4UJVk6N4nq0bg0v23dGUm6ULfrMHdJlLGde8Eb+ln/CWjOQXP/4G2UAOGi5PLlftqqJnqsGDS+MfCmNofifjq6NnF65i9JWkrfEVye3Ny3jwEEkBOaojtv9atjE+ExCsmH2BbJYAjEKNjamQwJkJ4iteGZEm88JCOkzRDr0ZEbgac4l7snbRTWt+2rz0UFnzYj00iAnrvQRh1OGgopspSZr7VJEvqdajO24PB7EuNVhG/y4mCpQ7ui1zFLF7X8s1/l6BXuCquiMOtldas5WzgAi1BiyOY3dj6iSEiR182asOsv/VRmmoQGIWQWU1qDQ7fvNCr+qKqSllslkJDb1MMgUumRiCKUI2VrdHt2tKuoHIKxR3zrHAhRe7gDCokPACFUcqOwL6wgFhtqtKJ1EzVl8yQBngnmaPDH/VGUHFhWU6i13hW76B1I/hhdI670l0YyJlsscxpBzWtHlgqTRzNX0l9LpWZhBXkKMluAH0JVy1fOfOs/zHJwqEkCmdDQyuuzN0z/B4PCCGQ== renanssilva@MacBook-Pro.local
+package_update: true
+package_upgrade: true
+packages:
+  - git
+  - vim
+  - neovim
+  - gcc
+  - make
+  - cmake
+  - awscli
+  - libsdl2-dev
+  - libsdl2-ttf-dev
+runcmd:
+  - cd /home/devops
+  - touch BOOTSTRAP_STARTED
+  - echo "sudo tail -f -n25 /var/log/cloud-init-output.log" > ./tail_log.sh
+  - echo "sudo less /var/log/cloud-init-output.log" > ./less_log.sh
+  - su devops -c "echo 'PATH=/home/devops/.local/bin:$PATH' >> ~/.bashrc"
+  - su devops -c "echo 'PATH=/home/devops/.poetry/bin:$PATH' >> ~/.bashrc"
+
+    # Python 3.10 setup
+  - apt install software-properties-common -y
+  - add-apt-repository ppa:deadsnakes/ppa -y
+  - apt update
+  - apt install python3.10-full -y
+  - su devops -c "python3.10 -m ensurepip --upgrade"
+  - su devops -c "python3.10 -m pip install --upgrade pip"
+
+    # Get gabate
+  - git clone 'https://github.com/h3nnn4n/gabate'
+  - chown -R devops:devops gabate
+  - cd gabate
+
+    ## Gabate deps
+  - git submodule update --init --recursive
+  - cd deps/pcg-c/ && make -j 4 && cd -
+  - cd deps/cJSON/ && mkdir build && cd build && cmake .. && make -j 4 && cd ../../../
+
+    ## Build gabate
+  - make -j 4
+
+    # Get rom
+  - cd roms
+  - su devops -c "aws s3 sync s3://gabate-roms/games/ ."
+  - gpg --passphrase-file /opt/rom_gpg_key --batch --yes --decrypt tetris.gb.gpg > tetris.gb
+  - cd ..
+
+    # Instal poetry and project deps
+  - su devops -c "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.10 - "
+  - su devops -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry install"
+  - su devops -c "cd /home/devops/gabate/trainer/ && /home/devops/.poetry/bin/poetry install"
+
+    # Get credentials
+  - cp -v /home/devops/.env /home/devops/gabate/trainer/.env
+  - cp -v /home/devops/.env /home/devops/gabate/worker/.env
+
+    # Worker setup
+  - cd /home/gabate/worker/
+
+    # Start worker
+  - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO --detach -f celery.logs"
+  - touch /home/devops/BOOTSTRAP_DONE
