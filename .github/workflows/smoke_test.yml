@@ -18,6 +18,20 @@ jobs:
           sudo apt update
           sudo apt install -y libsdl2-dev libsdl2-ttf-dev
 
+      - name: Get test image
+        uses: keithweaver/aws-s3-github-action@master
+        with:
+          command: cp
+          source: s3://gabate-roms/games/tetris.gb.gpg
+          destination: ./roms/tetris.gb.gpg
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Decrypt image
+        run: |
+          echo ${{ secrets.GPG_KEY }} > key
+          gpg --passphrase-file key --batch --yes --decrypt tetris.gb.gpg > tetris.gb
+
       - name: Build cJSON
         run: |
           mkdir -vp deps/cJSON/build
@@ -33,3 +47,6 @@ jobs:
 
       - name: Build
         run: make -j
+
+      - name: Ping test
+        run: ./gabate ./roms/tetris.gb '{"ping":"foobar"}'
