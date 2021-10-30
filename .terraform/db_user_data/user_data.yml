@@ -25,7 +25,7 @@ runcmd:
   - apt install redis-server -y
   - redis-server --version > /home/devops/redis_version
   - echo PING | redis-cli >> redis_ping
-  - echo "ACL SETUSER $(cat /opt/redis_user) a~* ~& +@all >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl
+  - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl
   - echo ACL LIST | redis-cli >> redis_acl
   - echo PING | redis-cli >> redis_ping
 
