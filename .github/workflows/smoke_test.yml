@@ -52,3 +52,6 @@ jobs:
 
       - name: Ping test
         run: ./gabate ./roms/tetris.gb '{"ping":"foobar"}'
+
+      - name: Agent test
+        run: ./gabate ./roms/tetris.gb "$(cat settings_but_bad.json)"
