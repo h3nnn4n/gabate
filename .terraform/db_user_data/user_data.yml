@@ -26,7 +26,7 @@ runcmd:
   - redis-server --version > /home/devops/redis_version
   - echo PING | redis-cli >> redis_ping
   - echo "protected-mode no" > /etc/redis/redis.conf
-  - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands >$(cat /opt/redis_passwd)" | redis-cli
+  - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl
   - systemctl enable redis-server.service
   - systemctl restart redis-server.service
   - systemctl status redis-server.service
