@@ -53,14 +53,18 @@ runcmd:
   - gpg --passphrase-file /opt/rom_gpg_key --batch --yes --decrypt tetris.gb.gpg > tetris.gb
   - cd ..
 
-    # Worker setup
-  - cd worker
-
-    # Instal poetry and worker deps
+    # Instal poetry and project deps
   - su devops -c "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.10 - "
-  - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry install"
+  - su devops -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry install"
+  - su devops -c "cd /home/devops/gabate/trainer/ && /home/devops/.poetry/bin/poetry install"
+
+    # Get credentials
+  - cp -v /home/devops/.env /home/devops/gabate/trainer/.env
+  - cp -v /home/devops/.env /home/devops/gabate/worker/.env
+
+    # Worker setup
+  - cd /home/gabate/worker/
 
     # Start worker
-  - cp -v /home/devops/.env .env
   - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO --detach -f celery.logs"
   - touch /home/devops/BOOTSTRAP_DONE
