@@ -16,16 +16,18 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt update
-          sudo apt install -y libsdl2-dev libsdl2-ttf-dev
+          sudo apt install -y libsdl2-dev libsdl2-ttf-dev awscli
+
+      - name: Set AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Get test image
-        uses: keithweaver/aws-s3-github-action@master
-        with:
-          command: cp
-          source: s3://gabate-roms/games/tetris.gb.gpg
-          destination: ./roms/tetris.gb.gpg
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        runs: |
+          aws s3 cp s3://gabate-roms/games/tetris.gb.gpg ./roms/tetris.gb.gpg
 
       - name: Decrypt image
         run: |
