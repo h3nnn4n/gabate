@@ -25,6 +25,8 @@ runcmd:
   - apt install redis-server -y
   - redis-server --version > /home/devops/redis_version
   - echo PING | redis-cli >> redis_ping
+  - echo "protected-mode no" > /etc/redis/redis.conf
+  - systemctl restart redis-server.service
   - echo "ACL SETUSER $(cat /opt/redis_user) allkeys allcommands on >$(cat /opt/redis_passwd)" | redis-cli >> redis_acl
   - echo ACL LIST | redis-cli >> redis_acl
   - echo PING | redis-cli >> redis_ping
