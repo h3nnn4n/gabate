@@ -11,11 +11,3 @@ output "workers_servers_ips" {
     server.name => server.ipv4_address
   }
 }
-
-output "db_server_status" {
-  value = hcloud_server.db_server.status
-}
-
-output "db_server_ip" {
-  value = hcloud_server.db_server.ipv4_address
-}

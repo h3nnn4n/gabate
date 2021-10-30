@@ -4,8 +4,8 @@ cd /home/devops/
 
 # Setup worker secrets
 touch .env
-echo "BROKER_URL=pyamqp://$(cat /opt/rabbitmq_user):$(cat /opt/rabbitmq_passwd)@$(cat /opt/db_server_ip)" >> .env
-echo "RESULT_BACKEND=redis://$(cat /opt/redis_user):$(cat /opt/redis_passwd)@$(cat /opt/db_server_ip)" >> .env
+echo "BROKER_URL=pyamqp://$(cat /opt/rabbitmq_user):$(cat /opt/rabbitmq_passwd)@$(cat /opt/rabbitmq_ip)" >> .env
+echo "RESULT_BACKEND=redis://$(cat /opt/redis_user):$(cat /opt/redis_passwd)@$(cat /opt/redis_ip)" >> .env
 
 # Setup aws credentials
 mkdir .aws
