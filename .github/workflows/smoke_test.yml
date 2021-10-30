@@ -6,6 +6,8 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      LD_LIBRARY_PATH:deps/cJSON/build/
 
     steps:
       - uses: actions/checkout@master
