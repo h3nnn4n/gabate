@@ -24,5 +24,5 @@ def ping():
         assert parsed_response["pong"] == "foo bar"
         passed += 1
 
-    print(f"PING health check passed {passed} / {len(result)}")
+    print(f"PING health check passed {passed} / {len(results)}")
     return True
