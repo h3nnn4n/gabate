@@ -17,7 +17,6 @@ jobs:
         python -m pip install poetry
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
         source $HOME/.poetry/env
-        poetry config settings.virtualenvs.in-project true
         poetry config virtualenvs.in-project true
 
     - name: Load cached venv
