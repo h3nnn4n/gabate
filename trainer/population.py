@@ -28,7 +28,7 @@ class Individual:
         return result["max"]
 
     def clone(self):
-        copy_agent = self.agent.clone()
+        copy_agent = self._agent.clone()
         new = Individual(agent=copy_agent)
         new.n_genes = self.n_genes
         new.genes = copy(self.genes)
