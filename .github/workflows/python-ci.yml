@@ -15,21 +15,8 @@ jobs:
     - name: Install poetry
       run: |
         python -m pip install poetry
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-        source $HOME/.poetry/env
-        cd trainer/ && poetry config virtualenvs.in-project true
-
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v2
-      with:
-        path: trainer/.venv
-        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Install dependencies
-      run: poetry install
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
 
     - name: Run tests
       run: |
-        cd trainer/ poetry run pytest
+        cd trainer
+        poetry run pytest
