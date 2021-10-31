@@ -5,8 +5,8 @@ from agent import Agent
 
 
 class Individual:
-    def __init__(self):
-        self._agent = Agent()
+    def __init__(self, agent=None):
+        self._agent = agent or Agent()
         self.id = self._agent.id
         self.n_genes = 14 * 3
         self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
@@ -28,7 +28,8 @@ class Individual:
         return result["max"]
 
     def clone(self):
-        new = Individual()
+        copy_agent = self.agent.clone()
+        new = Individual(agent=copy_agent)
         new.n_genes = self.n_genes
         new.genes = copy(self.genes)
 
