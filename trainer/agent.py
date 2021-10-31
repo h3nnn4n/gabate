@@ -27,8 +27,12 @@ class Agent:
         self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
 
     def set_weights(self, weights):
-        self._dirty_fitness = True
         assert len(weights) == len(self.settings["weights"])
+
+        if weights == self.settings["weights"]:
+            return
+
+        self._dirty_fitness = True
         self.settings["weights"] = copy(self.settings["weights"])
 
     def get_agent_data(self):
