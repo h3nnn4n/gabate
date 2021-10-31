@@ -1,5 +1,6 @@
-from ..agent import Agent
 from mock import patch
+
+from ..agent import Agent
 
 
 def test_to_json():
