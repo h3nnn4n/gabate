@@ -103,6 +103,6 @@ bool pong() {
     if (!agent_config.ping_mode)
         return false;
 
-    printf("{\"pong\": \"foo bar\"}\n");
+    printf("{\"pong\": \"foo bar\"}");
     return true;
 }
