@@ -67,5 +67,5 @@ runcmd:
   - cd /home/gabate/worker/
 
     # Start worker
-  - su devops -l -c "cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO --detach -f celery.logs"
+  - su devops -l -c "( while [[ -n true ]]; do sleep 5; cd /home/devops/gabate/worker/ && /home/devops/.poetry/bin/poetry run celery -A tasks worker --loglevel=INFO -f celery.logs; done; ) &"
   - touch /home/devops/BOOTSTRAP_DONE
