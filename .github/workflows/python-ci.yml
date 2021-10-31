@@ -20,6 +20,7 @@ jobs:
 
     - name: Install project deps
       run: |
+        cd trainer
         poetry install
 
     - name: Run tests
