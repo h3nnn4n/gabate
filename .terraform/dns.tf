@@ -13,8 +13,4 @@ resource "aws_route53_record" "db_server" {
   type    = "A"
   ttl     = "60"
   records = [hcloud_server.db_server.ipv4_address]
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
