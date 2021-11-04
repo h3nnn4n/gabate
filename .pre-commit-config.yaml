@@ -49,3 +49,15 @@ repos:
       language_version: python3
       args: ['--config=trainer/.flake8']
       exclude: src/
+
+- repo: local
+  hooks:
+    - id: git-secrets
+      name: git secrets scan
+      entry: git secrets --scan
+      language: system
+
+    - id: git-leaks
+      name: git leaks scan
+      entry: gitleaks --path=. --depth=15 --quiet
+      language: system
