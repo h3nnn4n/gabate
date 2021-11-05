@@ -19,6 +19,10 @@ resource "aws_ecs_task_definition" "main" {
       essential = true
     }
   ])
+
+  tags = {
+    Name = var.name
+  }
 }
 
 
@@ -48,4 +52,8 @@ resource "aws_ecs_service" "main" {
  lifecycle {
    ignore_changes = [task_definition, desired_count]
  }
+
+  tags = {
+    Name = var.name
+  }
 }

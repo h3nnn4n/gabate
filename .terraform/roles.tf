@@ -16,6 +16,10 @@ resource "aws_iam_role" "ecs_task_role" {
  ]
 }
 EOF
+
+  tags = {
+    Name = var.name
+  }
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -36,6 +40,10 @@ resource "aws_iam_role" "ecs_task_execution_role" {
  ]
 }
 EOF
+
+  tags = {
+    Name = var.name
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
