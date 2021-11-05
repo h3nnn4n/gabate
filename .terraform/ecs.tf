@@ -1,4 +1,4 @@
-resource "aws_ecs_cluster" "cluster" {
+resource "aws_ecs_cluster" "main" {
   name = "${var.name}-cluster"
 }
 
@@ -9,22 +9,21 @@ resource "aws_ecs_task_definition" "main" {
   memory                   = 512
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  container_definitions = jsonencode([{
-   name        = "${var.name}-container"
-   image       = "${var.container_image}:latest"
-   essential   = true
-   environment = var.container_environment
-   # I dont think we need port mappings
-   #portMappings = [{
-     #protocol      = "tcp"
-     #containerPort = var.container_port
-     #hostPort      = var.container_port
-   #}]
-  }])
+  family                   = "${var.name}-worker"
+  container_definitions = jsonencode([
+    {
+      name      = "${var.name}-worker"
+      image     = "${var.container_registry}/${var.container_image}:${var.container_image_tag}"
+      cpu       = 256
+      memory    = 512
+      essential = true
+    }
+  ])
 }
 
+
 resource "aws_ecs_service" "main" {
- name                               = "${var.name}-service-${var.environment}"
+ name                               = "${var.name}-service"
  cluster                            = aws_ecs_cluster.main.id
  task_definition                    = aws_ecs_task_definition.main.arn
  desired_count                      = 4
@@ -33,7 +32,7 @@ resource "aws_ecs_service" "main" {
  launch_type                        = "FARGATE"
  scheduling_strategy                = "REPLICA"
 
- # TODO: Add a subnet for the workers to talk
+ # TODO: Add a subnet for the workers to talk to each other and the brain node
  #network_configuration {
    #security_groups  = var.ecs_service_security_groups
    #subnets          = var.subnets.*.id

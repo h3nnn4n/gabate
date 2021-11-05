@@ -10,14 +10,22 @@ variable "aws_secret_key" {
   #default = ""
 }
 
+variable "aws_account" {
+  #default = ""
+}
+
 variable "name" {
   default = "gabate"
 }
 
-variable "container_image" {
-  default = "gabate"
+variable "container_registry" {
+  #default = ""
 }
 
-variable "container_environment" {
-  default = "dev"
+variable "container_image" {
+  default = "worker"
+}
+
+variable "container_image_tag" {
+  default = "latest"
 }
