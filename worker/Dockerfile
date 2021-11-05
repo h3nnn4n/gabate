@@ -7,4 +7,4 @@ COPY . .
 RUN python -m pip install poetry
 RUN poetry install
 
-CMD "poetry run celery -A tasks worker --loglevel=INFO"
+CMD python -m poetry run celery -A tasks worker --loglevel=INFO
