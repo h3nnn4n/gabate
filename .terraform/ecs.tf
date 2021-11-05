@@ -1,5 +1,10 @@
 resource "aws_ecs_cluster" "main" {
   name = "${var.name}-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_ecs_task_definition" "main" {
@@ -17,6 +22,14 @@ resource "aws_ecs_task_definition" "main" {
       cpu       = 256
       memory    = 512
       essential = true
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-stream-prefix = "ecs"
+          awslogs-group         = var.cloudwatch_log_group_name
+          awslogs-region        = var.aws_region
+        }
+      }
     }
   ])
 

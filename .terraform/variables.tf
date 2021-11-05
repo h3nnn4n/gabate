@@ -26,6 +26,10 @@ variable "container_image" {
   default = "gabate-worker"
 }
 
+variable "cloudwatch_log_group_name" {
+  default = "gabate-worker"
+}
+
 variable "container_image_tag" {
   default = "latest"
 }
