@@ -23,9 +23,32 @@ variable "container_registry" {
 }
 
 variable "container_image" {
-  default = "worker"
+  default = "gabate-worker"
 }
 
 variable "container_image_tag" {
   default = "latest"
+}
+
+variable "private_subnets" {
+  default = [
+    "10.0.1.0/24"
+  ]
+}
+
+variable "public_subnets" {
+  default = [
+    "10.0.2.0/24"
+  ]
+}
+
+variable "availability_zones" {
+  default = [
+    "us-east-1a",
+    #"us-east-1b",
+    #"us-east-1c",
+    #"us-east-1d",
+    #"us-east-1e",
+    #"us-east-1f",
+  ]
 }

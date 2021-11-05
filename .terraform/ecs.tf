@@ -32,12 +32,11 @@ resource "aws_ecs_service" "main" {
  launch_type                        = "FARGATE"
  scheduling_strategy                = "REPLICA"
 
- # TODO: Add a subnet for the workers to talk to each other and the brain node
- #network_configuration {
-   #security_groups  = var.ecs_service_security_groups
-   #subnets          = var.subnets.*.id
-   #assign_public_ip = false
- #}
+ network_configuration {
+   security_groups  = [aws_security_group.ecs_tasks.id]
+   subnets          = aws_subnet.private.*.id
+   assign_public_ip = false
+ }
 
  # I dont think we need a load balancer
  #load_balancer {
