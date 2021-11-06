@@ -55,13 +55,6 @@ resource "aws_ecs_service" "main" {
    assign_public_ip = false
  }
 
- # I dont think we need a load balancer
- #load_balancer {
-   #target_group_arn = var.aws_alb_target_group_arn
-   #container_name   = "${var.name}-container-${var.environment}"
-   #container_port   = var.container_port
- #}
-
  lifecycle {
    ignore_changes = [task_definition, desired_count]
  }
