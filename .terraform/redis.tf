@@ -8,6 +8,7 @@ resource "aws_elasticache_cluster" "example" {
   engine_version       = "6.x"
   port                 = 6379
   security_group_ids   = [aws_security_group.result-backend.id]
+  subnet_group_name    = aws_elasticache_subnet_group.main.name
   apply_immediately    = true
   availability_zone    = var.availability_zones[0]
 }
