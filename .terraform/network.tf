@@ -92,3 +92,10 @@ resource "aws_security_group" "ecs_tasks" {
    ipv6_cidr_blocks = ["::/0"]
   }
 }
+
+
+# Elasticache subnet
+resource "aws_elasticache_subnet_group" "main" {
+  name       = "${var.name}-result-backend-subnet"
+  subnet_ids = aws_subnet.private.*.id
+}

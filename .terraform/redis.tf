@@ -1,3 +1,4 @@
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_cluster
 resource "aws_elasticache_cluster" "example" {
   cluster_id           = "${var.name}-result-backend"
   engine               = "redis"
