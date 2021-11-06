@@ -2,18 +2,10 @@
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
   enable_dns_hostnames = true
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = var.name
-  }
 }
 
 # Subnets
@@ -23,10 +15,6 @@ resource "aws_subnet" "private" {
   cidr_block        = element(var.private_subnets, count.index)
   availability_zone = element(var.availability_zones, count.index)
   count             = length(var.private_subnets)
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_subnet" "public" {
@@ -35,19 +23,11 @@ resource "aws_subnet" "public" {
   availability_zone       = element(var.availability_zones, count.index)
   count                   = length(var.public_subnets)
   map_public_ip_on_launch = true
-
-  tags = {
-    Name = var.name
-  }
 }
 
 # Routing tables
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_route" "public" {
@@ -67,28 +47,16 @@ resource "aws_nat_gateway" "main" {
   allocation_id = element(aws_eip.nat.*.id, count.index)
   subnet_id     = element(aws_subnet.public.*.id, count.index)
   depends_on    = [aws_internet_gateway.main]
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_eip" "nat" {
   count = length(var.private_subnets)
   vpc = true
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_route_table" "private" {
   count  = length(var.private_subnets)
   vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = var.name
-  }
 }
 
 resource "aws_route" "private" {
@@ -122,9 +90,5 @@ resource "aws_security_group" "ecs_tasks" {
    to_port          = 0
    cidr_blocks      = ["0.0.0.0/0"]
    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = var.name
   }
 }
