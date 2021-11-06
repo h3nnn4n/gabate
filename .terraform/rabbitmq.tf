@@ -5,7 +5,7 @@ resource "aws_mq_broker" "example" {
   engine_type        = "RabbitMQ"
   engine_version     = "3.8.22"
   host_instance_type = "mq.t3.micro"
-  security_groups    = [aws_security_group.ecs_tasks.id]
+  security_groups    = [aws_security_group.message-broker.id]
   apply_immediately  = true
   subnet_ids         = aws_subnet.private.*.id
   deployment_mode    = "SINGLE_INSTANCE"

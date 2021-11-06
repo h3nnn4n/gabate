@@ -72,28 +72,6 @@ resource "aws_route_table_association" "private" {
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
-resource "aws_security_group" "ecs_tasks" {
-  name   = "${var.name}-sg-task"
-  vpc_id = aws_vpc.main.id
-
-  ingress {
-   protocol         = "tcp"
-   from_port        = 6379
-   to_port          = 6379
-   cidr_blocks      = ["0.0.0.0/0"]
-   ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-   protocol         = "-1"
-   from_port        = 0
-   to_port          = 0
-   cidr_blocks      = ["0.0.0.0/0"]
-   ipv6_cidr_blocks = ["::/0"]
-  }
-}
-
-
 # Elasticache subnet
 resource "aws_elasticache_subnet_group" "main" {
   name       = "${var.name}-result-backend-subnet"
