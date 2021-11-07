@@ -52,6 +52,3 @@ variable "availability_zones" {
     #"us-east-1f",
   ]
 }
-
-variable "rabbitmq_user" {}
-variable "rabbitmq_password" {}

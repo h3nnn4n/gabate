@@ -11,7 +11,7 @@ resource "aws_mq_broker" "example" {
   deployment_mode    = "SINGLE_INSTANCE"
 
   user {
-    username = var.rabbitmq_user
-    password = var.rabbitmq_password
+    username = local.db_creds.rabbitmq_user
+    password = local.db_creds.rabbitmq_passwd
   }
 }
