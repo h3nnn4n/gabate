@@ -22,6 +22,16 @@ resource "aws_ecs_task_definition" "main" {
       cpu       = 256
       memory    = 512
       essential = true
+      environment = [
+        {
+          name = "BROKER_URL",
+          value = "pyamqp://${local.db_creds.rabbitmq_user}:${local.db_creds.rabbitmq_passwd}@${aws_mq_broker.main.instances.0.endpoints}"
+        },
+        {
+          name = "RESULT_BACKEND",
+          value = "redis://${aws_elasticache_cluster.main.cache_nodes.0.address}"
+        },
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
