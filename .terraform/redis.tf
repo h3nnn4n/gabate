@@ -1,5 +1,5 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_cluster
-resource "aws_elasticache_cluster" "example" {
+resource "aws_elasticache_cluster" "main" {
   cluster_id           = "${var.name}-result-backend"
   engine               = "redis"
   node_type            = "cache.t3.micro"

@@ -1,5 +1,5 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/mq_broker
-resource "aws_mq_broker" "example" {
+resource "aws_mq_broker" "main" {
   broker_name = "${var.name}-message-broker"
 
   engine_type        = "RabbitMQ"
