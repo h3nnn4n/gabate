@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "main" {
       environment = [
         {
           name = "BROKER_URL",
-          value = "pyamqp://${local.db_creds.rabbitmq_user}:${local.db_creds.rabbitmq_passwd}@${aws_mq_broker.main.instances.0.endpoints}"
+          value = "pyamqp://${local.db_creds.rabbitmq_user}:${local.db_creds.rabbitmq_passwd}@${aws_mq_broker.main.instances.0.ip_address}"
         },
         {
           name = "RESULT_BACKEND",
