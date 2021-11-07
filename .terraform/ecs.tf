@@ -1,14 +1,9 @@
 resource "aws_ecs_cluster" "main" {
   name = "${var.name}-cluster"
-  capacity_providers       = ["FARGATE_SPOT", "FARGATE"]
 
   setting {
     name  = "containerInsights"
     value = "enabled"
-  }
-
-  default_capacity_provider_strategy {
-    capacity_provider = "FARGATE_SPOT"
   }
 }
 
@@ -30,7 +25,7 @@ resource "aws_ecs_task_definition" "main" {
       environment = [
         {
           name = "BROKER_URL",
-          value = "pyamqp://${local.db_creds.rabbitmq_user}:${local.db_creds.rabbitmq_passwd}@${aws_mq_broker.main.instances.0.ip_address}"
+          value = aws_mq_broker.main.instances.0.endpoints[0]
         },
         {
           name = "RESULT_BACKEND",
