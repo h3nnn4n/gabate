@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "main" {
       environment = [
         {
           name = "BROKER_URL",
-          value = aws_mq_broker.main.instances.0.endpoints[0]
+          value = "redis://${aws_elasticache_cluster.main.cache_nodes.0.address}"
         },
         {
           name = "RESULT_BACKEND",

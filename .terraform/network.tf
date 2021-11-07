@@ -74,6 +74,6 @@ resource "aws_route_table_association" "private" {
 
 # Elasticache subnet
 resource "aws_elasticache_subnet_group" "main" {
-  name       = "${var.name}-result-backend-subnet"
+  name       = "${var.name}-redis-subnet"
   subnet_ids = aws_subnet.private.*.id
 }
