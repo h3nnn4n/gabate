@@ -46,6 +46,13 @@ resource "aws_ecs_service" "redis" {
    assign_public_ip = false
  }
 
+ load_balancer {
+   target_group_arn = aws_lb_target_group.redis.arn
+   container_name   = "${var.name}-redis"
+   container_port   = "6379"
+ }
+
+
  lifecycle {
    ignore_changes = [task_definition, desired_count]
  }
@@ -70,11 +77,11 @@ resource "aws_ecs_task_definition" "main" {
       environment = [
         {
           name = "BROKER_URL",
-          value = "redis://${aws_elasticache_cluster.main.cache_nodes.0.address}"
+          value = "redis://${aws_alb.redis.dns_name}"
         },
         {
           name = "RESULT_BACKEND",
-          value = "redis://${aws_elasticache_cluster.main.cache_nodes.0.address}"
+          value = "redis://${aws_alb.redis.dns_name}"
         },
       ]
       logConfiguration = {
@@ -110,6 +117,11 @@ resource "aws_ecs_task_definition" "redis" {
           value = "bar"
         },
       ]
+      portMappings = [
+        {
+          containerPort = 6379
+        }
+      ],
       logConfiguration = {
         logDriver = "awslogs"
         options = {

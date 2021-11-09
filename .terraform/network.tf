@@ -50,7 +50,7 @@ resource "aws_nat_gateway" "main" {
 }
 
 resource "aws_eip" "nat" {
-  count = length(var.private_subnets)
+  count = length(var.public_subnets)
   vpc = true
 }
 
@@ -72,8 +72,19 @@ resource "aws_route_table_association" "private" {
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
-# Elasticache subnet
-resource "aws_elasticache_subnet_group" "main" {
-  name       = "${var.name}-redis-subnet"
-  subnet_ids = aws_subnet.private.*.id
+# DNS
+resource "aws_route53_zone" "main" {
+  name = var.main_domain
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_route53_record" "redis" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = var.redis_domain
+  type    = "CNAME"
+  ttl     = "60"
+  records = [aws_alb.redis.dns_name]
 }
