@@ -53,10 +53,6 @@ variable "availability_zones" {
   ]
 }
 
-variable "main_domain" {
-  default = "h3nnn4n.me"
-}
+variable "main_domain" {}
 
-variable "redis_domain" {
-  default = "gabate-redis.h3nnn4n.me"
-}
+variable "redis_domain" {}
