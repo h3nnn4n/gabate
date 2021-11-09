@@ -42,7 +42,7 @@ resource "aws_ecs_service" "redis" {
 
  network_configuration {
    security_groups  = [aws_security_group.ecs_tasks.id, aws_security_group.redis.id]
-   subnets          = aws_subnet.private.*.id
+   subnets          = setunion(aws_subnet.private.*.id, aws_subnet.public.*.id)
    assign_public_ip = false
  }
 
