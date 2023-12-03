@@ -17,5 +17,3 @@ broker = RedisBroker(url=REDIS_URL)
 broker.add_middleware(Results(backend=result_backend))
 broker.add_middleware(PeriodiqMiddleware(skip_delay=30))
 dramatiq.set_broker(broker)
-
-print("set configs")
