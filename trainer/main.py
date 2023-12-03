@@ -17,6 +17,7 @@ def main():
     for generation in range(config.N_GENERATIONS):
         population.start_generation()
         population.evaluate_population_fitness()
+        population.store_elite_individual()
         population.selection()
         population.crossover()
         population.mutation()

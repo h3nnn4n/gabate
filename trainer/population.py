@@ -1,3 +1,4 @@
+import json
 from copy import copy
 from random import choice, random, uniform
 
@@ -127,3 +128,7 @@ class Population:
                     changed += 1
 
             self.population.append(individual)
+
+    def store_elite_individual(self):
+        with open(f"elite_individual__{self.generations}.json", "wt") as f:
+            f.write(json.dumps(self.elite_individual._agent.settings))
