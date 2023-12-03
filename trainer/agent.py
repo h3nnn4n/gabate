@@ -1,5 +1,6 @@
 import json
 import statistics
+import dramatiq
 from copy import copy
 from random import uniform
 from uuid import uuid4
@@ -48,7 +49,17 @@ class Agent:
         self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
 
     def _get_scores(self):
-        values = [json.loads(result.get_result(backend=config.result_backend)) for result in self.pending_results]
+        values = []
+
+        for _index, result in enumerate(self.pending_results):
+            while True:
+                try:
+                    value = result.get_result(block=True)
+                    values.append(json.loads(value))
+                    break
+                except dramatiq.results.ResultTimeout:
+                    continue
+
         return [value.get("lines_cleared") for value in values]
 
     def get_fitness(self):
