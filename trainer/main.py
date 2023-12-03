@@ -1,13 +1,7 @@
 from population import Population
-from utils import get_n_workers, ping
 
 
 def main():
-    n_nodes, n_workers = get_n_workers()
-    print(f"running with {n_nodes} nodes and {n_workers} workers")
-
-    assert ping()
-
     population = Population()
 
     for generation in range(10):

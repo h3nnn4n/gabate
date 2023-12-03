@@ -4,7 +4,8 @@ from copy import copy
 from random import uniform
 from uuid import uuid4
 
-from worker import worker
+import config
+import tasks
 
 
 class Agent:
@@ -13,7 +14,7 @@ class Agent:
         self.n_evals = 7
         self.settings = {}
         self.set_random_weights()
-        self.id = uuid4()
+        self.id = str(uuid4())
 
         self.settings["agent_id"] = self.id
 
@@ -44,10 +45,10 @@ class Agent:
 
         data = self.get_agent_data()
 
-        self.pending_results = [worker.send_task("tasks.evaluate_agent", args=[data]) for _ in range(self.n_evals)]
+        self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
 
     def _get_scores(self):
-        values = [json.loads(result.get()) for result in self.pending_results]
+        values = [json.loads(result.get_result(backend=config.result_backend)) for result in self.pending_results]
         return [value.get("lines_cleared") for value in values]
 
     def get_fitness(self):
