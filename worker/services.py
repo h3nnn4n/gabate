@@ -2,12 +2,15 @@ import json
 import platform
 from subprocess import PIPE, Popen
 
-import config
+import config  # noqa
 
 
 def run_agent(agent_settings):
-    env = {}
     payload = json.dumps(agent_settings)
+    agent_id = agent_settings["agent"]["agent_id"]
+
+    print(f"running {agent_id=}")
+    env = {}
     args = ["../gabate", "../roms/tetris.gb", payload]
 
     if platform.system() == "Linux":
@@ -16,4 +19,14 @@ def run_agent(agent_settings):
     with Popen(args, stdout=PIPE, env=env) as proc:
         output_stdout = proc.stdout.read()
 
-    return output_stdout.decode()
+    result = output_stdout.decode()
+    try:
+        result_data = json.loads(result)
+        lines_cleared = result_data["lines_cleared"]
+        pieces_spawned = result_data["pieces_spawned"]
+
+        print(f"finished running {agent_id=} {lines_cleared=} {pieces_spawned=}")
+    except json.decoder.JSONDecodeError:
+        print(f"finished running {agent_id=}")
+
+    return result
