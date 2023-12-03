@@ -85,7 +85,20 @@ class Population:
         return max(self.population, key=lambda individual: individual.get_fitness())
 
     def crossover(self):
-        pass
+        for individual in self.population:
+            if random() > self.crossover_chance:
+                continue
+
+            child = Individual()
+            mate = choice(self.population)
+
+            for i in range(individual.n_genes):
+                if random() > 0.5:
+                    child.genes[i] = individual.genes[i]
+                else:
+                    child.genes[i] = mate.genes[i]
+
+            self.population.append(child)
 
     def mutation(self):
         for individual in self.population:
@@ -98,3 +111,19 @@ class Population:
 
                 # Changes the value by up to 10% in either direction
                 individual.genes[i] *= uniform(0.9, 1.1)
+
+        elite_individual = self.get_elite_individual()
+
+        for i in range(config.ELITE_MUTATIONS):
+            individual = elite_individual.clone()
+
+            changed = 0
+            while changed < i + 1:
+                for i in range(individual.n_genes):
+                    if random() > self.mutation_chance / individual.n_genes:
+                        continue
+
+                    individual.genes[i] *= uniform(0.9, 1.1)
+                    changed += 1
+
+            self.population.append(individual)

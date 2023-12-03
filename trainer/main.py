@@ -15,10 +15,12 @@ def main():
     population = Population()
 
     for generation in range(config.N_GENERATIONS):
+        population.start_generation()
         population.evaluate_population_fitness()
         population.selection()
         population.crossover()
         population.mutation()
+        population.end_generation()
 
     print("finished")
 

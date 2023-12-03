@@ -43,6 +43,15 @@ class Agent:
         self._dirty_fitness = True
         self.settings["weights"] = copy(self.settings["weights"])
 
+    def set_weight(self, index, value):
+        assert 0 <= index < self.n_weights
+
+        if self.settings["weights"][index] == value:
+            return
+
+        self._dirty_fitness = True
+        self.settings["weights"][index] = value
+
     def get_agent_data(self):
         return {"agent": self.settings}
 
