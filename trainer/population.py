@@ -1,6 +1,7 @@
 from copy import copy
 from random import choice, random, uniform
 
+import config
 from agent import Agent
 
 
@@ -38,11 +39,13 @@ class Individual:
 
 class Population:
     def __init__(self):
-        self.population_size = 5
+        self.population_size = config.POPULATION_SIZE
         self._init_population()
 
-        self.crossover_chance = 0.2
-        self.mutation_chance = 0.05
+        self.crossover_chance = config.CROSSOVER_RATE
+        self.mutation_chance = config.MUTATION_RATE
+
+        self.generations = 0
 
     def _init_population(self):
         self.population = [Individual() for _ in range(self.population_size)]
@@ -51,8 +54,16 @@ class Population:
         for individual in self.population:
             individual.trigger_fitness_evaluation()
 
-    def print_pop_state(self):
-        print(" ".join([f"{individual.get_fitness():4}" for individual in self.population]))
+        print(f"{self.generations:4d}/{config.N_GENERATIONS:4d}", end=" ", flush=True)
+        scores = [individual.get_fitness() for individual in self.population]
+        print(f"{min(scores):6d} {sum(scores) / len(scores):6.2f} {max(scores):6d}", end=" ")
+        print()
+
+    def start_generation(self):
+        pass
+
+    def end_generation(self):
+        self.generations += 1
 
     def selection(self):
         _new_pop = [self.get_elite_individual().clone()]

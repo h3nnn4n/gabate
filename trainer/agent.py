@@ -1,18 +1,22 @@
 import json
+import logging
 import statistics
-import dramatiq
 from copy import copy
 from random import uniform
 from uuid import uuid4
 
+import dramatiq
+
 import config
 import tasks
+
+logger = logging.getLogger(__name__)
 
 
 class Agent:
     def __init__(self):
         self.n_weights = 14 * 3
-        self.n_evals = 7
+        self.n_evals = config.N_AGENT_EVALS
         self.settings = {}
         self.set_random_weights()
         self.id = str(uuid4())
@@ -23,6 +27,8 @@ class Agent:
 
         self._scores = []
         self._dirty_fitness = True
+
+        logger.info(f"created {self.id=}")
 
     def set_random_weights(self):
         self._dirty_fitness = True
@@ -44,6 +50,8 @@ class Agent:
         if not force and not self._dirty_fitness:
             return
 
+        logger.info(f"triggering eval for {self.id=}")
+
         data = self.get_agent_data()
 
         self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
@@ -51,21 +59,23 @@ class Agent:
     def _get_scores(self):
         values = []
 
+        logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
         for _index, result in enumerate(self.pending_results):
             while True:
                 try:
                     value = result.get_result(block=True)
                     values.append(json.loads(value))
+                    logger.info(f"got {_index} result from {self.id=}")
                     break
                 except dramatiq.results.ResultTimeout:
-                    continue
+                    logger.info(f"timeout {self.id=}")
 
         return [value.get("lines_cleared") for value in values]
 
     def get_fitness(self):
         if self._dirty_fitness:
-            self._dirty_fitness = False
             self._scores = self._get_scores()
+            self._dirty_fitness = False
 
         scores = self._scores
 
@@ -83,4 +93,5 @@ class Agent:
         new.settings["weights"] = copy(self.settings["weights"])
         new._dirty_fitness = self._dirty_fitness
         new._scores = copy(self._scores)
+        logger.info(f"cloning {self.id=} to {new.id=}")
         return new

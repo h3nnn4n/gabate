@@ -17,3 +17,12 @@ broker = RedisBroker(url=REDIS_URL)
 broker.add_middleware(Results(backend=result_backend))
 broker.add_middleware(PeriodiqMiddleware(skip_delay=30))
 dramatiq.set_broker(broker)
+
+
+N_GENERATIONS = config("N_GENERATIONS", default=10, cast=int)
+POPULATION_SIZE = config("POPULATION_SIZE", default=5, cast=int)
+
+N_AGENT_EVALS = config("N_AGENT_EVALS", default=3, cast=int)
+
+CROSSOVER_RATE = config("CROSSOVER_RATE", default=0.2, cast=float)
+MUTATION_RATE = config("MUTATION_RATE", default=0.05, cast=float)
