@@ -59,6 +59,8 @@ class Population:
         print(f"{min(scores):6d} {sum(scores) / len(scores):6.2f} {max(scores):6d}", end=" ")
         print()
 
+        self.elite_individual = self.get_elite_individual()
+
     def start_generation(self):
         pass
 
@@ -112,10 +114,8 @@ class Population:
                 # Changes the value by up to 10% in either direction
                 individual.genes[i] *= uniform(0.9, 1.1)
 
-        elite_individual = self.get_elite_individual()
-
         for i in range(config.ELITE_MUTATIONS):
-            individual = elite_individual.clone()
+            individual = self.elite_individual.clone()
 
             changed = 0
             while changed < i + 1:

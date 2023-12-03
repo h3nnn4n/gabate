@@ -86,6 +86,9 @@ class Agent:
             self._scores = self._get_scores()
             self._dirty_fitness = False
 
+            if not self._scores:
+                raise ValueError("agent hasn't been evaluated yet")
+
         scores = self._scores
 
         fitness = {
@@ -102,5 +105,6 @@ class Agent:
         new.settings["weights"] = copy(self.settings["weights"])
         new._dirty_fitness = self._dirty_fitness
         new._scores = copy(self._scores)
+        new.pending_results = copy(self.pending_results)
         logger.info(f"cloning {self.id=} to {new.id=}")
         return new
