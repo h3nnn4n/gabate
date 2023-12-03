@@ -7,9 +7,11 @@ license = "GPLv3"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-celery = "^5.1.2"
 redis = "^3.5.3"
 python-dotenv = "^0.19.1"
+dramatiq = {extras = ["redis", "watch"], version = "^1.15.0"}
+periodiq = "^0.12.1"
+python-decouple = "^3.8"
 
 [tool.poetry.dev-dependencies]
 celery = {extras = ["pytest"], version = "^5.1.2"}

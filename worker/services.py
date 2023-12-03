@@ -2,6 +2,8 @@ import json
 import platform
 from subprocess import PIPE, Popen
 
+import config
+
 
 def run_agent(agent_settings):
     env = {}
