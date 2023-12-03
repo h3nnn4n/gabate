@@ -43,8 +43,10 @@
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
-    if (argc < 3)
+    if (argc < 3) {
         fprintf(stderr, "Missing argument\n");
+        return EXIT_FAILURE;
+    }
 
     load_settings(argv[2]);
 
