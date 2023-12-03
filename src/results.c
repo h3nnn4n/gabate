@@ -77,6 +77,6 @@ void print_agent_results() {
     if (agent_id != NULL)
         cJSON_AddItemToObject(agent_results.results, "agent_id", agent_id);
 
-    char *string = cJSON_Print(agent_results.results);
+    char *string = cJSON_PrintUnformatted(agent_results.results);
     printf("%s\n", string);
 }
