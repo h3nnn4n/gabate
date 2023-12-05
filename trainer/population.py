@@ -27,10 +27,23 @@ class Individual:
     def get_fitness(self):
         result = self._agent.get_fitness()
 
+        # Short circuit fitness to zero if IA fails to score anything during any evals
         if result["min"] == 0:
             return 0
 
-        return result["max"]
+        match config.FITNESS_MODE.upper():
+            case "MAX":
+                return result["max"]
+            case "MIN":
+                return result["min"]
+            case "MEDIAN":
+                return result["median"]
+            case "SUM":
+                return sum(result["raw"])
+            case "AVG":
+                return sum(result["raw"]) / len(result["raw"])
+            case _:
+                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
 
     def clone(self):
         copy_agent = self._agent.clone()
@@ -162,6 +175,7 @@ class Population:
                         "crossover_chance": self.crossover_chance,
                         "mutation_chance": self.mutation_chance,
                         "elite_mutations": config.ELITE_MUTATIONS,
+                        "fitness_mode": config.FITNESS_MODE,
                         "started_at": f"{self.started_at:%Y-%m-%d %H:%M:%S}",
                     }
                 )

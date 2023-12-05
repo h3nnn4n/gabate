@@ -28,3 +28,6 @@ CROSSOVER_RATE = config("CROSSOVER_RATE", default=0.3, cast=float)
 MUTATION_RATE = config("MUTATION_RATE", default=0.1, cast=float)
 
 ELITE_MUTATIONS = config("ELITE_MUTATIONS", default=5, cast=int)
+
+# Can be "max", "min", "avg", "sum" or "median"
+FITNESS_MODE = config("FITNESS_MODE", default="max", cast=str)

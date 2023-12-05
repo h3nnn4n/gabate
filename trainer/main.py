@@ -4,6 +4,7 @@ from population import Population
 
 def main():
     print("settings")
+    print(f"   FITNESS_MODE: {config.FITNESS_MODE}")
     print(f"  N_GENERATIONS: {config.N_GENERATIONS}")
     print(f"POPULATION_SIZE: {config.POPULATION_SIZE}")
     print(f"  N_AGENT_EVALS: {config.N_AGENT_EVALS}")
