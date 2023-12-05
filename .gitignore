@@ -6,3 +6,8 @@ gabate
 
 roms/
 build/
+
+results/
+
+*.json
+*.csv

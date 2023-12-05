@@ -1,8 +1,11 @@
 import json
+import csv
 from copy import copy
+from datetime import datetime
 from random import choice, random, uniform
 
 import config
+import utils
 from agent import Agent
 
 
@@ -41,29 +44,44 @@ class Individual:
 class Population:
     def __init__(self):
         self.population_size = config.POPULATION_SIZE
-        self._init_population()
+        self.population = self.build_population()
 
         self.crossover_chance = config.CROSSOVER_RATE
         self.mutation_chance = config.MUTATION_RATE
 
         self.generations = 0
 
-    def _init_population(self):
-        self.population = [Individual() for _ in range(self.population_size)]
+        self.started_at = datetime.now()
+        self.pop_id = f"{self.started_at:%Y%m%d_%H%M%S}_{self.population_size}"
+
+        utils.ensure_folder_exists(f"results/{self.pop_id}")
+
+        self.store_experiment_details()
+
+    def build_population(self) -> list[Individual]:
+        return [Individual() for _ in range(self.population_size)]
 
     def evaluate_population_fitness(self):
         for individual in self.population:
             individual.trigger_fitness_evaluation()
 
-        print(f"{self.generations:4d}/{config.N_GENERATIONS:4d}", end=" ", flush=True)
         scores = [individual.get_fitness() for individual in self.population]
-        print(f"{min(scores):6d} {sum(scores) / len(scores):6.2f} {max(scores):6d}", end=" ")
+
+        generation_time = datetime.now()
+        generation_duration = (generation_time - self.generation_time).total_seconds()
+        diversity = self.get_diversity()
+
+        print(f"{self.generations:4d}/{config.N_GENERATIONS:4d}", end=" ", flush=True)
+        print(f"{min(scores):7d} {sum(scores) / len(scores):8.2f} {max(scores):7d}", end=" ")
+        print(f"{diversity:7.2f} {generation_duration:7.2f}", end="")
         print()
 
         self.elite_individual = self.get_elite_individual()
 
+        self.store_population_statistics()
+
     def start_generation(self):
-        pass
+        self.generation_time = datetime.now()
 
     def end_generation(self):
         self.generations += 1
@@ -130,5 +148,59 @@ class Population:
             self.population.append(individual)
 
     def store_elite_individual(self):
-        with open(f"elite_individual__{self.generations}.json", "wt") as f:
+        with open(f"results/{self.pop_id}/elite_individual__{self.generations}.json", "wt") as f:
             f.write(json.dumps(self.elite_individual._agent.settings))
+
+    def store_experiment_details(self) -> None:
+        with open(f"results/{self.pop_id}/experiment_details.json", "wt") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "n_generations": config.N_GENERATIONS,
+                        "population_size": self.population_size,
+                        "n_agents_evals": config.N_AGENT_EVALS,
+                        "crossover_chance": self.crossover_chance,
+                        "mutation_chance": self.mutation_chance,
+                        "elite_mutations": config.ELITE_MUTATIONS,
+                        "started_at": f"{self.started_at:%Y-%m-%d %H:%M:%S}",
+                    }
+                )
+            )
+
+    def store_population_statistics(self) -> None:
+        scores = [individual.get_fitness() for individual in self.population]
+
+        generation_time = datetime.now()
+        generation_duration = (generation_time - self.generation_time).total_seconds()
+
+        with open(f"results/{self.pop_id}/stats.csv", "a+t") as f:
+            csvwriter = csv.writer(f)
+            csvwriter.writerow(
+                [
+                    self.generations + 1 / config.N_GENERATIONS,
+                    self.generations + 1,
+                    min(scores),
+                    sum(scores) / len(scores),
+                    max(scores),
+                    self.get_diversity(),
+                    generation_duration,
+                ]
+            )
+
+    def get_diversity(self) -> float:
+        # FIXME: Should be a config
+        n_genes = self.population[0].n_genes
+        value = 0
+
+        for i in range(self.population_size):
+            individual_a = self.population[i]
+            for j in range(self.population_size):
+                if i == j:
+                    continue
+
+                individual_b = self.population[j]
+
+                for k in range(individual_a.n_genes):
+                    value += abs(individual_a.genes[k] - individual_b.genes[k]) / n_genes
+
+        return value
