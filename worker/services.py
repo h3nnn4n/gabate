@@ -25,7 +25,7 @@ def run_agent(agent_settings):
         lines_cleared = result_data["lines_cleared"]
         pieces_spawned = result_data["pieces_spawned"]
 
-        print(f"finished running {agent_id=} {lines_cleared=} {pieces_spawned=}")
+        print(f"finished running {agent_id=} {pieces_spawned=:4d}     {lines_cleared=:4d}")
     except json.decoder.JSONDecodeError:
         print(f"finished running {agent_id=}")
 
