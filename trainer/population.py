@@ -205,6 +205,7 @@ class Population:
         # FIXME: Should be a config
         n_genes = self.population[0].n_genes
         value = 0
+        count = 0
 
         for i in range(self.population_size):
             individual_a = self.population[i]
@@ -213,8 +214,9 @@ class Population:
                     continue
 
                 individual_b = self.population[j]
+                count += 1
 
                 for k in range(individual_a.n_genes):
                     value += abs(individual_a.genes[k] - individual_b.genes[k]) / n_genes
 
-        return value
+        return value / count
