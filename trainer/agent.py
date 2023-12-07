@@ -72,7 +72,7 @@ class Agent:
         for _index, result in enumerate(self.pending_results):
             while True:
                 try:
-                    value = result.get_result(block=True)
+                    value = result.get_result(block=True, timeout=1)
                     values.append(json.loads(value))
                     logger.info(f"got {_index} result from {self.id=}")
                     break
@@ -107,4 +107,49 @@ class Agent:
         new._scores = copy(self._scores)
         new.pending_results = copy(self.pending_results)
         logger.info(f"cloning {self.id=} to {new.id=}")
+        return new
+
+
+class Individual:
+    def __init__(self, agent=None):
+        self._agent = agent or Agent()
+        self.id = self._agent.id
+        self.n_genes = 14 * 3
+        self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
+
+    def evaluate_fitness(self):
+        self._agent.set_weights(self.genes)
+        self._agent.trigger_eval()
+        self._agent.get_fitness()
+
+    def trigger_fitness_evaluation(self):
+        self._agent.trigger_eval()
+
+    def get_fitness(self):
+        result = self._agent.get_fitness()
+
+        # Short circuit fitness to zero if IA fails to score anything during any evals
+        if result["min"] == 0:
+            return 0
+
+        match config.FITNESS_MODE.upper():
+            case "MAX":
+                return result["max"]
+            case "MIN":
+                return result["min"]
+            case "MEDIAN":
+                return result["median"]
+            case "SUM":
+                return sum(result["raw"])
+            case "AVG":
+                return sum(result["raw"]) / len(result["raw"])
+            case _:
+                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
+
+    def clone(self):
+        copy_agent = self._agent.clone()
+        new = Individual(agent=copy_agent)
+        new.n_genes = self.n_genes
+        new.genes = copy(self.genes)
+
         return new

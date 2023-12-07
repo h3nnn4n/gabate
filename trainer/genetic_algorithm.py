@@ -1,12 +1,11 @@
-import json
 import csv
-from copy import copy
+import json
 from datetime import datetime
 from random import choice, random, uniform
 
 import config
 import utils
-from agent import Agent
+from agent import Individual
 
 
 def genetic_algorithm():
@@ -33,51 +32,6 @@ def genetic_algorithm():
         population.end_generation()
 
     print("finished")
-
-
-class Individual:
-    def __init__(self, agent=None):
-        self._agent = agent or Agent()
-        self.id = self._agent.id
-        self.n_genes = 14 * 3
-        self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
-
-    def evaluate_fitness(self):
-        self._agent.set_weights(self.genes)
-        self._agent.trigger_eval()
-        self._agent.get_fitness()
-
-    def trigger_fitness_evaluation(self):
-        self._agent.trigger_eval()
-
-    def get_fitness(self):
-        result = self._agent.get_fitness()
-
-        # Short circuit fitness to zero if IA fails to score anything during any evals
-        if result["min"] == 0:
-            return 0
-
-        match config.FITNESS_MODE.upper():
-            case "MAX":
-                return result["max"]
-            case "MIN":
-                return result["min"]
-            case "MEDIAN":
-                return result["median"]
-            case "SUM":
-                return sum(result["raw"])
-            case "AVG":
-                return sum(result["raw"]) / len(result["raw"])
-            case _:
-                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
-
-    def clone(self):
-        copy_agent = self._agent.clone()
-        new = Individual(agent=copy_agent)
-        new.n_genes = self.n_genes
-        new.genes = copy(self.genes)
-
-        return new
 
 
 class Population:
