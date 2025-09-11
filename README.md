@@ -32,6 +32,15 @@ Local Setup
 Run:
  - `git config blame.ignoreRevsFile .git-blame-ignore-revs`
  - `pre-commit install -t pre-push`
+ - `git submodule update --init --recursive`
+ - `make`
+ - `./gabate ./roms/tetris.gb "$(cat setting.json)`
+
+ Inside trainer:
+ - `python main.py <algorithm>`
+
+ Inside worker:
+ -  `poetry run dramatiq --processes=1 --threads=1 tasks`
 
 License
 =======
