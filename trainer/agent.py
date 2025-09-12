@@ -158,6 +158,9 @@ class Individual:
             case _:
                 raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
 
+    def get_raw_fitness(self) -> dict[str, float]:
+        return self._agent.get_fitness()
+
     def clone(self):
         copy_agent = self._agent.clone()
         new = Individual(agent=copy_agent)
