@@ -66,6 +66,7 @@ def run_grid_search(individual: Individual):
         for test_individual, score in zip(test_individuals, scores):
             if score > elite_individual.get_fitness():
                 elite_individual = test_individual.clone()
+                elite_individual.set_genes(test_individual.genes)
                 print(f"new elite individual {score=}")
 
         print(f"iteration {i} elite_score:")
