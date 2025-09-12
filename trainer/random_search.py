@@ -82,6 +82,8 @@ class RandomSearch:
             self.elite_genes = new_elite.genes
             self.elite_score = new_elite_score
 
+        return new_elite
+
     def mutate_individual(self, individual: Individual):
         for i in range(individual.n_genes):
             if random() > config.MUTATION_RATE:

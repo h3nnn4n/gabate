@@ -1,8 +1,11 @@
-from random_search import RandomSearch
-import config
+import os
+import json
 from datetime import datetime
 from random import random, uniform
+
+import config
 from agent import Individual
+from random_search import RandomSearch
 
 
 def forever_search():
@@ -19,6 +22,7 @@ class ForeverSearch(RandomSearch):
 
         self.elite_genes = self.population[0].genes
         self.elite_score = 0
+        self.elite_individual = self.population[0]
 
         self.generation_count = 0
 
@@ -30,12 +34,13 @@ class ForeverSearch(RandomSearch):
             elite_genes = RandomSearch().run()
             self.population[i].genes = elite_genes
             self.population[i]._agent.set_weights(elite_genes)
-            
+
             self.population[i].trigger_fitness_evaluation()
             individual_score = self.population[i].get_fitness()
             if individual_score > self.elite_score:
                 self.elite_genes = elite_genes
                 self.elite_score = individual_score
+                self.elite_individual = self.population[i]
 
         print("finished initializing population")
         print(flush=True)
@@ -54,7 +59,7 @@ class ForeverSearch(RandomSearch):
 
         self.population[0].genes = self.elite_genes
         self.population[0]._agent.set_weights(self.elite_genes)
-        
+
         for i in range(len(self.population)):
             self.mutate_individual(self.population[i])
 
@@ -67,7 +72,8 @@ class ForeverSearch(RandomSearch):
         diversity = self.get_diversity()
         self.generation_count += 1
 
-        self.elite = self.update_elite()
+        self.elite_individual = self.update_elite()
+        self.store_elite()
 
         print(f"{self.generation_count:4d}  ", end=" ")
         print(f"min={min(scores):7d}   ", end=" ")
@@ -84,5 +90,11 @@ class ForeverSearch(RandomSearch):
                 continue
 
             individual.genes[i] *= uniform(0.9, 1.1)
-        
+
         individual._agent.set_weights(individual.genes)
+
+    def store_elite(self):
+        os.makedirs("results", exist_ok=True)
+
+        with open(f"results/elite_individual__{self.generation_count}_score_{self.elite_score}.json", "wt") as f:
+            f.write(json.dumps(self.elite_individual._agent.settings))
