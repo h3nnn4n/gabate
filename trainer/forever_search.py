@@ -87,7 +87,7 @@ class ForeverSearch(RandomSearch):
             if random() > config.MUTATION_RATE:
                 continue
 
-            individual.genes[i] *= uniform(0.9, 1.1)
+            individual.genes[i] *= uniform(0.95, 1.05)
 
         individual._agent.set_weights(individual.genes)
 
