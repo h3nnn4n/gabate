@@ -119,6 +119,16 @@ class Individual:
         self.n_genes = 14 * 3
         self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
 
+    def set_genes(self, genes: list[float]):
+        assert len(genes) == self.n_genes
+
+        if genes == self.genes:
+            return
+
+        self._dirty_fitness = True
+        self.genes = genes
+        self._agent.set_weights(genes)
+
     def evaluate_fitness(self):
         self._agent.set_weights(self.genes)
         self._agent.trigger_eval()
