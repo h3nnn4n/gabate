@@ -15,7 +15,7 @@ def main():
         choices=["genetic_algorithm", "random_search", "forever_search", "evaluator"],
     )
     parser.add_argument(
-        "individual",
+        "--individual",
         type=str,
         help="The path to the individual to evaluate.",
         default=None,
