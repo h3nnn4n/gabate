@@ -94,7 +94,9 @@ class Agent:
         fitness = {
             "min": min(scores),
             "median": statistics.median(scores),
+            "avg": sum(scores) / len(scores),
             "max": max(scores),
+            "sum": sum(scores),
             "raw": sorted(scores),
         }
 
@@ -140,9 +142,9 @@ class Individual:
             case "MEDIAN":
                 return result["median"]
             case "SUM":
-                return sum(result["raw"])
+                return result["sum"]
             case "AVG":
-                return sum(result["raw"]) / len(result["raw"])
+                return result["avg"]
             case _:
                 raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
 
