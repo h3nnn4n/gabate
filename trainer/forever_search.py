@@ -1,32 +1,63 @@
+from random_search import RandomSearch
+import config
 from datetime import datetime
 from random import random, uniform
-
-import config
 from agent import Individual
 
 
-def random_search():
-    rs = RandomSearch()
-    rs.run()
+def forever_search():
+    fs = ForeverSearch()
+    fs.run()
 
 
-class RandomSearch:
+class ForeverSearch(RandomSearch):
     def __init__(self):
         self.population_size = config.POPULATION_SIZE
         self.population = self.build_population()
+
+        self.new_population = []
+
         self.elite_genes = self.population[0].genes
         self.elite_score = 0
 
         self.generation_count = 0
 
+    def initialize_population(self):
+        print(flush=True)
+        print("Initializing population")
+        for i in range(len(self.population)):
+            print(f"Running random search {i+1} of {len(self.population)}")
+            elite_genes = RandomSearch().run()
+            self.population[i].genes = elite_genes
+            self.population[i]._agent.set_weights(elite_genes)
+            
+            self.population[i].trigger_fitness_evaluation()
+            individual_score = self.population[i].get_fitness()
+            if individual_score > self.elite_score:
+                self.elite_genes = elite_genes
+                self.elite_score = individual_score
+
+        print("finished initializing population")
+        print(flush=True)
+
     def run(self):
-        for _ in range(config.N_GENERATIONS):
+        self.initialize_population()
+
+        while True:
             self.run_generation()
 
-        return self.elite_genes
+            if self.generation_count > 10:
+                break
 
     def run_generation(self):
         t_start = datetime.now()
+
+        self.population[0].genes = self.elite_genes
+        self.population[0]._agent.set_weights(self.elite_genes)
+        
+        for i in range(len(self.population)):
+            self.mutate_individual(self.population[i])
+
         for individual in self.population:
             individual.trigger_fitness_evaluation()
 
@@ -38,12 +69,7 @@ class RandomSearch:
 
         self.elite = self.update_elite()
 
-        self.population = self.build_population()
-        self.population[0].genes = self.elite_genes
-        self.population[0]._agent.set_weights(self.elite_genes)
-        self.mutate_individual(self.population[0])
-
-        print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")
+        print(f"{self.generation_count:4d}  ", end=" ")
         print(f"min={min(scores):7d}   ", end=" ")
         print(f"mean={sum(scores) / len(scores):8.2f}   ", end=" ")
         print(f"max={max(scores):7d}   ", end=" ")
@@ -51,36 +77,6 @@ class RandomSearch:
         print(f"{generation_duration=:7.2f}   ", end=" ")
         print(f"elite={self.elite_score=:7.2f}   ", end=" ")
         print(flush=True)
-
-    def build_population(self) -> list[Individual]:
-        return [Individual() for _ in range(self.population_size)]
-
-    def get_diversity(self) -> float:
-        n_genes = self.population[0].n_genes
-        value = 0
-        count = 0
-
-        for i in range(self.population_size):
-            individual_a = self.population[i]
-            for j in range(self.population_size):
-                if i == j:
-                    continue
-
-                individual_b = self.population[j]
-                count += 1
-
-                for k in range(individual_a.n_genes):
-                    value += abs(individual_a.genes[k] - individual_b.genes[k]) / n_genes
-
-        return value / count
-
-    def update_elite(self) -> Individual:
-        new_elite = max(self.population, key=lambda x: x.get_fitness())
-        new_elite_score = new_elite.get_fitness()
-
-        if new_elite_score > self.elite_score:
-            self.elite_genes = new_elite.genes
-            self.elite_score = new_elite_score
 
     def mutate_individual(self, individual: Individual):
         for i in range(individual.n_genes):

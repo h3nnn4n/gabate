@@ -1,6 +1,7 @@
 import argparse
 
 from random_search import random_search
+from forever_search import forever_search
 
 from genetic_algorithm import genetic_algorithm
 
@@ -11,7 +12,7 @@ def main():
         "mode",
         type=str,
         help="The training mode to use to train gabate.",
-        choices=["genetic_algorithm", "random_search"],
+        choices=["genetic_algorithm", "random_search", "forever_search"],
     )
 
     args = parser.parse_args()
@@ -21,6 +22,8 @@ def main():
             genetic_algorithm()
         case "random_search":
             random_search()
+        case "forever_search":
+            forever_search()
         case _:
             raise ValueError(f"Invalid mode: {args.mode}")
 
