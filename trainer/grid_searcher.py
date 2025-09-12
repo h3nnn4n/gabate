@@ -81,4 +81,4 @@ def store_elite(individual: Individual, run_id: str, generation_count: int, elit
     os.makedirs(base_path, exist_ok=True)
 
     with open(f"{base_path}/elite_individual__{run_id}__{generation_count}_score_{elite_score}.json", "wt") as f:
-        f.write(json.dumps(individual._agent.settings))
+        f.write(json.dumps(individual.genes, indent=2))
