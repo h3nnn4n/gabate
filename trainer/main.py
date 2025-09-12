@@ -4,6 +4,7 @@ from evaluator import evaluator
 from forever_search import forever_search
 from genetic_algorithm import genetic_algorithm
 from random_search import random_search
+from grid_searcher import grid_searcher
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
         "mode",
         type=str,
         help="The training mode to use to train gabate.",
-        choices=["genetic_algorithm", "random_search", "forever_search", "evaluator"],
+        choices=["genetic_algorithm", "random_search", "forever_search", "evaluator", "grid_searcher"],
     )
     parser.add_argument(
         "--individual",
@@ -35,6 +36,11 @@ def main():
                 raise ValueError("Individual path is required for evaluator mode")
 
             evaluator(args.individual)
+        case "grid_searcher":
+            if args.individual is None:
+                raise ValueError("Individual path is required for grid searcher mode")
+
+            grid_searcher(args.individual)
         case _:
             raise ValueError(f"Invalid mode: {args.mode}")
 
