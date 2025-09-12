@@ -41,7 +41,7 @@ class Agent:
             return
 
         self._dirty_fitness = True
-        self.settings["weights"] = copy(self.settings["weights"])
+        self.settings["weights"] = copy(weights)
 
     def set_weight(self, index, value):
         assert 0 <= index < self.n_weights

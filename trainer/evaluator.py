@@ -4,7 +4,10 @@ from agent import Individual
 
 
 def evaluator(individual_path: str):
-    genes = json.load(open(individual_path))["weights"]
+    with open(individual_path, "r") as f:
+        agent_settings = json.load(f)
+
+    genes = agent_settings["weights"]
 
     individual = Individual()
     individual.genes = genes
