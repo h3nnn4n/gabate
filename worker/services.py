@@ -26,7 +26,7 @@ def run_agent(agent_settings):
         pieces_spawned = result_data["pieces_spawned"]
 
         print(f"finished running {agent_id=} {pieces_spawned=:4d}     {lines_cleared=:4d}")
-    except json.decoder.JSONDecodeError:
-        print(f"finished running {agent_id=}")
+    except Exception as e:
+        print(f"finished running {agent_id=} with exception: {e}")
 
     return result
