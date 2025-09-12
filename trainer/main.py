@@ -1,9 +1,9 @@
 import argparse
 
-from random_search import random_search
+from evaluator import evaluator
 from forever_search import forever_search
-
 from genetic_algorithm import genetic_algorithm
+from random_search import random_search
 
 
 def main():
@@ -12,7 +12,13 @@ def main():
         "mode",
         type=str,
         help="The training mode to use to train gabate.",
-        choices=["genetic_algorithm", "random_search", "forever_search"],
+        choices=["genetic_algorithm", "random_search", "forever_search", "evaluator"],
+    )
+    parser.add_argument(
+        "individual",
+        type=str,
+        help="The path to the individual to evaluate.",
+        default=None,
     )
 
     args = parser.parse_args()
@@ -24,6 +30,11 @@ def main():
             random_search()
         case "forever_search":
             forever_search()
+        case "evaluator":
+            if args.individual is None:
+                raise ValueError("Individual path is required for evaluator mode")
+
+            evaluator(args.individual)
         case _:
             raise ValueError(f"Invalid mode: {args.mode}")
 
