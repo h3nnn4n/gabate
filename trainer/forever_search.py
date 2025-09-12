@@ -1,5 +1,3 @@
-import os
-import json
 from datetime import datetime
 from random import random, uniform
 
@@ -93,8 +91,3 @@ class ForeverSearch(RandomSearch):
 
         individual._agent.set_weights(individual.genes)
 
-    def store_elite(self):
-        os.makedirs("results", exist_ok=True)
-
-        with open(f"results/elite_individual__{self.generation_count}_score_{self.elite_score}.json", "wt") as f:
-            f.write(json.dumps(self.elite_individual._agent.settings))

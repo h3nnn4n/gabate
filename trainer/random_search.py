@@ -1,5 +1,8 @@
+import json
+import os
 from datetime import datetime
 from random import random, uniform
+from uuid import uuid4
 
 import config
 from agent import Individual
@@ -16,6 +19,8 @@ class RandomSearch:
         self.population = self.build_population()
         self.elite_genes = self.population[0].genes
         self.elite_score = 0
+        self.elite_individual = self.population[0]
+        self.run_id = str(uuid4())[:8]
 
         self.generation_count = 0
 
@@ -42,6 +47,8 @@ class RandomSearch:
         self.population[0].genes = self.elite_genes
         self.population[0]._agent.set_weights(self.elite_genes)
         self.mutate_individual(self.population[0])
+
+        self.store_elite()
 
         print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")
         print(f"min={min(scores):7d}   ", end=" ")
@@ -81,6 +88,7 @@ class RandomSearch:
         if new_elite_score > self.elite_score:
             self.elite_genes = new_elite.genes
             self.elite_score = new_elite_score
+            self.elite_individual = new_elite
 
         return new_elite
 
@@ -90,5 +98,13 @@ class RandomSearch:
                 continue
 
             individual.genes[i] *= uniform(0.9, 1.1)
-        
+
         individual._agent.set_weights(individual.genes)
+
+    def store_elite(self):
+        os.makedirs("results", exist_ok=True)
+
+        with open(
+            f"results/elite_individual__{self.run_id}__{self.generation_count}_score_{self.elite_score}.json", "wt"
+        ) as f:
+            f.write(json.dumps(self.elite_individual._agent.settings))
