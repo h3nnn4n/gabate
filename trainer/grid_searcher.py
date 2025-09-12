@@ -39,7 +39,7 @@ def run_grid_search(individual: Individual):
 
     for i in range(individual.n_genes):
         print()
-        print(f"running grid search for gene {i}/{individual.n_genes}")
+        print(f"running grid search for gene {i}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}")
 
         test_individuals = []
         grid_range = GRID_SEARCH_RANGE * 2
@@ -47,9 +47,9 @@ def run_grid_search(individual: Individual):
 
         for j in range(n_grid_steps):
             gene_value = j * GRID_SEARCH_STEP - GRID_SEARCH_RANGE
-            new_genes = individual.genes.copy()
+            new_genes = elite_individual.genes.copy()
             new_genes[i] = gene_value
-            test_individual = individual.clone()
+            test_individual = elite_individual.clone()
             test_individual.set_genes(new_genes)
             test_individuals.append(test_individual)
 
@@ -64,4 +64,7 @@ def run_grid_search(individual: Individual):
                 elite_individual = test_individual.clone()
                 print(f"new elite individual {score=}")
 
+        print(f"iteration {i} elite_score:")
+        pprint(elite_individual.get_raw_fitness())
+        
     return elite_individual
