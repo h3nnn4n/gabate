@@ -1,6 +1,7 @@
 import json
 import logging
 import statistics
+import typing as t
 from copy import copy
 from random import uniform
 from uuid import uuid4
@@ -169,3 +170,7 @@ class Individual:
         new.genes = copy(self.genes)
 
         return new
+
+    @property
+    def settings(self) -> dict[str, t.Any]:
+        return self._agent.settings
