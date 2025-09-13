@@ -2,6 +2,7 @@ import json
 import os
 from pprint import pprint
 from uuid import uuid4
+from tqdm import tqdm
 
 from agent import Individual
 
@@ -43,7 +44,7 @@ def run_grid_search(individual: Individual):
 
     for i in range(individual.n_genes):
         print()
-        print(f"running grid search for gene {i}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}")
+        print(f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}")
 
         test_individuals = []
         grid_range = GRID_SEARCH_RANGE * 2
@@ -60,7 +61,7 @@ def run_grid_search(individual: Individual):
         for test_individual in test_individuals:
             test_individual.trigger_fitness_evaluation()
 
-        scores = [individual.get_fitness() for individual in test_individuals]
+        scores = [individual.get_fitness() for individual in tqdm(test_individuals, desc="evaluating")]
 
         for test_individual, score in zip(test_individuals, scores):
             if score > elite_individual.get_fitness():
