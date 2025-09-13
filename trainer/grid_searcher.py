@@ -60,8 +60,7 @@ def run_grid_search(individual: Individual):
         for test_individual in test_individuals:
             test_individual.trigger_fitness_evaluation()
 
-        scores = [test_individual.get_fitness() for test_individual in test_individuals]
-        fitness = min(scores)
+        scores = [individual.get_fitness() for individual in test_individuals]
 
         for test_individual, score in zip(test_individuals, scores):
             if score > elite_individual.get_fitness():
