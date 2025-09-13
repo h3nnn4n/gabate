@@ -79,9 +79,11 @@ class Agent:
                     logger.info(f"got {_index} result from {self.id=}")
                     break
                 except dramatiq.results.ResultTimeout:
-                    logger.info(f"timeout {self.id=}")
+                    logger.info(f"timeout {self.id=} {_index=} returning 0")
+                    values.append({"lines_cleared": 0, "pieces_spawned": 0, "error": "timeout"})
+                    break
 
-        return [value.get("lines_cleared") for value in values]
+        return [value.get("lines_cleared", 0) for value in values]
 
     def get_fitness(self):
         if self._dirty_fitness:
