@@ -28,19 +28,8 @@
 
 _agent_results agent_results;
 
-void set_lines_cleared(int lines_cleared) {
-    if (agent_results.results == NULL)
-        agent_results.results = cJSON_CreateObject();
-
-    cJSON_AddNumberToObject(agent_results.results, "lines_cleared", lines_cleared);
-}
-
-void set_pieces_spawned(int pieces_spawned) {
-    if (agent_results.results == NULL)
-        agent_results.results = cJSON_CreateObject();
-
-    cJSON_AddNumberToObject(agent_results.results, "pieces_spawned", pieces_spawned);
-}
+static int total_lines_cleared = 0;
+static int total_pieces_spawned = 0;
 
 void register_piece_spawned(char piece) {
     if (agent_results.results == NULL)
@@ -56,6 +45,12 @@ void register_piece_spawned(char piece) {
     snprintf(piece_str, 16, "%c", piece);
     cJSON *piece_json = cJSON_CreateString(piece_str);
     cJSON_AddItemToArray(pieces, piece_json);
+
+    total_pieces_spawned++;
+}
+
+void register_line_cleared() {
+    total_lines_cleared++;
 }
 
 // FIXME: This shouldn't have any side effect, but it does. Changing the json
@@ -76,6 +71,9 @@ void print_agent_results() {
     cJSON *agent_id = cJSON_GetObjectItem(agent, "agent_id");
     if (agent_id != NULL)
         cJSON_AddItemToObject(agent_results.results, "agent_id", agent_id);
+
+    cJSON_AddNumberToObject(agent_results.results, "pieces_spawned", total_pieces_spawned);
+    cJSON_AddNumberToObject(agent_results.results, "lines_cleared", total_lines_cleared);
 
     char *string = cJSON_PrintUnformatted(agent_results.results);
     printf("%s\n", string);
