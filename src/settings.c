@@ -73,14 +73,14 @@ void load_settings(char *setting_str) {
 
     cJSON *run_id = cJSON_GetObjectItem(agent, "run_id");
     if (run_id != NULL) {
-        agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 2));
-        snprintf(agent_config.run_id, strlen(agent_config.run_id), "%s", run_id->valuestring);
+        agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 1));
+        snprintf(agent_config.run_id, strlen(run_id->valuestring) + 1, "%s", run_id->valuestring);
     }
 
     cJSON *agent_id = cJSON_GetObjectItem(agent, "agent_id");
     if (agent_id != NULL) {
-        agent_config.agent_id = (char *)malloc(sizeof(char) * (strlen(agent_id->valuestring) + 2));
-        snprintf(agent_config.agent_id, strlen(agent_config.agent_id), "%s", agent_id->valuestring);
+        agent_config.agent_id = (char *)malloc(sizeof(char) * (strlen(agent_id->valuestring) + 1));
+        snprintf(agent_config.agent_id, strlen(agent_id->valuestring) + 1, "%s", agent_id->valuestring);
     }
 }
 
