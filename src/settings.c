@@ -82,6 +82,16 @@ void load_settings(char *setting_str) {
         agent_config.agent_id = (char *)malloc(sizeof(char) * (strlen(agent_id->valuestring) + 1));
         snprintf(agent_config.agent_id, strlen(agent_id->valuestring) + 1, "%s", agent_id->valuestring);
     }
+
+    cJSON *feature_set_name = cJSON_GetObjectItem(agent, "feature_set_name");
+    if (feature_set_name != NULL) {
+        agent_config.feature_set_name = (char *)malloc(sizeof(char) * (strlen(feature_set_name->valuestring) + 1));
+        snprintf(agent_config.feature_set_name, strlen(feature_set_name->valuestring) + 1, "%s",
+                 feature_set_name->valuestring);
+    } else {
+        printf("fature set not set. Aborting.\n");
+        abort();
+    }
 }
 
 double *get_agent_weights() {

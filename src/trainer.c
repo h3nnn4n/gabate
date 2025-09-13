@@ -22,6 +22,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "agent.h"
 #include "feature_functions.h"
@@ -80,20 +81,34 @@ void scaler() {
 void evaluate_cost() {
     get_brain_pointer()->round_has_cleaned_lines = cleaned_any_row() ? 1 : 0;
 
+    char *feature_set_name = get_agent_config()->feature_set_name;
+
     ff_ctrl_reset();
 
-    /*feature_set_FBDP();*/
-    /*feature_set_NDP();*/
-    /*feature_set_KBR();*/
-    /*feature_set_CMA();*/
-    /*feature_set_HA();*/
-    feature_set_LELmark();
-    /*feature_set_ALL();*/
-
-    /*feature_set_HA2();*/
-
-    /*feature_set_testing();*/
-    /*feature_set_basic();*/
+    if (strcmp(feature_set_name, "FBDP") == 0) {
+        feature_set_FBDP();
+    } else if (strcmp(feature_set_name, "NDP") == 0) {
+        feature_set_NDP();
+    } else if (strcmp(feature_set_name, "KBR") == 0) {
+        feature_set_KBR();
+    } else if (strcmp(feature_set_name, "CMA") == 0) {
+        feature_set_CMA();
+    } else if (strcmp(feature_set_name, "HA") == 0) {
+        feature_set_HA();
+    } else if (strcmp(feature_set_name, "LELmark") == 0) {
+        feature_set_LELmark();
+    } else if (strcmp(feature_set_name, "ALL") == 0) {
+        feature_set_ALL();
+    } else if (strcmp(feature_set_name, "HA2") == 0) {
+        feature_set_HA2();
+    } else if (strcmp(feature_set_name, "testing") == 0) {
+        feature_set_testing();
+    } else if (strcmp(feature_set_name, "basic") == 0) {
+        feature_set_basic();
+    } else {
+        printf("Unknown feature set: %s\n", feature_set_name);
+        abort();
+    }
 
     /*normalizer();*/
 

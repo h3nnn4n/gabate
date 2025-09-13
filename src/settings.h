@@ -32,6 +32,7 @@ typedef struct {
     char *  run_id;
     char *  agent_id;
     bool    ping_mode;
+    char   *feature_set_name;
 } _agent_config;
 
 bool           pong();
