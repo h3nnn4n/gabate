@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016-2017,2021  Renan S. Silva                               *
+ * Copyright (C) 2016-2017,2021, 2025  Renan S. Silva                         *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -26,13 +26,10 @@
 #include "stats.h"
 #include "tetris.h"
 
-// TODO: This should be a setting
-#define fast_training 1
-
 _best_piece best_piece;
 _move_queue move_queue;
 _ai_state   ai_state;
-_cpu_info * cpu_info;  // This probably doesnt belong here
+_cpu_info  *cpu_info;  // This probably doesnt belong here
 
 // Why in the seven heavens have I done this?
 void       set_cpu_pointer(_cpu_info *cpu) { cpu_info = cpu; }
@@ -84,7 +81,7 @@ void joystick_hook() {
                     case 1:
                         move_queue.ready = 0;
 
-                        if (get_brain_pointer()->suicide && fast_training) {
+                        if (get_brain_pointer()->suicide) {
                             cpu->joystick.button_down = 0;
                             break;
                         }
@@ -196,10 +193,6 @@ void new_piece_on_screen_hook() {
         brain->new_piece = 0;
         /*evaluate_cost();*/
 
-        brain->population[brain->current].pieces_spawned_total++;
-        brain->population[brain->current].pieces_spawned[brain->runs]++;
-
-        update_fitness();
         get_best_move();
         /*best = get_best_move();*/
         /*printf("%3d %3d\n", x, y);*/
@@ -219,9 +212,7 @@ void game_over_hook() {
         get_brain_pointer()->suicide = 0;
         reset_bg();
         check_stop_condition();
-        update_fitness();
         ai_state.game_state = GAMEOVER;
-        finished_evaluating_individual();
         reset_file_control();
     }
 
@@ -282,7 +273,6 @@ void get_best_move() {
                             best_piece->blocks     = piece;
                             best_piece->set        = 1;
                             best_piece->nrotations = n_totation;
-                            best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
                         }
 
                         restore_bg();
@@ -302,7 +292,6 @@ void get_best_move() {
                         best_piece->blocks     = piece;
                         best_piece->set        = 1;
                         best_piece->nrotations = n_totation;
-                        best_piece->parameters = get_brain_pointer()->population[get_brain_pointer()->current];
                         restore_bg();
                         break;
                     }

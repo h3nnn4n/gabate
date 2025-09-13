@@ -26,11 +26,10 @@
 #include <cJSON.h>
 
 typedef struct {
-    cJSON * settings;
+    cJSON  *settings;
     double *agent_weights;
-    bool    train;
-    char *  run_id;
-    char *  agent_id;
+    char   *run_id;
+    char   *agent_id;
     bool    ping_mode;
     char   *feature_set_name;
     bool    debug_mode;
@@ -38,8 +37,7 @@ typedef struct {
 
 bool           pong();
 void           load_settings(char *setting_str);
-double *       get_agent_weights();
-bool           get_train();
+double        *get_agent_weights();
 _agent_config *get_agent_config();
 bool           is_debug_mode();
 

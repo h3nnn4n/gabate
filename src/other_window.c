@@ -406,25 +406,13 @@ void mem_fiddling() {
 
         ////////////////////
 
-        sprintf(text, "Most Cleared: %5d", get_brain_pointer()->most_lines_cleared);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "Worst Cleared: %4d", get_brain_pointer()->worst_lines_cleared);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
         /*sprintf(text, "best: %3d , %3d ", best_piece.coord.x, best_piece.coord.y);*/
         /*draw_text(text, 40, pos, 0x2a, 0x90, 0xf5);*/
         /*pos += 20;*/
 
         _brain *brain = get_brain_pointer();
 
-        sprintf(text, "Lines Cleared: %4d", brain->population[brain->current].fitness);
-        draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "Least Cleared: %4d", get_brain_pointer()->population[get_brain_pointer()->current].worst);
+        sprintf(text, "Lines Cleared: %d", brain->round_has_cleaned_lines);
         draw_text(text, 400, pos, 0x2a, 0x90, 0xf5);
         pos += 20;
 
@@ -455,24 +443,6 @@ void mem_fiddling() {
         /*sprintf(text, "best: %3d , %3d ", best_piece.coord.x, best_piece.coord.y);*/
         /*draw_text(text, 20, pos, 0xff, 0x00, 0x00);*/
         ////////////////////
-
-        pos = 0;
-
-        sprintf(text, "diversity:   %f", get_brain_pointer()->diversity);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "generations: %3d", get_brain_pointer()->elapsed_generations);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "current:     %3d/%d", get_brain_pointer()->current, POP_SIZE);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
-
-        sprintf(text, "runs:        %3d/%d", get_brain_pointer()->runs, get_brain_pointer()->max_runs);
-        draw_text(text, 110, pos, 0x2a, 0x90, 0xf5);
-        pos += 20;
 
         ////////////////////
     }

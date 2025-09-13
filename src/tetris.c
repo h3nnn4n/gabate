@@ -27,6 +27,7 @@
 #include "graphics.h"
 #include "lelmark.h"
 #include "other_window.h"
+#include "results.h"
 #include "tetris.h"
 #include "trainer.h"
 #include "types.h"
@@ -196,7 +197,7 @@ bool can_fit(_piece piece, int dx, int dy) {
 
 void clear_lines() {
     _bg_info *bg_info = get_bg_info_pointer();
-    _brain *  brain   = get_brain_pointer();
+    int lines_cleared_this_call = 0;
 
     for (int j = 0; j < __Y_SIZE; ++j) {
         int ok = 1;
@@ -208,6 +209,7 @@ void clear_lines() {
         }
 
         if (ok) {
+            lines_cleared_this_call++;
             for (int i = 0; i < __X_SIZE; ++i) {
                 bg_info->data[i][j] = 5;
             }
@@ -231,12 +233,12 @@ void clear_lines() {
                 }
             }
         }
-        if (changed) {
-            brain->population[brain->current].lines_cleared_total++;
-            brain->population[brain->current].lines_cleared[brain->runs]++;
-        }
     } while (changed);
     /*dump_bg();*/
+
+    for (int i = 0; i < lines_cleared_this_call; i++) {
+        register_line_cleared();
+    }
 }
 
 void save_bg() {

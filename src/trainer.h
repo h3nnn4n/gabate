@@ -26,16 +26,12 @@
 #include "types.h"
 
 double get_cost();
-
-void mutation(_obj_costs *individual);
-void print_pop();
 void boot_brain();
 void evaluate_cost();
-void finished_evaluating_individual();
-void update_fitness();
-void update_diversity();
 void store_piece();
 
 _brain *get_brain_pointer();
+double *get_current_cost();
+double *get_current_weights();
 
 #endif /* TRAINER_H */
