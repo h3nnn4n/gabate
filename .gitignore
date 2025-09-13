@@ -11,3 +11,6 @@ results/
 
 *.json
 *.csv
+
+*.png
+*.txt
