@@ -3,9 +3,12 @@ import threading
 
 import config
 from agent import Individual
+import uuid
 
 
 best_fitness = 0
+run_id = str(uuid.uuid4())
+file_lock = threading.Lock()
 
 
 def record_breaker(individual_path: str) -> None:
@@ -46,6 +49,16 @@ def loop(individual_path: str) -> None:
             best_fitness = raw_fitness["max"]
 
         print_pretty_fitness(raw_fitness)
+
+        store_data(raw_fitness)
+
+
+def store_data(raw_fitness: dict) -> None:
+    raw_scores = raw_fitness["raw"]
+    with file_lock:
+        with open(f"results/{run_id}.txt", "a+t") as f:
+            for score in raw_scores:
+                f.write(f"{score}\n")
 
 
 def print_pretty_fitness(raw_fitness: dict) -> None:
