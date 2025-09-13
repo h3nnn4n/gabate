@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2021  Renan S. Silva                                         *
+ * Copyright (C) 2021, 2025  Renan S. Silva                                   *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -32,6 +32,8 @@ typedef struct {
     char *  run_id;
     char *  agent_id;
     bool    ping_mode;
+    char   *feature_set_name;
+    bool    debug_mode;
 } _agent_config;
 
 bool           pong();
@@ -39,5 +41,6 @@ void           load_settings(char *setting_str);
 double *       get_agent_weights();
 bool           get_train();
 _agent_config *get_agent_config();
+bool           is_debug_mode();
 
 #endif  // SRC_SETTINGS_H_

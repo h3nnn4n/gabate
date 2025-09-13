@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2016, 2025  Renan S. Silva                                   *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -37,5 +37,7 @@ void            print_state(_cpu_info *cpu);
 unsigned long   mix(unsigned long a, unsigned long b, unsigned long c);
 void            load_rom(_cpu_info *cpu, const char *fname, uint16_t offset);
 void            check_rom(_cpu_info *cpu);
+
+void printf_debug(const char *format, ...);
 
 #endif /* UTILS_H */
