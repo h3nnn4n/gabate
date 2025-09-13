@@ -32,7 +32,7 @@ _agent_config agent_config;
 
 void load_settings(char *setting_str) {
     const cJSON *object = NULL;
-    cJSON *      json   = cJSON_Parse(setting_str);
+    cJSON       *json   = cJSON_Parse(setting_str);
 
     if (json == NULL) {
         fprintf(stderr, "Failed to parse agent settings\n");
@@ -80,14 +80,6 @@ void load_settings(char *setting_str) {
         abort();
     }
 
-    cJSON *train = cJSON_GetObjectItem(json, "train");
-    if (train != NULL) {
-        agent_config.train = cJSON_IsTrue(train);
-    } else {
-        printf("defaulting to agent mode\n");
-        agent_config.train = false;
-    }
-
     cJSON *run_id = cJSON_GetObjectItem(agent, "run_id");
     if (run_id != NULL) {
         agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 1));
@@ -129,8 +121,6 @@ double *get_agent_weights() {
 
     return agent_config.agent_weights;
 }
-
-bool get_train() { return agent_config.train; }
 
 _agent_config *get_agent_config() { return &agent_config; }
 

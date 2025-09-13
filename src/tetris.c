@@ -196,7 +196,6 @@ bool can_fit(_piece piece, int dx, int dy) {
 
 void clear_lines() {
     _bg_info *bg_info = get_bg_info_pointer();
-    _brain *  brain   = get_brain_pointer();
 
     for (int j = 0; j < __Y_SIZE; ++j) {
         int ok = 1;
@@ -230,10 +229,6 @@ void clear_lines() {
                     }
                 }
             }
-        }
-        if (changed) {
-            brain->population[brain->current].lines_cleared_total++;
-            brain->population[brain->current].lines_cleared[brain->runs]++;
         }
     } while (changed);
     /*dump_bg();*/
