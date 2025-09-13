@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016  Renan S. Silva                                         *
+ * Copyright (C) 2016, 2025  Renan S. Silva                                   *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -18,6 +18,7 @@
  * 3. This notice may not be removed or altered from any source distribution. *
  ******************************************************************************/
 #include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +29,7 @@
 #include "disassembler.h"
 #include "display.h"
 #include "lookup3.h"
+#include "settings.h"
 #include "types.h"
 #include "utils.h"
 
@@ -336,4 +338,13 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
     c = c - b;
     c = c ^ (b >> 15);
     return c;
+}
+
+void printf_debug(const char *format, ...) {
+    if (is_debug_mode()) {
+        va_list args;
+        va_start(args, format);
+        vprintf(format, args);
+        va_end(args);
+    }
 }

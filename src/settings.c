@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2021  Renan S. Silva                                         *
+ * Copyright (C) 2021, 2025  Renan S. Silva                                   *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -26,6 +26,7 @@
 #include <cJSON.h>
 
 #include "settings.h"
+#include "utils.h"
 
 _agent_config agent_config;
 
@@ -38,9 +39,18 @@ void load_settings(char *setting_str) {
         abort();
     }
 
+    cJSON *debug_mode = cJSON_GetObjectItem(json, "debug_mode");
+    if (debug_mode != NULL) {
+        agent_config.debug_mode = cJSON_IsTrue(debug_mode);
+    } else {
+        printf("defaulting to debug mode\n");
+        agent_config.debug_mode = true;
+    }
+
     cJSON *ping = cJSON_GetObjectItemCaseSensitive(json, "ping");
     if (ping != NULL && strcmp(ping->valuestring, "foobar") == 0) {
         agent_config.ping_mode = true;
+        printf("ping mode enabled\n");
         return;
     }
 
@@ -49,6 +59,7 @@ void load_settings(char *setting_str) {
     cJSON *agent = cJSON_GetObjectItemCaseSensitive(json, "agent");
     if (agent == NULL) {
         fprintf(stderr, "\"agent\" key not found. Can't run an agent without it\n");
+        abort();
     }
 
     cJSON *weights = cJSON_GetObjectItemCaseSensitive(agent, "weights");
@@ -62,25 +73,39 @@ void load_settings(char *setting_str) {
             agent_config.agent_weights[index] = object->valuedouble;
             index++;
         }
+
+        printf_debug("loaded %d weights\n", index);
     } else {
         fprintf(stderr, "\"weights\" key not found. Can't run an agent without it\n");
+        abort();
     }
 
     cJSON *train = cJSON_GetObjectItem(json, "train");
     if (train != NULL) {
         agent_config.train = cJSON_IsTrue(train);
+    } else {
+        printf("defaulting to agent mode\n");
+        agent_config.train = false;
     }
 
     cJSON *run_id = cJSON_GetObjectItem(agent, "run_id");
     if (run_id != NULL) {
         agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 1));
         snprintf(agent_config.run_id, strlen(run_id->valuestring) + 1, "%s", run_id->valuestring);
+    } else {
+        printf("run id not set. Using dummy.\n");
+        agent_config.run_id = (char *)malloc(sizeof(char) * 4);
+        strcpy(agent_config.run_id, "foo");
     }
 
     cJSON *agent_id = cJSON_GetObjectItem(agent, "agent_id");
     if (agent_id != NULL) {
         agent_config.agent_id = (char *)malloc(sizeof(char) * (strlen(agent_id->valuestring) + 1));
         snprintf(agent_config.agent_id, strlen(agent_id->valuestring) + 1, "%s", agent_id->valuestring);
+    } else {
+        printf("agent id not set. Using dummy.\n");
+        agent_config.agent_id = (char *)malloc(sizeof(char) * 4);
+        strcpy(agent_config.agent_id, "bar");
     }
 
     cJSON *feature_set_name = cJSON_GetObjectItem(agent, "feature_set_name");
@@ -116,3 +141,5 @@ bool pong() {
     printf("{\"pong\": \"foo bar\"}");
     return true;
 }
+
+bool is_debug_mode() { return agent_config.debug_mode; }

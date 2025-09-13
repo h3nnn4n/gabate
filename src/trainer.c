@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016-2017  Renan S. Silva                                    *
+ * Copyright (C) 2016-2017, 2025  Renan S. Silva                            *
  *                                                                            *
  * This software is provided 'as-is', without any express or implied          *
  * warranty. In no event will the authors be held liable for any damages      *
@@ -37,6 +37,7 @@
 #include "tetris.h"
 #include "trainer.h"
 #include "types.h"
+#include "utils.h"
 
 /*#define print_ga_status*/
 /*#define print_piece_sequence*/
