@@ -64,6 +64,7 @@ class Agent:
         data = self.get_agent_data()
 
         self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
+        self._dirty_fitness = True
 
     def _get_scores(self):
         values = []
@@ -129,13 +130,13 @@ class Individual:
         self.genes = genes
         self._agent.set_weights(genes)
 
-    def evaluate_fitness(self):
+    def evaluate_fitness(self, force: bool = False) -> None:
         self._agent.set_weights(self.genes)
-        self._agent.trigger_eval()
+        self._agent.trigger_eval(force)
         self._agent.get_fitness()
 
-    def trigger_fitness_evaluation(self):
-        self._agent.trigger_eval()
+    def trigger_fitness_evaluation(self, force: bool = False) -> None:
+        self._agent.trigger_eval(force)
 
     def get_fitness(self):
         result = self._agent.get_fitness()
