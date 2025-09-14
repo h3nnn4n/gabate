@@ -1,6 +1,6 @@
 import os
 from redis import Redis
-from config import REDIS_URL  # type: ignore
+from config import REDIS_URL
 
 
 def ensure_folder_exists(path: str) -> None:
@@ -9,5 +9,6 @@ def ensure_folder_exists(path: str) -> None:
     except OSError:
         pass
 
-def get_redis() -> Redis:
+
+def get_redis():
     return Redis.from_url(REDIS_URL)

@@ -8,8 +8,8 @@ from random import uniform
 from uuid import uuid4
 
 import config
-import dramatiq
 import tasks
+from queueer.task import TaskNotFinishedError, send_task
 
 logger = logging.getLogger(__name__)
 
@@ -65,37 +65,48 @@ class Agent:
 
         data = self.get_agent_data()
 
-        self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
+        self.pending_results = []
+        for _index in range(self.n_evals):
+            key = f"{self.id}:{_index}"
+            self.pending_results.append(
+                send_task(
+                    tasks.evaluate_agent_task,
+                    key,
+                    args=[data],
+                )
+            )
+
         self._dirty_fitness = True
 
     def _get_scores(self):
         values = []
-        start_time = time.time()
-        timeout_seconds = 10 * 60  # 10 minutes
 
         logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
 
         for _index, result in enumerate(self.pending_results):
             while True:
-                # Agents should have as much time as possible to complete
-                # their evaluation. However, due to a bug where an agent
-                # run may finish but not register, we risk waiting
-                # forever. This hack allows us to continue, at the risk
-                # of missing a potentially good score.
-                if time.time() - start_time > timeout_seconds:
-                    logger.error(f"_get_scores timed out after 10 minutes for {_index=} result from {self.id=}")
-                    break
-
                 try:
-                    value = result.get_result(block=True, timeout=1000)
+                    value = result.get_result()
                     values.append(json.loads(value))
-                    logger.info(f"got {_index} result from {self.id=}")
-                    break
-                except dramatiq.results.ResultTimeout:
-                    logger.info(f"timeout {self.id=}")
-                    time.sleep(1)  # Prevent busy waiting
+                    lines_cleared = value.get("lines_cleared")
+                    pieces_spawned = value.get("pieces_spawned")
+                    logger.info(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
 
-        return [value.get("lines_cleared") for value in values]
+                    if value is None:
+                        raise Exception("Agent result is None")
+                    
+                except TaskNotFinishedError:
+                    pass
+                except json.JSONDecodeError:
+                    raise Exception("Agent result is not valid JSON")
+                except Exception as e:
+                    raise Exception(f"Got exception while awaiting agent result: {e}")
+
+                time.sleep(1)
+
+        scores = [value.get("lines_cleared") for value in values]
+        print(f"got {len(scores)} scores for {self.id=}")
+        return scores
 
     def get_fitness(self):
         if self._dirty_fitness:

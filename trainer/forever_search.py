@@ -90,4 +90,3 @@ class ForeverSearch(RandomSearch):
             individual.genes[i] *= uniform(0.95, 1.05)
 
         individual._agent.set_weights(individual.genes)
-
