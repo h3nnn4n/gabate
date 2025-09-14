@@ -58,7 +58,10 @@ class Agent:
         self.settings["weights"][index] = value
 
     def get_agent_data(self):
-        return {"agent": self.settings}
+        return {
+            "debug_mode": False,
+            "agent": self.settings,
+        }
 
     def trigger_eval(self, force=False):
         if not force and not self._dirty_fitness:
