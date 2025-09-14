@@ -120,7 +120,7 @@ class Agent:
                 except Exception as e:
                     raise Exception(f"Got exception while awaiting agent result: {e}")
 
-            if all(results_by_index.values()):
+            if len(values) == self.n_evals:
                 break
 
             time.sleep(0.2)
