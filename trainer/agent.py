@@ -3,6 +3,7 @@ import logging
 import statistics
 import time
 import typing as t
+from collections import defaultdict
 from copy import copy
 from random import uniform
 from uuid import uuid4
@@ -83,8 +84,13 @@ class Agent:
 
         logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
 
+        results_by_index = defaultdict(lambda: False)
+
         while True:
             for _index, result in enumerate(self.pending_results):
+                if results_by_index[_index]:
+                    continue
+
                 try:
                     agent_raw_result = result.get_result()
 
@@ -98,6 +104,7 @@ class Agent:
                     logger.info(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
 
                     print(f"got {_index} result from {self.id=} with {lines_cleared=} {pieces_spawned=}")
+                    results_by_index[_index] = True
                     break
                 except TaskNotFinishedError:
                     pass
@@ -106,7 +113,7 @@ class Agent:
                 except Exception as e:
                     raise Exception(f"Got exception while awaiting agent result: {e}")
 
-            if len(values) == len(self.pending_results):
+            if all(results_by_index.values()):
                 break
 
             time.sleep(1)
