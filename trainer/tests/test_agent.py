@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 
 from ..agent import Agent
 
@@ -10,6 +10,9 @@ def test_to_json():
     for weight in data["agent"]["weights"]:
         assert -5 <= weight and weight <= 5
 
+    assert "feature_set_name" in data["agent"]
+    assert data["agent"]["feature_set_name"] == "LELmark"
+
 
 def test_clone_weights():
     agent = Agent()
@@ -17,6 +20,7 @@ def test_clone_weights():
 
     assert len(agent.settings["weights"]) == len(new_agent.settings["weights"])
     assert agent.settings["weights"] == new_agent.settings["weights"]
+    assert agent.settings["feature_set_name"] == new_agent.settings["feature_set_name"]
 
 
 def test_clone_dirty():

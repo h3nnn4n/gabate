@@ -31,3 +31,5 @@ ELITE_MUTATIONS = config("ELITE_MUTATIONS", default=5, cast=int)
 
 # Can be "max", "min", "avg", "sum" or "median"
 FITNESS_MODE = config("FITNESS_MODE", default="max", cast=str)
+
+FEATURE_SET_NAME = config("FEATURE_SET_NAME", default="LELmark", cast=str)
