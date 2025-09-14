@@ -3,7 +3,9 @@ import typing as t
 from dataclasses import dataclass
 
 from .utils import get_redis
+import logging
 
+logger = logging.getLogger(__name__)
 
 class TaskNotFinishedError(Exception):
     pass
@@ -91,7 +93,7 @@ def send_task(task: Task, task_id: str, args: t.Optional[list] = None, kwargs: t
         kwargs=kwargs,
     )
 
-    print(f"sent task {task_instance.name=} {task_instance.instance_id=}")
+    logger.info(f"sent task {task_instance.name=} {task_instance.instance_id=}")
     redis = get_redis()
     task_key = f"task:{task_instance.name}:{task_instance.instance_id}"
     payload = TaskSerializer.to_json(task_instance)

@@ -103,8 +103,8 @@ class Agent:
                     pieces_spawned = agent_result.get("pieces_spawned")
                     logger.info(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
 
-                    print(f"got {_index} result from {self.id=} with {lines_cleared=} {pieces_spawned=}")
                     results_by_index[_index] = True
+
                     break
                 except TaskNotFinishedError:
                     pass
@@ -119,7 +119,7 @@ class Agent:
             time.sleep(0.2)
 
         scores = [agent_result.get("lines_cleared") for agent_result in values]
-        print(f"got {len(scores)} scores for {self.id=}")
+        logger.info(f"got {len(scores)} scores for {self.id=}")
         return scores
 
     def get_fitness(self):
