@@ -5,9 +5,10 @@ from uuid import uuid4
 
 from tqdm import tqdm
 
+import config
 from agent import Individual
 
-GRID_SEARCH_RANGE = 5.0
+GRID_SEARCH_RANGE = config.GENE_RANGE  # type: ignore
 GRID_SEARCH_STEP = 0.5
 
 RUN_ID = str(uuid4())[:8]

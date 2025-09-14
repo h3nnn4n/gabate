@@ -35,10 +35,12 @@ class Agent:
 
     def set_random_weights(self):
         self._dirty_fitness = True
-        self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
+        self.settings["weights"] = [uniform(-config.GENE_RANGE, config.GENE_RANGE) for _ in range(self.n_weights)]  # type: ignore
 
     def set_weights(self, weights):
-        assert len(weights) == len(self.settings["weights"]), f"new={len(weights)} current={len(self.settings['weights'])}"
+        assert len(weights) == len(
+            self.settings["weights"]
+        ), f"new={len(weights)} current={len(self.settings['weights'])}"
 
         if weights == self.settings["weights"]:
             return
@@ -159,7 +161,7 @@ class Individual:
         self._agent = agent or Agent()
         self.id = self._agent.id
         self.n_genes = config.N_GENES  # type: ignore
-        self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
+        self.genes = [uniform(-config.GENE_RANGE, config.GENE_RANGE) for _ in range(self.n_genes)]  # type: ignore
 
     def set_genes(self, genes: list[float]):
         assert len(genes) == self.n_genes
