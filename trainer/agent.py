@@ -123,8 +123,6 @@ class Agent:
             if len(values) == self.n_evals:
                 break
 
-            time.sleep(0.2)
-
         assert all(results_by_index.values()), f"Not all results were received: {results_by_index}"
         assert len(values) == len(self.pending_results), f"Not all results were received: {len(values)} != {len(self.pending_results)}"
         assert len(values) == self.n_evals, f"Not all results were received: {len(values)} != {self.n_evals}"

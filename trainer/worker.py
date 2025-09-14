@@ -1,6 +1,5 @@
 import json
 from multiprocessing import Pool
-from time import sleep
 
 import config
 from queueer.task import TaskInstance, TaskSerializer
@@ -23,19 +22,15 @@ def single_worker_loop(_worker_id: int) -> None:
         task_key = redis.lpop("tasks")
 
         if task_key is None:
-            sleep(1)
             continue
 
         task_raw = redis.get(task_key)  # type: ignore
         if task_raw is None:
-            sleep(1)
             continue
 
         task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
         if task:
             run_task(task)
-        else:
-            sleep(1)
 
 
 def run_task(task: TaskInstance) -> None:
