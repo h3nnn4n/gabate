@@ -107,7 +107,7 @@ def send_task(task: Task, task_id: str, args: t.Optional[list] = None, kwargs: t
     redis = get_redis()
     task_key = f"task:{task_instance.name}:{task_instance.instance_id}"
     payload = TaskSerializer.to_json(task_instance)
-    redis.lpush(f"tasks", task_key)
     redis.set(task_key, payload)
+    redis.lpush(f"tasks", task_key)
 
     return task_instance

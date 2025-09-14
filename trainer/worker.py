@@ -26,11 +26,13 @@ def single_worker_loop(_worker_id: int) -> None:
 
         task_raw = redis.get(task_key)  # type: ignore
         if task_raw is None:
-            continue
+            raise Exception(f"task data not found for {task_key=}")
 
         task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
         if task:
             run_task(task)
+        else:
+            raise Exception(f"Failed to deserialize task data for {task_key=}")
 
 
 def run_task(task: TaskInstance) -> None:
