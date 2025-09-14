@@ -85,7 +85,7 @@ void load_settings(char *setting_str) {
         agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 1));
         snprintf(agent_config.run_id, strlen(run_id->valuestring) + 1, "%s", run_id->valuestring);
     } else {
-        printf("run id not set. Using dummy.\n");
+        printf_debug("run id not set. Using dummy.\n");
         agent_config.run_id = (char *)malloc(sizeof(char) * 4);
         strcpy(agent_config.run_id, "foo");
     }
@@ -95,7 +95,7 @@ void load_settings(char *setting_str) {
         agent_config.agent_id = (char *)malloc(sizeof(char) * (strlen(agent_id->valuestring) + 1));
         snprintf(agent_config.agent_id, strlen(agent_id->valuestring) + 1, "%s", agent_id->valuestring);
     } else {
-        printf("agent id not set. Using dummy.\n");
+        printf_debug("agent id not set. Using dummy.\n");
         agent_config.agent_id = (char *)malloc(sizeof(char) * 4);
         strcpy(agent_config.agent_id, "bar");
     }
@@ -106,7 +106,7 @@ void load_settings(char *setting_str) {
         snprintf(agent_config.feature_set_name, strlen(feature_set_name->valuestring) + 1, "%s",
                  feature_set_name->valuestring);
     } else {
-        printf("fature set not set. Aborting.\n");
+        fprintf(stderr, "fature set not set. Aborting.\n");
         abort();
     }
 }
