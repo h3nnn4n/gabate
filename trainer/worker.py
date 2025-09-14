@@ -18,12 +18,12 @@ def worker_loop() -> None:
             sleep(1)
             continue
 
-        task_raw = redis.get(task_key)
+        task_raw = redis.get(task_key)  # type: ignore
         if task_raw is None:
             sleep(1)
             continue
 
-        task = TaskSerializer.from_json(task_raw.decode())
+        task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
         if task:
             run_task(task)
         else:

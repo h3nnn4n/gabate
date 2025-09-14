@@ -17,7 +17,7 @@ def evaluate_agent(agent_settings):
         env["LD_LIBRARY_PATH"] = "../deps/cJSON/build/"
 
     with Popen(args, stdout=PIPE, env=env) as proc:
-        output_stdout = proc.stdout.read()
+        output_stdout = proc.stdout.read()  # type: ignore
 
     result = output_stdout.decode()
     try:

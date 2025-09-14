@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 class Agent:
     def __init__(self):
         self.n_weights = 14 * 3
-        self.n_evals = config.N_AGENT_EVALS
+        self.n_evals = config.N_AGENT_EVALS  # type: ignore
         self.settings = {}
         self.set_random_weights()
         self.id = str(uuid4())
 
         self.settings["agent_id"] = self.id
-        self.settings["feature_set_name"] = config.FEATURE_SET_NAME
+        self.settings["feature_set_name"] = config.FEATURE_SET_NAME  # type: ignore
 
         self.pending_results = []
 
@@ -179,7 +179,7 @@ class Individual:
         if result["min"] == 0:
             return 0
 
-        match config.FITNESS_MODE.upper():
+        match config.FITNESS_MODE.upper():  # type: ignore
             case "MAX":
                 return result["max"]
             case "MIN":
@@ -191,7 +191,7 @@ class Individual:
             case "AVG":
                 return result["avg"]
             case _:
-                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
+                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")  # type: ignore
 
     def get_raw_fitness(self) -> dict[str, float]:
         return self._agent.get_fitness()
