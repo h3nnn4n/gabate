@@ -36,6 +36,9 @@ void feature_set_basic() {
     STORE_FEATURE(holes());
     STORE_FEATURE(aggregate_height());
     STORE_FEATURE(surface_variance());
+    STORE_FEATURE(height_delta());
+    STORE_FEATURE(vertical_roughness());
+    STORE_FEATURE(horizontal_roughness());
 }
 
 void feature_set_testing() {

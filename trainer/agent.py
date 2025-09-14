@@ -10,7 +10,7 @@ from uuid import uuid4
 
 import config
 import tasks
-from queueer.task import TaskNotFinishedError, send_task
+from queueer.task import TaskFailedError, TaskNotFinishedError, send_task
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,10 @@ class Agent:
         self.settings["weights"][index] = value
 
     def get_agent_data(self):
-        return {"agent": self.settings}
+        return {
+            "debug_mode": False,
+            "agent": self.settings,
+        }
 
     def trigger_eval(self, force=False):
         if not force and not self._dirty_fitness:
@@ -110,15 +113,19 @@ class Agent:
                     break
                 except TaskNotFinishedError:
                     pass
+                except TaskFailedError:
+                    raise Exception("Agent result is failed")
                 except json.JSONDecodeError:
                     raise Exception("Agent result is not valid JSON")
                 except Exception as e:
                     raise Exception(f"Got exception while awaiting agent result: {e}")
 
-            if all(results_by_index.values()):
+            if len(values) == self.n_evals:
                 break
 
-            time.sleep(0.2)
+        assert all(results_by_index.values()), f"Not all results were received: {results_by_index}"
+        assert len(values) == len(self.pending_results), f"Not all results were received: {len(values)} != {len(self.pending_results)}"
+        assert len(values) == self.n_evals, f"Not all results were received: {len(values)} != {self.n_evals}"
 
         scores = [agent_result.get("lines_cleared") for agent_result in values]
         logger.info(f"got {len(scores)} scores for {self.id=}")

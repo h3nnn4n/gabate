@@ -1,6 +1,5 @@
 import json
 from multiprocessing import Pool
-from time import sleep
 
 import config
 from queueer.task import TaskInstance, TaskSerializer
@@ -23,19 +22,17 @@ def single_worker_loop(_worker_id: int) -> None:
         task_key = redis.lpop("tasks")
 
         if task_key is None:
-            sleep(1)
             continue
 
         task_raw = redis.get(task_key)  # type: ignore
         if task_raw is None:
-            sleep(1)
-            continue
+            raise Exception(f"task data not found for {task_key=}")
 
         task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
         if task:
             run_task(task)
         else:
-            sleep(1)
+            raise Exception(f"Failed to deserialize task data for {task_key=}")
 
 
 def run_task(task: TaskInstance) -> None:
@@ -48,8 +45,14 @@ def run_task(task: TaskInstance) -> None:
     kwargs = task.kwargs or {}
 
     print(f"running task {task.name=} {task.instance_id=}")
-    result = task.callable(*args, **kwargs)
-    print(f"finished task {task.name=} {task.instance_id=}")
 
-    redis.hset(result_key, "status", "finished")
-    redis.hset(result_key, "result", json.dumps(result))
+    try:
+        result = task.callable(*args, **kwargs)
+        print(f"finished task {task.name=} {task.instance_id=}")
+    except Exception as e:
+        print(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
+        redis.hset(result_key, "result", json.dumps({"error": str(e)}))
+        redis.hset(result_key, "status", "failed")
+    else:
+        redis.hset(result_key, "result", json.dumps(result))
+        redis.hset(result_key, "status", "finished")
