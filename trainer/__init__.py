@@ -1,1 +1,1 @@
-import config # noqa
+import config  # noqa

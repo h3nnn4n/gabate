@@ -44,7 +44,9 @@ def run_grid_search(individual: Individual):
 
     for i in range(individual.n_genes):
         print()
-        print(f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}")
+        print(
+            f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}"
+        )
 
         test_individuals = []
         grid_range = GRID_SEARCH_RANGE * 2
