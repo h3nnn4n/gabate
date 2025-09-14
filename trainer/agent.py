@@ -95,6 +95,7 @@ class Agent:
                     if value is None:
                         raise Exception("Agent result is None")
                     
+                    break
                 except TaskNotFinishedError:
                     pass
                 except json.JSONDecodeError:
@@ -103,6 +104,8 @@ class Agent:
                     raise Exception(f"Got exception while awaiting agent result: {e}")
 
                 time.sleep(1)
+
+            print(f"got {_index} result from {self.id=} with {lines_cleared=} {pieces_spawned=}")
 
         scores = [value.get("lines_cleared") for value in values]
         print(f"got {len(scores)} scores for {self.id=}")
