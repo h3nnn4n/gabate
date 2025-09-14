@@ -19,6 +19,7 @@ ELITE_MUTATIONS = int(config("ELITE_MUTATIONS", default=5, cast=int))
 # Can be "max", "min", "avg", "sum" or "median"
 FITNESS_MODE = str(config("FITNESS_MODE", default="max", cast=str))
 
+N_GENES = int(config("N_GENES", default=14 * 3, cast=int))
 FEATURE_SET_NAME = str(config("FEATURE_SET_NAME", default="LELmark", cast=str))
 
 ## Infrastructure settings

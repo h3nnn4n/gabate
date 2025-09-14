@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Agent:
     def __init__(self):
-        self.n_weights = 14 * 3
+        self.n_weights = config.N_GENES  # type: ignore
         self.n_evals = config.N_AGENT_EVALS  # type: ignore
         self.settings = {}
         self.set_random_weights()
