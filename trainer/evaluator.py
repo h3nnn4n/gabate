@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from agent import Individual
 
@@ -14,4 +15,8 @@ def evaluator(individual_path: str):
     individual._agent.set_weights(genes)
     individual.trigger_fitness_evaluation()
 
-    print(individual.get_fitness())
+    raw_fitness = individual.get_raw_fitness()
+
+    print(
+        f"min={raw_fitness['min']:8} avg={raw_fitness['avg']:10.2f} median={raw_fitness['median']:10.2f} max={raw_fitness['max']:8}"
+    )
