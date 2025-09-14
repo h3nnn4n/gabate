@@ -1,10 +1,9 @@
 import json
 import threading
+import uuid
 
 import config
 from agent import Individual
-import uuid
-
 
 best_fitness = 0
 run_id = str(uuid.uuid4())

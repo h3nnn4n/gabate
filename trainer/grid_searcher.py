@@ -2,9 +2,9 @@ import json
 import os
 from pprint import pprint
 from uuid import uuid4
-from tqdm import tqdm
 
 from agent import Individual
+from tqdm import tqdm
 
 GRID_SEARCH_RANGE = 5.0
 GRID_SEARCH_STEP = 0.5
@@ -44,7 +44,9 @@ def run_grid_search(individual: Individual):
 
     for i in range(individual.n_genes):
         print()
-        print(f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}")
+        print(
+            f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}"
+        )
 
         test_individuals = []
         grid_range = GRID_SEARCH_RANGE * 2
@@ -77,7 +79,7 @@ def run_grid_search(individual: Individual):
 
 
 def store_elite(individual: Individual, generation_count: int, elite_score: float):
-    base_path = f"results/grid_searcher/"
+    base_path = "results/grid_searcher/"
     os.makedirs(base_path, exist_ok=True)
 
     with open(f"{base_path}/elite_individual__{RUN_ID}__{generation_count}_score_{elite_score}.json", "wt") as f:
