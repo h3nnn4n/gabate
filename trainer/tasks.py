@@ -28,6 +28,8 @@ def evaluate_agent(agent_settings):
         print(f"finished running {agent_id=} {pieces_spawned=:4d}     {lines_cleared=:4d}")
     except Exception as e:
         print(f"finished running {agent_id=} with exception: {e}")
+        print(f"exit code: {proc.returncode}")
+        print(f"result: {result}")
 
     return result
 
