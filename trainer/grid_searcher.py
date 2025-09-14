@@ -81,7 +81,7 @@ def run_grid_search(individual: Individual):
 
 
 def store_elite(individual: Individual, generation_count: int, elite_score: float):
-    base_path = f"results/grid_searcher/"
+    base_path = "results/grid_searcher/"
     os.makedirs(base_path, exist_ok=True)
 
     with open(f"{base_path}/elite_individual__{RUN_ID}__{generation_count}_score_{elite_score}.json", "wt") as f:
