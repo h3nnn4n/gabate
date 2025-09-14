@@ -10,7 +10,7 @@ from uuid import uuid4
 
 import config
 import tasks
-from queueer.task import TaskNotFinishedError, send_task
+from queueer.task import TaskFailedError, TaskNotFinishedError, send_task
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +113,8 @@ class Agent:
                     break
                 except TaskNotFinishedError:
                     pass
+                except TaskFailedError:
+                    raise Exception("Agent result is failed")
                 except json.JSONDecodeError:
                     raise Exception("Agent result is not valid JSON")
                 except Exception as e:

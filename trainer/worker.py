@@ -48,8 +48,14 @@ def run_task(task: TaskInstance) -> None:
     kwargs = task.kwargs or {}
 
     print(f"running task {task.name=} {task.instance_id=}")
-    result = task.callable(*args, **kwargs)
-    print(f"finished task {task.name=} {task.instance_id=}")
 
-    redis.hset(result_key, "status", "finished")
-    redis.hset(result_key, "result", json.dumps(result))
+    try:
+        result = task.callable(*args, **kwargs)
+        print(f"finished task {task.name=} {task.instance_id=}")
+    except Exception as e:
+        print(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
+        redis.hset(result_key, "status", "failed")
+        redis.hset(result_key, "result", json.dumps({"error": str(e)}))
+    else:
+        redis.hset(result_key, "status", "finished")
+        redis.hset(result_key, "result", json.dumps(result))

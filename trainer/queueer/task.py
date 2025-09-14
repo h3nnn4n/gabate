@@ -12,6 +12,10 @@ class TaskNotFinishedError(Exception):
     pass
 
 
+class TaskFailedError(Exception):
+    pass
+
+
 class TaskSerializer:
     """Handles JSON serialization and deserialization of Task instances."""
 
@@ -66,6 +70,11 @@ class TaskInstance(Task):
 
         task_status = task_status_raw.decode() if isinstance(task_status_raw, bytes) else task_status_raw
         finished = task_status == "finished"
+        failed = task_status == "failed"
+
+        if failed:
+            raise TaskFailedError(f"Task {self.instance_id} failed")
+
         if not finished:
             raise TaskNotFinishedError(f"Task {self.instance_id} is not finished")
 
