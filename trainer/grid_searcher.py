@@ -2,9 +2,9 @@ import json
 import os
 from pprint import pprint
 from uuid import uuid4
-from tqdm import tqdm
 
 from agent import Individual
+from tqdm import tqdm
 
 GRID_SEARCH_RANGE = 5.0
 GRID_SEARCH_STEP = 0.5
