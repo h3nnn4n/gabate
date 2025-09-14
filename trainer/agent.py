@@ -125,6 +125,10 @@ class Agent:
 
             time.sleep(0.2)
 
+        assert all(results_by_index.values()), f"Not all results were received: {results_by_index}"
+        assert len(values) == len(self.pending_results), f"Not all results were received: {len(values)} != {len(self.pending_results)}"
+        assert len(values) == self.n_evals, f"Not all results were received: {len(values)} != {self.n_evals}"
+
         scores = [agent_result.get("lines_cleared") for agent_result in values]
         logger.info(f"got {len(scores)} scores for {self.id=}")
         return scores
