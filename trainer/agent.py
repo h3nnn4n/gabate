@@ -83,8 +83,8 @@ class Agent:
 
         logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
 
-        for _index, result in enumerate(self.pending_results):
-            while True:
+        while True:
+            for _index, result in enumerate(self.pending_results):
                 try:
                     value = result.get_result()
                     values.append(json.loads(value))
@@ -95,6 +95,7 @@ class Agent:
                     if value is None:
                         raise Exception("Agent result is None")
                     
+                    print(f"got {_index} result from {self.id=} with {lines_cleared=} {pieces_spawned=}")
                     break
                 except TaskNotFinishedError:
                     pass
@@ -103,9 +104,7 @@ class Agent:
                 except Exception as e:
                     raise Exception(f"Got exception while awaiting agent result: {e}")
 
-                time.sleep(1)
-
-            print(f"got {_index} result from {self.id=} with {lines_cleared=} {pieces_spawned=}")
+            time.sleep(1)
 
         scores = [value.get("lines_cleared") for value in values]
         print(f"got {len(scores)} scores for {self.id=}")
