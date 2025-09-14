@@ -49,8 +49,8 @@ def run_task(task: TaskInstance) -> None:
         print(f"finished task {task.name=} {task.instance_id=}")
     except Exception as e:
         print(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
-        redis.hset(result_key, "status", "failed")
         redis.hset(result_key, "result", json.dumps({"error": str(e)}))
+        redis.hset(result_key, "status", "failed")
     else:
-        redis.hset(result_key, "status", "finished")
         redis.hset(result_key, "result", json.dumps(result))
+        redis.hset(result_key, "status", "finished")
