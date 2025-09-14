@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from tqdm import tqdm
 
-from agent import Individual
+from agent import Individual, eval_as_completed
 
 GRID_SEARCH_RANGE = 5.0
 GRID_SEARCH_STEP = 0.5
@@ -64,7 +64,7 @@ def run_grid_search(individual: Individual):
         for test_individual in test_individuals:
             test_individual.trigger_fitness_evaluation()
 
-        scores = [individual.get_fitness() for individual in tqdm(test_individuals, desc="evaluating")]
+        scores = eval_agents_as_completed(test_individuals, progress_bar=True)
 
         for test_individual, score in zip(test_individuals, scores):
             if score > elite_individual.get_fitness():
