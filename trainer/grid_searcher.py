@@ -62,7 +62,7 @@ def run_grid_search(individual: Individual):
         for test_individual in test_individuals:
             test_individual.trigger_fitness_evaluation()
 
-        scores = eval_as_completed(test_individuals, progress_bar=True)
+        scores = eval_agents_as_completed(test_individuals, progress_bar=True)
 
         for test_individual, score in zip(test_individuals, scores):
             if score > elite_individual.get_fitness():
