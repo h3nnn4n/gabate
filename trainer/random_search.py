@@ -41,11 +41,10 @@ class RandomSearch:
         diversity = self.get_diversity()
         self.generation_count += 1
 
-        self.elite = self.update_elite()
+        self.elite_individual = self.update_elite()
 
         self.population = self.build_population()
-        self.population[0].genes = self.elite_genes
-        self.population[0]._agent.set_weights(self.elite_genes)
+        self.population[0].set_genes(self.elite_genes)
         self.mutate_individual(self.population[0])
 
         self.store_elite()

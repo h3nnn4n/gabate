@@ -38,7 +38,7 @@ class Agent:
         self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
 
     def set_weights(self, weights):
-        assert len(weights) == len(self.settings["weights"])
+        assert len(weights) == len(self.settings["weights"]), f"new={len(weights)} current={len(self.settings['weights'])}"
 
         if weights == self.settings["weights"]:
             return
@@ -158,7 +158,7 @@ class Individual:
     def __init__(self, agent=None):
         self._agent = agent or Agent()
         self.id = self._agent.id
-        self.n_genes = 14 * 3
+        self.n_genes = config.N_GENES  # type: ignore
         self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
 
     def set_genes(self, genes: list[float]):
