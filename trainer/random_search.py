@@ -15,7 +15,7 @@ def random_search():
 
 class RandomSearch:
     def __init__(self):
-        self.population_size = config.POPULATION_SIZE
+        self.population_size = config.POPULATION_SIZE  # type: ignore
         self.population = self.build_population()
         self.elite_genes = self.population[0].genes
         self.elite_score = 0
@@ -25,7 +25,7 @@ class RandomSearch:
         self.generation_count = 0
 
     def run(self):
-        for _ in range(config.N_GENERATIONS):
+        for _ in range(config.N_GENERATIONS):  # type: ignore
             self.run_generation()
 
         return self.elite_genes
@@ -50,7 +50,7 @@ class RandomSearch:
 
         self.store_elite()
 
-        print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")
+        print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")  # type: ignore
         print(f"min={min(scores):7d}   ", end=" ")
         print(f"mean={sum(scores) / len(scores):8.2f}   ", end=" ")
         print(f"max={max(scores):7d}   ", end=" ")
@@ -94,7 +94,7 @@ class RandomSearch:
 
     def mutate_individual(self, individual: Individual):
         for i in range(individual.n_genes):
-            if random() > config.MUTATION_RATE:
+            if random() > config.MUTATION_RATE:  # type: ignore
                 continue
 
             individual.genes[i] *= uniform(0.9, 1.1)
