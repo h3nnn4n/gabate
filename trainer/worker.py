@@ -1,19 +1,17 @@
 import json
+from multiprocessing import Pool
 from time import sleep
 
+import config
 from queueer.task import TaskInstance, TaskSerializer
 from utils import get_redis
-import config
-
-from multiprocessing import Pool
-
 
 WORKER_CONCURRENCY = config.WORKER_CONCURRENCY  # type: ignore
 
 
 def worker_loop() -> None:
     print(f"Running worker with {WORKER_CONCURRENCY=}")
-    
+
     with Pool(WORKER_CONCURRENCY) as pool:
         pool.map(single_worker_loop, range(WORKER_CONCURRENCY))
 

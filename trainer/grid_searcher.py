@@ -3,8 +3,6 @@ import os
 from pprint import pprint
 from uuid import uuid4
 
-from tqdm import tqdm
-
 from agent import Individual, eval_as_completed
 
 GRID_SEARCH_RANGE = 5.0

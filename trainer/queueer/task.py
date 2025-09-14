@@ -1,11 +1,12 @@
 import json
+import logging
 import typing as t
 from dataclasses import dataclass
 
 from .utils import get_redis
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 class TaskNotFinishedError(Exception):
     pass
