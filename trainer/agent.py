@@ -23,6 +23,7 @@ class Agent:
         self.id = str(uuid4())
 
         self.settings["agent_id"] = self.id
+        self.settings["feature_set_name"] = config.FEATURE_SET_NAME
 
         self.pending_results = []
 
@@ -120,6 +121,7 @@ class Agent:
     def clone(self):
         new = Agent()
         new.settings["weights"] = copy(self.settings["weights"])
+        new.settings["feature_set_name"] = self.settings["feature_set_name"]
         new._dirty_fitness = self._dirty_fitness
         new._scores = copy(self._scores)
         new.pending_results = copy(self.pending_results)
