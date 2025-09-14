@@ -116,7 +116,7 @@ class Agent:
             if all(results_by_index.values()):
                 break
 
-            time.sleep(1)
+            time.sleep(0.2)
 
         scores = [agent_result.get("lines_cleared") for agent_result in values]
         print(f"got {len(scores)} scores for {self.id=}")
