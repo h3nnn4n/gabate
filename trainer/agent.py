@@ -4,12 +4,9 @@ import statistics
 import time
 import typing as t
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import copy
 from random import uniform
 from uuid import uuid4
-
-from tqdm import tqdm
 
 import config
 import tasks
@@ -217,28 +214,3 @@ class Individual:
     @property
     def settings(self) -> dict[str, t.Any]:
         return self._agent.settings
-
-
-def eval_as_completed(individuals: list[Individual], progress_bar: bool = False) -> list[float]:
-    with ThreadPoolExecutor(max_workers=len(individuals)) as executor:
-        futures = [executor.submit(individual.get_fitness) for individual in individuals]
-
-        results = []
-        if progress_bar:
-            with tqdm(total=len(individuals), desc="Evaluating agents") as pbar:
-                for future in as_completed(futures):
-                    results.append(future.result())
-                    pbar.update(1)
-
-            # The results may be out of order; reorder to match input agents
-            # Map futures to their index
-            future_to_index = {f: i for i, f in enumerate(futures)}
-            ordered_results: t.List[t.Optional[float]] = [None] * len(individuals)
-
-            for f, r in zip(futures, results):
-                idx = future_to_index[f]
-                ordered_results[idx] = r
-
-            return [r for r in ordered_results if r is not None]  # Make pyright happy
-        else:
-            return [future.result() for future in futures]
