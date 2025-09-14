@@ -1,14 +1,14 @@
 import json
 import logging
 import statistics
+import time
 import typing as t
 from copy import copy
 from random import uniform
 from uuid import uuid4
 
-import dramatiq
-
 import config
+import dramatiq
 import tasks
 
 logger = logging.getLogger(__name__)
@@ -69,17 +69,30 @@ class Agent:
 
     def _get_scores(self):
         values = []
+        start_time = time.time()
+        timeout_seconds = 10 * 60  # 10 minutes
 
         logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
+
         for _index, result in enumerate(self.pending_results):
             while True:
+                # Agents should have as much time as possible to complete
+                # their evaluation. However, due to a bug where an agent
+                # run may finish but not register, we risk waiting
+                # forever. This hack allows us to continue, at the risk
+                # of missing a potentially good score.
+                if time.time() - start_time > timeout_seconds:
+                    logger.error(f"_get_scores timed out after 10 minutes for {_index=} result from {self.id=}")
+                    break
+
                 try:
-                    value = result.get_result(block=True, timeout=1)
+                    value = result.get_result(block=True, timeout=1000)
                     values.append(json.loads(value))
                     logger.info(f"got {_index} result from {self.id=}")
                     break
                 except dramatiq.results.ResultTimeout:
                     logger.info(f"timeout {self.id=}")
+                    time.sleep(1)  # Prevent busy waiting
 
         return [value.get("lines_cleared") for value in values]
 
