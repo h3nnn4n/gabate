@@ -50,12 +50,12 @@ class RandomSearch:
         self.store_elite()
 
         print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")  # type: ignore
-        print(f"min={min(scores):7d}   ", end=" ")
+        print(f"min={min(scores):8.2f}   ", end=" ")
         print(f"mean={sum(scores) / len(scores):8.2f}   ", end=" ")
-        print(f"max={max(scores):7d}   ", end=" ")
+        print(f"max={max(scores):8.2f}   ", end=" ")
         print(f"{diversity=:7.2f}   ", end=" ")
         print(f"{generation_duration=:7.2f}   ", end=" ")
-        print(f"elite={self.elite_score=:7.2f}   ", end=" ")
+        print(f"elite={self.elite_score:8.2f}   ", end=" ")
         print(flush=True)
 
     def build_population(self) -> list[Individual]:
