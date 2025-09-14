@@ -70,8 +70,8 @@ class Agent:
             key = f"{self.id}:{_index}"
             self.pending_results.append(
                 send_task(
-                    tasks.evaluate_agent_task,
-                    key,
+                    task=tasks.evaluate_agent_task,
+                    task_id=key,
                     args=[data],
                 )
             )
