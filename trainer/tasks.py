@@ -19,7 +19,11 @@ def evaluate_agent(agent_settings):
     with Popen(args, stdout=PIPE, env=env) as proc:
         output_stdout = proc.stdout.read()  # type: ignore
 
+    if proc.returncode != 0:
+        raise Exception(f"Agent {agent_id=} returned non-zero exit code: {proc.returncode}. Output: {output_stdout.decode()}")
+
     result = output_stdout.decode()
+    
     try:
         result_data = json.loads(result)
         lines_cleared = result_data["lines_cleared"]
