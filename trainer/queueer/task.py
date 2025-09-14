@@ -11,21 +11,21 @@ class TaskNotFinishedError(Exception):
 
 class TaskSerializer:
     """Handles JSON serialization and deserialization of Task instances."""
-    
+
     @staticmethod
-    def to_json(task_instance: 'TaskInstance') -> str:
+    def to_json(task_instance: "TaskInstance") -> str:
         """Convert TaskInstance to JSON string."""
         # Create a dict without the callable since it can't be serialized
         data = {
             "name": task_instance.name,
             "instance_id": task_instance.instance_id,
             "args": task_instance.args,
-            "kwargs": task_instance.kwargs
+            "kwargs": task_instance.kwargs,
         }
         return json.dumps(data)
 
     @staticmethod
-    def from_json(json_str: str) -> 'TaskInstance':
+    def from_json(json_str: str) -> "TaskInstance":
         """Create TaskInstance from JSON string."""
         data = json.loads(json_str)
         # We can't restore the callable from JSON, so we'll need to get it from tasks module
@@ -37,7 +37,7 @@ class TaskSerializer:
             callable=callable_func,
             instance_id=data["instance_id"],
             args=data.get("args"),
-            kwargs=data.get("kwargs")
+            kwargs=data.get("kwargs"),
         )
 
 
@@ -55,9 +55,14 @@ class TaskInstance(Task):
 
     def get_result(self) -> t.Any:
         redis = get_redis()
-        result_key = f"result:{self.instance_id}:result"
+        result_key = f"result:{self.instance_id}:status"
 
-        finished = redis.hget(result_key, "status") == "finished"
+        task_status_raw = redis.hget(result_key, "status")
+        if task_status_raw is None:
+            raise TaskNotFinishedError(f"Task {self.instance_id} not found")
+
+        task_status = task_status_raw.decode() if isinstance(task_status_raw, bytes) else task_status_raw
+        finished = task_status == "finished"
         if not finished:
             raise TaskNotFinishedError(f"Task {self.instance_id} is not finished")
 
@@ -66,7 +71,7 @@ class TaskInstance(Task):
         if result_raw is None:
             return None
 
-        result = json.loads(str(result_raw))
+        result = json.loads(result_raw.decode() if isinstance(result_raw, bytes) else str(result_raw))
         return result
 
 

@@ -1,5 +1,7 @@
 import os
+
 from redis import Redis
+
 from config import REDIS_URL
 
 

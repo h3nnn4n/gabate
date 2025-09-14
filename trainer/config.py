@@ -1,6 +1,5 @@
 from decouple import config
 from dotenv import load_dotenv
-
 from redis import Redis
 
 load_dotenv()
