@@ -3,18 +3,28 @@ from time import sleep
 
 from queueer.task import TaskInstance, TaskSerializer
 from utils import get_redis
+import config
+
+from multiprocessing import Pool
+
+
+WORKER_CONCURRENCY = config.WORKER_CONCURRENCY  # type: ignore
 
 
 def worker_loop() -> None:
+    print(f"Running worker with {WORKER_CONCURRENCY=}")
+    
+    with Pool(WORKER_CONCURRENCY) as pool:
+        pool.map(single_worker_loop, range(WORKER_CONCURRENCY))
+
+
+def single_worker_loop(_worker_id: int) -> None:
     redis = get_redis()
 
     while True:
-        print("waiting for task")
         task_key = redis.lpop("tasks")
-        print(f"got task {task_key=}")
 
         if task_key is None:
-            print("no task found")
             sleep(1)
             continue
 

@@ -1,11 +1,11 @@
 from decouple import config
 from dotenv import load_dotenv
-from redis import Redis
+
 
 load_dotenv()
 
 
-REDIS_URL: str = str(config("REDIS_URL", default="redis://localhost:6379"))
+## Algorithm settings
 
 N_GENERATIONS = int(config("N_GENERATIONS", default=100, cast=int))
 POPULATION_SIZE = int(config("POPULATION_SIZE", default=10, cast=int))
@@ -21,3 +21,11 @@ ELITE_MUTATIONS = int(config("ELITE_MUTATIONS", default=5, cast=int))
 FITNESS_MODE = str(config("FITNESS_MODE", default="max", cast=str))
 
 FEATURE_SET_NAME = str(config("FEATURE_SET_NAME", default="LELmark", cast=str))
+
+## Infrastructure settings
+
+REDIS_URL: str = str(config("REDIS_URL", default="redis://localhost:6379"))
+
+## Worker settings
+
+WORKER_CONCURRENCY = int(config("WORKER_CONCURRENCY", default=1, cast=int))
