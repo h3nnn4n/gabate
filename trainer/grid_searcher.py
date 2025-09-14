@@ -3,10 +3,12 @@ import os
 from pprint import pprint
 from uuid import uuid4
 
-from agent import Individual
 from tqdm import tqdm
 
-GRID_SEARCH_RANGE = 5.0
+import config
+from agent import Individual
+
+GRID_SEARCH_RANGE = config.GENE_RANGE  # type: ignore
 GRID_SEARCH_STEP = 0.5
 
 RUN_ID = str(uuid4())[:8]

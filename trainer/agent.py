@@ -3,27 +3,28 @@ import logging
 import statistics
 import time
 import typing as t
+from collections import defaultdict
 from copy import copy
 from random import uniform
 from uuid import uuid4
 
 import config
-import dramatiq
 import tasks
+from queueer.task import TaskNotFinishedError, send_task
 
 logger = logging.getLogger(__name__)
 
 
 class Agent:
     def __init__(self):
-        self.n_weights = 14 * 3
-        self.n_evals = config.N_AGENT_EVALS
+        self.n_weights = config.N_GENES  # type: ignore
+        self.n_evals = config.N_AGENT_EVALS  # type: ignore
         self.settings = {}
         self.set_random_weights()
         self.id = str(uuid4())
 
         self.settings["agent_id"] = self.id
-        self.settings["feature_set_name"] = config.FEATURE_SET_NAME
+        self.settings["feature_set_name"] = config.FEATURE_SET_NAME  # type: ignore
 
         self.pending_results = []
 
@@ -34,10 +35,12 @@ class Agent:
 
     def set_random_weights(self):
         self._dirty_fitness = True
-        self.settings["weights"] = [uniform(-5.0, 5.0) for _ in range(self.n_weights)]
+        self.settings["weights"] = [uniform(-config.GENE_RANGE, config.GENE_RANGE) for _ in range(self.n_weights)]  # type: ignore
 
     def set_weights(self, weights):
-        assert len(weights) == len(self.settings["weights"])
+        assert len(weights) == len(
+            self.settings["weights"]
+        ), f"new={len(weights)} current={len(self.settings['weights'])}"
 
         if weights == self.settings["weights"]:
             return
@@ -65,37 +68,61 @@ class Agent:
 
         data = self.get_agent_data()
 
-        self.pending_results = [tasks.evaluate_agent.send(data) for _ in range(self.n_evals)]
+        self.pending_results = []
+        for _index in range(self.n_evals):
+            key = f"{self.id}:{_index}"
+            self.pending_results.append(
+                send_task(
+                    task=tasks.evaluate_agent_task,
+                    task_id=key,
+                    args=[data],
+                )
+            )
+
         self._dirty_fitness = True
 
     def _get_scores(self):
         values = []
-        start_time = time.time()
-        timeout_seconds = 10 * 60  # 10 minutes
 
         logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
 
-        for _index, result in enumerate(self.pending_results):
-            while True:
-                # Agents should have as much time as possible to complete
-                # their evaluation. However, due to a bug where an agent
-                # run may finish but not register, we risk waiting
-                # forever. This hack allows us to continue, at the risk
-                # of missing a potentially good score.
-                if time.time() - start_time > timeout_seconds:
-                    logger.error(f"_get_scores timed out after 10 minutes for {_index=} result from {self.id=}")
-                    break
+        results_by_index = defaultdict(lambda: False)
+
+        while True:
+            for _index, result in enumerate(self.pending_results):
+                if results_by_index[_index]:
+                    continue
 
                 try:
-                    value = result.get_result(block=True, timeout=1000)
-                    values.append(json.loads(value))
-                    logger.info(f"got {_index} result from {self.id=}")
-                    break
-                except dramatiq.results.ResultTimeout:
-                    logger.info(f"timeout {self.id=}")
-                    time.sleep(1)  # Prevent busy waiting
+                    agent_raw_result = result.get_result()
 
-        return [value.get("lines_cleared") for value in values]
+                    if agent_raw_result is None:
+                        raise Exception("Agent result is None")
+
+                    agent_result = json.loads(agent_raw_result)
+                    values.append(agent_result)
+                    lines_cleared = agent_result.get("lines_cleared")
+                    pieces_spawned = agent_result.get("pieces_spawned")
+                    logger.info(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
+
+                    results_by_index[_index] = True
+
+                    break
+                except TaskNotFinishedError:
+                    pass
+                except json.JSONDecodeError:
+                    raise Exception("Agent result is not valid JSON")
+                except Exception as e:
+                    raise Exception(f"Got exception while awaiting agent result: {e}")
+
+            if all(results_by_index.values()):
+                break
+
+            time.sleep(0.2)
+
+        scores = [agent_result.get("lines_cleared") for agent_result in values]
+        logger.info(f"got {len(scores)} scores for {self.id=}")
+        return scores
 
     def get_fitness(self):
         if self._dirty_fitness:
@@ -133,8 +160,8 @@ class Individual:
     def __init__(self, agent=None):
         self._agent = agent or Agent()
         self.id = self._agent.id
-        self.n_genes = 14 * 3
-        self.genes = [uniform(-5, 5) for _ in range(self.n_genes)]
+        self.n_genes = config.N_GENES  # type: ignore
+        self.genes = [uniform(-config.GENE_RANGE, config.GENE_RANGE) for _ in range(self.n_genes)]  # type: ignore
 
     def set_genes(self, genes: list[float]):
         assert len(genes) == self.n_genes
@@ -161,7 +188,7 @@ class Individual:
         if result["min"] == 0:
             return 0
 
-        match config.FITNESS_MODE.upper():
+        match config.FITNESS_MODE.upper():  # type: ignore
             case "MAX":
                 return result["max"]
             case "MIN":
@@ -173,7 +200,7 @@ class Individual:
             case "AVG":
                 return result["avg"]
             case _:
-                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")
+                raise ValueError(f"{config.FITNESS_MODE} is not a valid option")  # type: ignore
 
     def get_raw_fitness(self) -> dict[str, float]:
         return self._agent.get_fitness()

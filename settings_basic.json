@@ -1,0 +1,17 @@
+{
+  "agent": {
+    "run_id": "run_123_foo_bar",
+    "agent_id": "agent_spam_eggs",
+    "feature_set_name": "basic",
+    "weights": [
+      0.0,
+      5.0,
+      0.0,
+     -2.0,
+      0.0,
+     -2.0,
+      0.0,
+      2.5
+    ]
+  }
+}
