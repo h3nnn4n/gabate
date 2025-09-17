@@ -21,40 +21,42 @@ def worker_loop() -> None:
         locks = [manager.Lock() for _ in range(WORKER_CONCURRENCY)]
         shutdown_event = manager.Event()
 
-        # Custom signal handler that doesn't let KeyboardInterrupt propagate immediately
         def master_signal_handler(signum, frame):
             logger.info(f"Master received signal {signum}")
             shutdown_event.set()
 
-        # Install signal handler
         original_handler = signal.signal(signal.SIGINT, master_signal_handler)
 
         try:
             with Pool(WORKER_CONCURRENCY) as pool:
                 pool.starmap(single_worker_loop, [(i, locks[i], shutdown_event) for i in range(WORKER_CONCURRENCY)])
         except KeyboardInterrupt:
-            # This shouldn't happen now, but just in case
+            # This shouldn't happen, but just in case
             logger.info(f"Master received KeyboardInterrupt in except block")
             shutdown_event.set()
         finally:
-            # Restore original signal handler
             signal.signal(signal.SIGINT, original_handler)
 
             logger.info("Waiting for workers to complete immediate shutdown...")
 
-            # Brief pause to let signal handlers complete requeuing
-            time.sleep(0.1)
+            time.sleep(0.2)
 
-            # Wait for workers to signal completion
             for i, lock in enumerate(locks):
                 logger.info(f"Waiting for worker {i} to finish")
 
-                while not lock.acquire(timeout=1):
-                    logger.debug(f"Still waiting for worker {i} to finish...")
-                    time.sleep(0.1)
-
-                lock.release()
-                logger.info(f"Worker {i} finished")
+                timeout_count = 0
+                acquired = False
+                while not acquired and timeout_count <= 4:
+                    acquired = lock.acquire(timeout=0.1)
+                    if not acquired:
+                        timeout_count += 1
+                        logger.debug(f"Still waiting for worker {i} to finish...")
+                
+                if acquired:
+                    lock.release()
+                    logger.info(f"Worker {i} finished")
+                else:
+                    logger.warning(f"Worker {i} did not respond after 2 seconds, assuming it exited")
 
 
 def single_worker_loop(_worker_id: int, lock, shutdown_event) -> None:
@@ -97,6 +99,10 @@ def single_worker_loop(_worker_id: int, lock, shutdown_event) -> None:
         finally:
             if current_frame:
                 del current_frame
+        
+        # Interrupt whatever is running since it is back to the queue
+        logger.info(f"Worker {_worker_id} interrupting current task after requeuing")
+        raise KeyboardInterrupt("Task requeued, interrupting execution")
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -121,21 +127,20 @@ def single_worker_loop(_worker_id: int, lock, shutdown_event) -> None:
 
             task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
             if task:
-                # Check for shutdown immediately - don't start the task if shutdown requested
                 if shutdown_requested or shutdown_event.is_set():
                     logger.info(f"Worker {_worker_id} shutdown requested - task {task_key} already requeued")
                     break
 
-                # Run task normally
                 run_task(task, str(task_key))
 
-                # Clear task info after completion
                 task_key = None
                 task = None
             else:
                 logger.error(f"Failed to deserialize task data for {task_key=}")
                 task_key = None
 
+    except KeyboardInterrupt as e:
+        logger.info(f"Worker {_worker_id} interrupted by signal (task was requeued): {e}")
     except Exception as e:
         logger.error(f"Worker {_worker_id} encountered error: {e}")
     finally:
@@ -148,7 +153,6 @@ def single_worker_loop(_worker_id: int, lock, shutdown_event) -> None:
 
         logger.info(f"Worker {_worker_id} exiting: shutdown_reason={shutdown_reason}")
 
-        # Signal completion and exit (tasks already requeued in signal handler)
         logger.info(f"Worker {_worker_id} acquiring lock to signal completion")
         lock.acquire()
         logger.info(f"Worker {_worker_id} has acquired lock and is exiting")
