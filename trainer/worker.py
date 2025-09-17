@@ -24,63 +24,50 @@ def worker_loop() -> None:
                 pool.starmap(single_worker_loop, [(i, locks[i]) for i in range(WORKER_CONCURRENCY)])
         except KeyboardInterrupt:
             logger.info(f"Master received KeyboardInterrupt. HI Momo")
-            for lock in locks:
-                logger.info(f"Locking worker {lock=}")
-                lock.acquire()
 
-            for lock in locks:
-                logger.info(f"Waiting for worker to finish {lock=}")
+            for i, lock in enumerate(locks):
+                logger.info(f"Waiting for worker {i} to finish")
 
-                while not lock.acquire(timeout=10):
-                    time.sleep(0.5)
+                while not lock.acquire(timeout=1):
+                    logger.debug(f"Still waiting for worker {i} to finish...")
+                    time.sleep(1)
 
                 lock.release()
-                logger.info(f"Worker finished {lock=}")
+                logger.info(f"Worker {i} finished {lock=}")
 
 
 def single_worker_loop(_worker_id: int, lock) -> None:
-    def signal_handler(signum, frame):
-        logger.info(f"Worker received signal {signum}. HI Momo")
+    shutdown_requested = False
 
-        # Use inspect to get the calling frame and access local variables
+    def signal_handler(signum, frame):
+        nonlocal shutdown_requested
+        logger.info(f"Worker {_worker_id} received signal: {signum}")
+        shutdown_requested = True
+
+        # Iterate over frames to find the task_key to enqueue it back
         current_frame = inspect.currentframe()
         try:
-            # Walk up the call stack to find the single_worker_loop frame
             while current_frame:
                 if current_frame.f_code.co_name == "single_worker_loop":
-                    # Get local variables from the single_worker_loop frame
                     local_vars = current_frame.f_locals
                     task_key = local_vars.get("task_key")
                     redis = local_vars.get("redis")
+                    task = local_vars.get("task")
 
-                    if task_key and redis:
+                    if task_key and redis and task:
                         logger.info(f"Requeuing task {task_key} due to signal")
-                        # We need to get the task to determine the result_key
-                        task_raw = redis.get(task_key)
-                        if task_raw:
-                            task = TaskSerializer.from_json(task_raw.decode())
-                            if task:
-                                result_key = f"result:{task.instance_id}:status"
-                                redis.lpush("tasks", task_key)
-                                redis.hset(result_key, "status", "pending")
-                                logger.info(f"Requeued task {task_key} due to signal")
-                            else:
-                                logger.warning(f"Failed to deserialize task {task_key} for requeue")
-                        else:
-                            logger.warning(f"Task data not found for {task_key} during signal handling")
+                        try:
+                            result_key = f"result:{task.instance_id}:status"
+                            redis.hset(result_key, "status", "pending")
+                            redis.lpush("tasks", task_key)
+                            logger.info(f"Requeued task {task_key} due to signal")
+                        except Exception as e:
+                            logger.error(f"Failed to requeue task {task_key}: {e}")
                     else:
                         logger.warning("No current task_key or redis connection found in signal handler")
                     break
                 current_frame = current_frame.f_back
         finally:
-            logger.info(f"Releasing lock {lock=}")
-
-            # Wait to be acquired before releasing
-            while not lock.acquire(timeout=10):
-                time.sleep(0.5)
-
-            logger.info(f"Lock released {lock=}")
-
             # Clean up frame reference to avoid circular references
             del current_frame
 
@@ -88,21 +75,39 @@ def single_worker_loop(_worker_id: int, lock) -> None:
 
     redis = get_redis()
 
-    while True:
-        task_key = redis.lpop("tasks")
+    task_key = None
+    task = None
 
-        if task_key is None:
-            continue
+    try:
+        while not shutdown_requested:
+            task_key = redis.lpop("tasks")
 
-        task_raw = redis.get(task_key)  # type: ignore
-        if task_raw is None:
-            raise Exception(f"task data not found for {task_key=}")
+            if task_key is None:
+                time.sleep(0.1)
+                continue
 
-        task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
-        if task:
-            run_task(task, str(task_key))
-        else:
-            raise Exception(f"Failed to deserialize task data for {task_key=}")
+            task_raw = redis.get(task_key)  # type: ignore
+            if task_raw is None:
+                logger.error(f"task data not found for {task_key=}")
+                task_key = None
+                continue
+
+            task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
+            if task:
+                run_task(task, str(task_key))
+
+                task_key = None
+                task = None
+            else:
+                logger.error(f"Failed to deserialize task data for {task_key=}")
+                task_key = None
+
+    except Exception as e:
+        logger.error(f"Worker {_worker_id} encountered error: {e}")
+    finally:
+        logger.info(f"Worker {_worker_id} acquiring lock to signal completion")
+        lock.acquire()
+        logger.info(f"Worker {_worker_id} has acquired lock and is exiting")
 
 
 def run_task(task: TaskInstance, task_key: str) -> None:
