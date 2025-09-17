@@ -18,7 +18,7 @@ def record_breaker(individual_path: str) -> None:
 
     print_fitness_header()
 
-    for i in range(config.POPULATION_SIZE):
+    for i in range(config.POPULATION_SIZE):  # type: ignore
         thread = threading.Thread(target=loop, args=(individual_path,))
         threads.append(thread)
         thread.start()
