@@ -3,20 +3,24 @@ import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 def plot_histogram(input_file, output_file):
     try:
         with open(input_file, "r") as f:
             numbers = [int(line.strip()) for line in f if line.strip()]
     except FileNotFoundError:
-        print(f"Error: File '{input_file}' not found.")
+        logger.error(f"Error: File '{input_file}' not found.")
         return
     except ValueError:
-        print("Error: File contains non-integer values.")
+        logger.error("Error: File contains non-integer values.")
         return
 
     if not numbers:
-        print("Error: No valid integers found in the file.")
+        logger.error("Error: No valid integers found in the file.")
         return
 
     plt.figure(figsize=(10, 6))
@@ -25,7 +29,7 @@ def plot_histogram(input_file, output_file):
     plt.xlabel("Values")
     plt.ylabel("Frequency")
     plt.savefig(output_file, dpi=300, bbox_inches="tight")
-    print(f"Histogram saved to '{output_file}'")
+    logger.info(f"Histogram saved to '{output_file}'")
     plt.close()
 
 

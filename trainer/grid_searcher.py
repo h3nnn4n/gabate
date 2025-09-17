@@ -7,6 +7,9 @@ from tqdm import tqdm
 
 import config
 from agent import Individual
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 GRID_SEARCH_RANGE = config.GENE_RANGE  # type: ignore
 GRID_SEARCH_STEP = 0.5
@@ -26,16 +29,16 @@ def load_agent(individual_path: str):
 
     genes = agent_settings["weights"]
 
-    print(f"Evaluating initial individual {RUN_ID=}")
+    logger.info(f"Evaluating initial individual {RUN_ID=}")
 
     individual = Individual()
     individual.set_genes(genes)
     individual.trigger_fitness_evaluation()
     fitness = individual.get_raw_fitness()
 
-    print("initial fitness:")
-    pprint(fitness)
-    print()
+    logger.info("initial fitness:")
+    logger.info(f"{fitness}")
+    logger.info("")
 
     return individual
 
@@ -45,8 +48,8 @@ def run_grid_search(individual: Individual):
     elite_individual = individual.clone()
 
     for i in range(individual.n_genes):
-        print()
-        print(
+        logger.info("")
+        logger.info(
             f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}"
         )
 
@@ -71,10 +74,10 @@ def run_grid_search(individual: Individual):
             if score > elite_individual.get_fitness():
                 elite_individual = test_individual.clone()
                 elite_individual.set_genes(test_individual.genes)
-                print(f"new elite individual {score=}")
+                logger.info(f"new elite individual {score=}")
 
-        print(f"iteration {i} elite_score:")
-        pprint(elite_individual.get_raw_fitness())
+        logger.info(f"iteration {i} elite_score:")
+        logger.info(f"{elite_individual.get_raw_fitness()}")
         store_elite(elite_individual, i, elite_individual.get_fitness())
 
     return elite_individual

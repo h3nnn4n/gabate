@@ -31,7 +31,7 @@ class Agent:
         self._scores = []
         self._dirty_fitness = True
 
-        logger.info(f"created {self.id=}")
+        logger.debug(f"created {self.id=}")
 
     def set_random_weights(self):
         self._dirty_fitness = True
@@ -67,7 +67,7 @@ class Agent:
         if not force and not self._dirty_fitness:
             return
 
-        logger.info(f"triggering eval for {self.id=}")
+        logger.debug(f"triggering eval for {self.id=}")
 
         data = self.get_agent_data()
 
@@ -87,7 +87,7 @@ class Agent:
     def _get_scores(self):
         values = []
 
-        logger.info(f"getting scores for {self.id=} {self._dirty_fitness}")
+        logger.debug(f"getting scores for {self.id=} {self._dirty_fitness}")
 
         results_by_index = defaultdict(lambda: False)
 
@@ -106,7 +106,7 @@ class Agent:
                     values.append(agent_result)
                     lines_cleared = agent_result.get("lines_cleared")
                     pieces_spawned = agent_result.get("pieces_spawned")
-                    logger.info(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
+                    logger.debug(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
 
                     results_by_index[_index] = True
 
@@ -124,11 +124,13 @@ class Agent:
                 break
 
         assert all(results_by_index.values()), f"Not all results were received: {results_by_index}"
-        assert len(values) == len(self.pending_results), f"Not all results were received: {len(values)} != {len(self.pending_results)}"
+        assert len(values) == len(
+            self.pending_results
+        ), f"Not all results were received: {len(values)} != {len(self.pending_results)}"
         assert len(values) == self.n_evals, f"Not all results were received: {len(values)} != {self.n_evals}"
 
         scores = [agent_result.get("lines_cleared") for agent_result in values]
-        logger.info(f"got {len(scores)} scores for {self.id=}")
+        logger.debug(f"got {len(scores)} scores for {self.id=}")
         return scores
 
     def get_fitness(self):

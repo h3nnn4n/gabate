@@ -6,19 +6,22 @@ from random import choice, random, uniform
 import config
 import utils
 from agent import Individual
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def genetic_algorithm():
-    print("starting genetic algorithm")
-    print("settings:")
-    print(f"   FITNESS_MODE: {config.FITNESS_MODE}")
-    print(f"  N_GENERATIONS: {config.N_GENERATIONS}")
-    print(f"POPULATION_SIZE: {config.POPULATION_SIZE}")
-    print(f"  N_AGENT_EVALS: {config.N_AGENT_EVALS}")
-    print(f" CROSSOVER_RATE: {config.CROSSOVER_RATE}")
-    print(f"  MUTATION_RATE: {config.MUTATION_RATE}")
-    print()
-    print("starting...")
+    logger.info("starting genetic algorithm")
+    logger.info("settings:")
+    logger.info(f"   FITNESS_MODE: {config.FITNESS_MODE}")
+    logger.info(f"  N_GENERATIONS: {config.N_GENERATIONS}")
+    logger.info(f"POPULATION_SIZE: {config.POPULATION_SIZE}")
+    logger.info(f"  N_AGENT_EVALS: {config.N_AGENT_EVALS}")
+    logger.info(f" CROSSOVER_RATE: {config.CROSSOVER_RATE}")
+    logger.info(f"  MUTATION_RATE: {config.MUTATION_RATE}")
+    logger.info("")
+    logger.info("starting...")
 
     population = Population()
 
@@ -31,7 +34,7 @@ def genetic_algorithm():
         population.mutation()
         population.end_generation()
 
-    print("finished")
+    logger.info("finished")
 
 
 class Population:
@@ -64,10 +67,9 @@ class Population:
         generation_duration = (generation_time - self.generation_time).total_seconds()
         diversity = self.get_diversity()
 
-        print(f"{self.generations:4d}/{config.N_GENERATIONS:4d}", end=" ", flush=True)
-        print(f"{min(scores):7d} {sum(scores) / len(scores):8.2f} {max(scores):7d}", end=" ")
-        print(f"{diversity:7.2f} {generation_duration:7.2f}", end="")
-        print()
+        logger.info(
+            f"{self.generations:4d}/{config.N_GENERATIONS:4d} {min(scores):7d} {sum(scores) / len(scores):8.2f} {max(scores):7d} {diversity:7.2f} {generation_duration:7.2f}"
+        )
 
         self.elite_individual = self.get_elite_individual()
 

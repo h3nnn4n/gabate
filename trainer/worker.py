@@ -2,14 +2,17 @@ import json
 from multiprocessing import Pool
 
 import config
+from logging_config import get_logger
 from queueer.task import TaskInstance, TaskSerializer
 from utils import get_redis
+
+logger = get_logger(__name__)
 
 WORKER_CONCURRENCY = config.WORKER_CONCURRENCY  # type: ignore
 
 
 def worker_loop() -> None:
-    print(f"Running worker with {WORKER_CONCURRENCY=}")
+    logger.info(f"Running worker with {WORKER_CONCURRENCY=}")
 
     with Pool(WORKER_CONCURRENCY) as pool:
         pool.map(single_worker_loop, range(WORKER_CONCURRENCY))
@@ -44,13 +47,13 @@ def run_task(task: TaskInstance) -> None:
     args = task.args or []
     kwargs = task.kwargs or {}
 
-    print(f"running task {task.name=} {task.instance_id=}")
+    logger.info(f"running task {task.name=} {task.instance_id=}")
 
     try:
         result = task.callable(*args, **kwargs)
-        print(f"finished task {task.name=} {task.instance_id=}")
+        logger.info(f"finished task {task.name=} {task.instance_id=}")
     except Exception as e:
-        print(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
+        logger.info(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
         redis.hset(result_key, "result", json.dumps({"error": str(e)}))
         redis.hset(result_key, "status", "failed")
     else:

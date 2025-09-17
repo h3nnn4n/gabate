@@ -4,6 +4,7 @@ from evaluator import evaluator
 from forever_search import forever_search
 from genetic_algorithm import genetic_algorithm
 from grid_searcher import grid_searcher
+from logging_config import setup_logging
 from random_search import random_search
 from record_breaker import record_breaker
 from worker import worker_loop
@@ -31,6 +32,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Set up logging based on mode
+    setup_logging(is_worker=args.worker)
 
     if args.worker:
         return worker_loop()

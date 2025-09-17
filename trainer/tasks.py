@@ -2,14 +2,17 @@ import json
 import platform
 from subprocess import PIPE, Popen
 
+from logging_config import get_logger
 from queueer.task import Task
+
+logger = get_logger(__name__)
 
 
 def evaluate_agent(agent_settings):
     payload = json.dumps(agent_settings)
     agent_id = agent_settings["agent"]["agent_id"]
 
-    print(f"running {agent_id=}")
+    logger.info(f"running {agent_id=}")
     env = {}
     args = ["../gabate", "../roms/tetris.gb", payload]
 
@@ -20,20 +23,22 @@ def evaluate_agent(agent_settings):
         output_stdout = proc.stdout.read()  # type: ignore
 
     if proc.returncode != 0:
-        raise Exception(f"Agent {agent_id=} returned non-zero exit code: {proc.returncode}. Output: {output_stdout.decode()}")
+        raise Exception(
+            f"Agent {agent_id=} returned non-zero exit code: {proc.returncode}. Output: {output_stdout.decode()}"
+        )
 
     result = output_stdout.decode()
-    
+
     try:
         result_data = json.loads(result)
         lines_cleared = result_data["lines_cleared"]
         pieces_spawned = result_data["pieces_spawned"]
 
-        print(f"finished running {agent_id=} {pieces_spawned=:4d}     {lines_cleared=:4d}")
+        logger.info(f"finished running {agent_id=} {pieces_spawned=:4d}     {lines_cleared=:4d}")
     except Exception as e:
-        print(f"finished running {agent_id=} with exception: {e}")
-        print(f"exit code: {proc.returncode}")
-        print(f"result: {result}")
+        logger.info(f"finished running {agent_id=} with exception: {e}")
+        logger.info(f"exit code: {proc.returncode}")
+        logger.info(f"result: {result}")
 
     return result
 

@@ -3,7 +3,10 @@ from random import random, uniform
 
 import config
 from agent import Individual
+from logging_config import get_logger
 from random_search import RandomSearch
+
+logger = get_logger(__name__)
 
 
 def forever_search():
@@ -25,10 +28,10 @@ class ForeverSearch(RandomSearch):
         self.generation_count = 0
 
     def initialize_population(self):
-        print(flush=True)
-        print("Initializing population")
+        logger.info("")
+        logger.info("Initializing population")
         for i in range(len(self.population)):
-            print(f"Running random search {i+1} of {len(self.population)}")
+            logger.info(f"Running random search {i+1} of {len(self.population)}")
             elite_genes = RandomSearch().run()
             self.population[i].genes = elite_genes
             self.population[i]._agent.set_weights(elite_genes)
@@ -40,8 +43,8 @@ class ForeverSearch(RandomSearch):
                 self.elite_score = individual_score
                 self.elite_individual = self.population[i]
 
-        print("finished initializing population")
-        print(flush=True)
+        logger.info("finished initializing population")
+        logger.info("")
 
     def run(self):
         self.initialize_population()
@@ -73,14 +76,9 @@ class ForeverSearch(RandomSearch):
         self.elite_individual = self.update_elite()
         self.store_elite()
 
-        print(f"{self.generation_count:4d}  ", end=" ")
-        print(f"min={min(scores):7d}   ", end=" ")
-        print(f"mean={sum(scores) / len(scores):8.2f}   ", end=" ")
-        print(f"max={max(scores):7d}   ", end=" ")
-        print(f"{diversity=:7.2f}   ", end=" ")
-        print(f"{generation_duration=:7.2f}   ", end=" ")
-        print(f"elite={self.elite_score=:7.2f}   ", end=" ")
-        print(flush=True)
+        logger.info(
+            f"{self.generation_count:4d}   min={min(scores):7d}   mean={sum(scores) / len(scores):8.2f}   max={max(scores):7d}   {diversity=:7.2f}   {generation_duration=:7.2f}   elite={self.elite_score=:7.2f}"
+        )
 
     def mutate_individual(self, individual: Individual):
         for i in range(individual.n_genes):

@@ -4,6 +4,9 @@ import uuid
 
 import config
 from agent import Individual
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 best_fitness = 0
 run_id = str(uuid.uuid4())
@@ -61,10 +64,10 @@ def store_data(raw_fitness: dict) -> None:
 
 
 def print_pretty_fitness(raw_fitness: dict) -> None:
-    print(
+    logger.info(
         f"{raw_fitness['min']:8} {raw_fitness['avg']:10.2f} {raw_fitness['median']:10.2f} {raw_fitness['max']:8}    {best_fitness:8}"
     )
 
 
 def print_fitness_header() -> None:
-    print(f"{'min':8} {'avg':12} {'median':12} {'max':8}    {'best':8}")
+    logger.info(f"{'min':8} {'avg':12} {'median':12} {'max':8}    {'best':8}")

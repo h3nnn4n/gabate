@@ -6,6 +6,9 @@ from uuid import uuid4
 
 import config
 from agent import Individual
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def random_search():
@@ -49,14 +52,14 @@ class RandomSearch:
 
         self.store_elite()
 
-        print(f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}   ", end=" ")  # type: ignore
-        print(f"min={min(scores):8.2f}   ", end=" ")
-        print(f"mean={sum(scores) / len(scores):8.2f}   ", end=" ")
-        print(f"max={max(scores):8.2f}   ", end=" ")
-        print(f"{diversity=:7.2f}   ", end=" ")
-        print(f"{generation_duration=:7.2f}   ", end=" ")
-        print(f"elite={self.elite_score:8.2f}   ", end=" ")
-        print(flush=True)
+        gen_str = f"{self.generation_count:4d}/{config.N_GENERATIONS:4d}"  # type: ignore
+        min_str = f"min={min(scores):8.2f}"
+        mean_str = f"mean={sum(scores) / len(scores):8.2f}"
+        max_str = f"max={max(scores):8.2f}"
+        diversity_str = f"{diversity=:7.2f}"
+        duration_str = f"{generation_duration=:7.2f}"
+        elite_str = f"elite={self.elite_score:8.2f}"
+        print("   ".join([gen_str, min_str, mean_str, max_str, diversity_str, duration_str, elite_str]))
 
     def build_population(self) -> list[Individual]:
         return [Individual() for _ in range(self.population_size)]
