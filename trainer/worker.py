@@ -19,24 +19,45 @@ def worker_loop() -> None:
 
     with Manager() as manager:
         locks = [manager.Lock() for _ in range(WORKER_CONCURRENCY)]
+        shutdown_event = manager.Event()
+
+        # Custom signal handler that doesn't let KeyboardInterrupt propagate immediately
+        def master_signal_handler(signum, frame):
+            logger.info(f"Master received signal {signum}")
+            shutdown_event.set()
+
+        # Install signal handler
+        original_handler = signal.signal(signal.SIGINT, master_signal_handler)
+
         try:
             with Pool(WORKER_CONCURRENCY) as pool:
-                pool.starmap(single_worker_loop, [(i, locks[i]) for i in range(WORKER_CONCURRENCY)])
+                pool.starmap(single_worker_loop, [(i, locks[i], shutdown_event) for i in range(WORKER_CONCURRENCY)])
         except KeyboardInterrupt:
-            logger.info(f"Master received KeyboardInterrupt. HI Momo")
+            # This shouldn't happen now, but just in case
+            logger.info(f"Master received KeyboardInterrupt in except block")
+            shutdown_event.set()
+        finally:
+            # Restore original signal handler
+            signal.signal(signal.SIGINT, original_handler)
 
+            logger.info("Waiting for workers to complete immediate shutdown...")
+
+            # Brief pause to let signal handlers complete requeuing
+            time.sleep(0.1)
+
+            # Wait for workers to signal completion
             for i, lock in enumerate(locks):
                 logger.info(f"Waiting for worker {i} to finish")
 
                 while not lock.acquire(timeout=1):
                     logger.debug(f"Still waiting for worker {i} to finish...")
-                    time.sleep(1)
+                    time.sleep(0.1)
 
                 lock.release()
-                logger.info(f"Worker {i} finished {lock=}")
+                logger.info(f"Worker {i} finished")
 
 
-def single_worker_loop(_worker_id: int, lock) -> None:
+def single_worker_loop(_worker_id: int, lock, shutdown_event) -> None:
     shutdown_requested = False
 
     def signal_handler(signum, frame):
@@ -44,7 +65,7 @@ def single_worker_loop(_worker_id: int, lock) -> None:
         logger.info(f"Worker {_worker_id} received signal: {signum}")
         shutdown_requested = True
 
-        # Iterate over frames to find the task_key to enqueue it back
+        # Immediately requeue any active task
         current_frame = inspect.currentframe()
         try:
             while current_frame:
@@ -55,21 +76,27 @@ def single_worker_loop(_worker_id: int, lock) -> None:
                     task = local_vars.get("task")
 
                     if task_key and redis and task:
-                        logger.info(f"Requeuing task {task_key} due to signal")
+                        logger.info(f"Worker {_worker_id} immediately requeuing task {task_key}")
                         try:
-                            result_key = f"result:{task.instance_id}:status"
-                            redis.hset(result_key, "status", "pending")
-                            redis.lpush("tasks", task_key)
-                            logger.info(f"Requeued task {task_key} due to signal")
+                            task_key_str = task_key.decode() if isinstance(task_key, bytes) else str(task_key)
+                            parts = task_key_str.split(":", 2)
+                            if len(parts) >= 3:
+                                instance_id = parts[2]
+                                result_key = f"result:{instance_id}:status"
+
+                                redis.hset(result_key, "status", "pending")
+                                redis.lpush("tasks", task_key_str)
+
+                                logger.info(f"Worker {_worker_id} successfully requeued {task_key} immediately")
+                            else:
+                                logger.error(f"Could not parse instance_id from task_key: {task_key}")
                         except Exception as e:
-                            logger.error(f"Failed to requeue task {task_key}: {e}")
-                    else:
-                        logger.warning("No current task_key or redis connection found in signal handler")
+                            logger.error(f"Failed to requeue task {task_key} in signal handler: {e}")
                     break
                 current_frame = current_frame.f_back
         finally:
-            # Clean up frame reference to avoid circular references
-            del current_frame
+            if current_frame:
+                del current_frame
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -79,7 +106,7 @@ def single_worker_loop(_worker_id: int, lock) -> None:
     task = None
 
     try:
-        while not shutdown_requested:
+        while not shutdown_requested and not shutdown_event.is_set():
             task_key = redis.lpop("tasks")
 
             if task_key is None:
@@ -94,8 +121,15 @@ def single_worker_loop(_worker_id: int, lock) -> None:
 
             task = TaskSerializer.from_json(task_raw.decode())  # type: ignore
             if task:
+                # Check for shutdown immediately - don't start the task if shutdown requested
+                if shutdown_requested or shutdown_event.is_set():
+                    logger.info(f"Worker {_worker_id} shutdown requested - task {task_key} already requeued")
+                    break
+
+                # Run task normally
                 run_task(task, str(task_key))
 
+                # Clear task info after completion
                 task_key = None
                 task = None
             else:
@@ -105,12 +139,25 @@ def single_worker_loop(_worker_id: int, lock) -> None:
     except Exception as e:
         logger.error(f"Worker {_worker_id} encountered error: {e}")
     finally:
+        # Debug logging for task state
+        shutdown_reason = []
+        if shutdown_requested:
+            shutdown_reason.append("signal")
+        if shutdown_event.is_set():
+            shutdown_reason.append("event")
+
+        logger.info(f"Worker {_worker_id} exiting: shutdown_reason={shutdown_reason}")
+
+        # Signal completion and exit (tasks already requeued in signal handler)
         logger.info(f"Worker {_worker_id} acquiring lock to signal completion")
         lock.acquire()
         logger.info(f"Worker {_worker_id} has acquired lock and is exiting")
 
 
 def run_task(task: TaskInstance, task_key: str) -> None:
+    """
+    Run a task to completion.
+    """
     redis = get_redis()
     result_key = f"result:{task.instance_id}:status"
 
@@ -124,10 +171,9 @@ def run_task(task: TaskInstance, task_key: str) -> None:
     try:
         result = task.callable(*args, **kwargs)
         logger.info(f"finished task {task.name=} {task.instance_id=}")
+        redis.hset(result_key, "result", json.dumps(result))
+        redis.hset(result_key, "status", "finished")
     except Exception as e:
         logger.info(f"failed task {task.name=} {task.instance_id=} with exception: {e}")
         redis.hset(result_key, "result", json.dumps({"error": str(e)}))
         redis.hset(result_key, "status", "failed")
-    else:
-        redis.hset(result_key, "result", json.dumps(result))
-        redis.hset(result_key, "status", "finished")
