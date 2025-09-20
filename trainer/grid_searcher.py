@@ -45,12 +45,14 @@ def load_agent(individual_path: str):
 
 def run_grid_search(individual: Individual):
     test_individuals = []
-    elite_individual = individual.clone()
+    best_score = 0
 
     for i in range(individual.n_genes):
+        elite_individual = individual.clone()
+
         logger.info("")
         logger.info(
-            f"running grid search for gene {i + 1}/{individual.n_genes}  elite_score: {elite_individual.get_fitness()}"
+            f"running grid search for gene {i + 1}/{individual.n_genes}"
         )
 
         test_individuals = []
@@ -59,28 +61,30 @@ def run_grid_search(individual: Individual):
 
         for j in range(n_grid_steps):
             gene_value = j * GRID_SEARCH_STEP - GRID_SEARCH_RANGE
-            new_genes = elite_individual.genes.copy()
+            new_genes = individual.genes.copy()
             new_genes[i] = gene_value
-            test_individual = elite_individual.clone()
+            test_individual = Individual()
             test_individual.set_genes(new_genes)
             test_individuals.append(test_individual)
 
         for test_individual in test_individuals:
             test_individual.trigger_fitness_evaluation()
 
-        scores = [individual.get_fitness() for individual in tqdm(test_individuals, desc="evaluating")]
+        scores = [test_individual.get_fitness() for test_individual in tqdm(test_individuals, desc="evaluating")]
 
         for test_individual, score in zip(test_individuals, scores):
-            if score > elite_individual.get_fitness():
+            if score > best_score:
+                best_score = score
                 elite_individual = test_individual.clone()
                 elite_individual.set_genes(test_individual.genes)
-                logger.info(f"new elite individual {score=}")
+                logger.info(f"new best individual {score=}")
 
-        logger.info(f"iteration {i} elite_score:")
+        logger.info(f"iteration {i} best score:")
         logger.info(f"{elite_individual.get_raw_fitness()}")
-        store_elite(elite_individual, i, elite_individual.get_fitness())
 
-    return elite_individual
+        individual.set_genes(elite_individual.genes)
+
+        store_elite(elite_individual, i, elite_individual.get_fitness())
 
 
 def store_elite(individual: Individual, generation_count: int, elite_score: float):
