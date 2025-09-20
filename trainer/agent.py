@@ -161,7 +161,7 @@ class Agent:
         new._dirty_fitness = self._dirty_fitness
         new._scores = copy(self._scores)
         new.pending_results = copy(self.pending_results)
-        logger.info(f"cloning {self.id=} to {new.id=}")
+        logger.debug(f"cloning {self.id=} to {new.id=}")
         return new
 
 
