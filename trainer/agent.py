@@ -238,6 +238,7 @@ class Individual:
         new = Individual(agent=copy_agent)
         new.n_genes = self.n_genes
         new.genes = copy(self.genes)
+        new._dirty_fitness = self._dirty_fitness
 
         return new
 
