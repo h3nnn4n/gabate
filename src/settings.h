@@ -33,6 +33,7 @@ typedef struct {
     bool    ping_mode;
     char   *feature_set_name;
     bool    debug_mode;
+    bool    capture_output;
 } _agent_config;
 
 bool           pong();

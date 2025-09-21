@@ -30,6 +30,7 @@
 #include "file_control.h"
 #include "other_window.h"
 #include "rev.h"
+#include "settings.h"
 
 /*#define __use_sdl*/
 
@@ -325,8 +326,10 @@ void flip_screen(_cpu_info *cpu) {
 
 void sdl_init() {
 #ifdef __save_png_frames
-    headless_buffer = malloc(sizeof(uint32_t) * headless_screenx * headless_screeny);
-    memset(headless_buffer, 0, headless_screenx * headless_screeny * sizeof(uint32_t));
+    if (get_agent_config()->capture_output) {
+        headless_buffer = malloc(sizeof(uint32_t) * headless_screenx * headless_screeny);
+        memset(headless_buffer, 0, headless_screenx * headless_screeny * sizeof(uint32_t));
+    }
 #endif
 }
 

@@ -54,6 +54,14 @@ void load_settings(char *setting_str) {
         return;
     }
 
+    cJSON *capture_output = cJSON_GetObjectItemCaseSensitive(json, "capture_output");
+    if (capture_output != NULL) {
+        agent_config.capture_output = cJSON_IsTrue(capture_output);
+    } else {
+        printf_debug("defaulting to not capture output\n");
+        agent_config.capture_output = false;
+    }
+
     agent_config.settings = json;
 
     cJSON *agent = cJSON_GetObjectItemCaseSensitive(json, "agent");
