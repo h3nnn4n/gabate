@@ -172,7 +172,7 @@ class Agent:
         new.settings["feature_set_name"] = self.settings["feature_set_name"]
         new._dirty_fitness = self._dirty_fitness
         new._scores = copy(self._scores)
-        new.pending_results = copy(self.pending_results)
+        new.pending_results = []
         logger.debug(f"cloning {self.id=} to {new.id=}")
         return new
 
