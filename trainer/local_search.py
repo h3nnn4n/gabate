@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 STEP_SIZE = config.GENE_STEP_SIZE  # type: ignore
 DURATION = timedelta(minutes=5)
 
-UPDATE_INTERVAL = timedelta(seconds=10)
+UPDATE_INTERVAL = timedelta(seconds=30)
 RUN_ID = str(uuid4())[:8]
 
 
