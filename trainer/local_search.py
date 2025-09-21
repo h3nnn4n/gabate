@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import random
+import signal
+import sys
 from datetime import datetime, timedelta
 from time import sleep
 from uuid import uuid4
@@ -17,8 +19,22 @@ DURATION = timedelta(minutes=5)
 UPDATE_INTERVAL = timedelta(seconds=30)
 RUN_ID = str(uuid4())[:8]
 
+should_stop = False
+
+
+def signal_handler(signum, frame):
+    """Handle Ctrl+C gracefully by setting the stop flag."""
+    global should_stop
+    logger.info("Received interrupt signal (Ctrl+C). Stopping search gracefully...")
+    should_stop = True
+
 
 def local_search(individual_path: str):
+    global should_stop
+    should_stop = False
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     individual_name = individual_path.split("/")[-1]
     logger.info(f"Starting local search for {individual_name=}")
 
@@ -43,7 +59,7 @@ def local_search(individual_path: str):
     last_update = datetime.now()
     print_status(elite_individual, original_individual, evaluations, t_start)
 
-    while datetime.now() - t_start < DURATION:
+    while datetime.now() - t_start < DURATION and not should_stop:
         if datetime.now() - last_update > UPDATE_INTERVAL:
             print_status(elite_individual, original_individual, evaluations, t_start)
             last_update = datetime.now()
@@ -71,7 +87,11 @@ def local_search(individual_path: str):
 
         sleep(1)
 
-    logger.info("Finished main loop. Waiting for remaining evaluations to finish")
+    if should_stop:
+        logger.info("Search interrupted by user. Waiting for remaining evaluations to finish...")
+    else:
+        logger.info("Finished main loop. Waiting for remaining evaluations to finish")
+
     while not all(individual.is_evaluation_ready for individual in population):
         sleep(1)
     logger.info("Finished waiting for remaining evaluations to finish")
@@ -82,6 +102,9 @@ def local_search(individual_path: str):
             logger.info(f"New elite individual: {json.dumps(individual.get_raw_fitness())}")
 
     logger.info(f"Elite individual: {json.dumps(elite_individual.get_raw_fitness())}")
+
+    if should_stop:
+        logger.info("Search completed after interruption. Final results saved.")
 
 
 def print_status(
