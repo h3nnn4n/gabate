@@ -45,8 +45,11 @@ static uint32_t frame_counter = 0;
 
 void create_output_directory() {
     struct stat st = {0};
-    if (stat("output", &st) == -1) {
-        mkdir("output", 0755);
+
+    char path[256];
+    snprintf(path, sizeof(path), "output/%s/", get_agent_config()->run_id);
+    if (stat(path, &st) == -1) {
+        mkdir(path, 0755);
     }
 }
 

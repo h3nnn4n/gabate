@@ -117,6 +117,11 @@ void load_settings(char *setting_str) {
         fprintf(stderr, "fature set not set. Aborting.\n");
         abort();
     }
+
+    if (agent_config.capture_output && agent_config.run_id == NULL) {
+        fprintf(stderr, "run_id not set. Aborting.\n");
+        abort();
+    }
 }
 
 double *get_agent_weights() {
