@@ -31,3 +31,7 @@ REDIS_URL: str = str(config("REDIS_URL", default="redis://localhost:6379"))
 ## Worker settings
 
 WORKER_CONCURRENCY = int(config("WORKER_CONCURRENCY", default=1, cast=int))
+
+## Misc
+
+CAPTURE_OUTPUT = bool(config("CAPTURE_OUTPUT", default=False, cast=bool))

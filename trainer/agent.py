@@ -60,6 +60,7 @@ class Agent:
     def get_agent_data(self):
         return {
             "debug_mode": False,
+            "capture_output": config.CAPTURE_OUTPUT,  # type: ignore
             "agent": self.settings,
         }
 
@@ -74,6 +75,7 @@ class Agent:
         self.pending_results = []
         for _index in range(self.n_evals):
             key = f"{self.id}:{_index}"
+            data["run_id"] = key
             self.pending_results.append(
                 send_task(
                     task=tasks.evaluate_agent_task,
