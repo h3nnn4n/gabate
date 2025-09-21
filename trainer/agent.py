@@ -109,8 +109,6 @@ class Agent:
                     logger.debug(f"got {_index} result from {self.id=} {lines_cleared=} {pieces_spawned=}")
 
                     results_by_index[_index] = True
-
-                    break
                 except TaskNotFinishedError:
                     pass
                 except TaskFailedError:
@@ -123,7 +121,7 @@ class Agent:
             if len(values) == self.n_evals:
                 break
 
-            if not block:
+            if not block and (len(values) < self.n_evals):
                 logger.debug(f"not blocking, returning None found {len(values)} of {self.n_evals} results")
                 return None
 
