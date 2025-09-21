@@ -59,7 +59,7 @@ def local_search(individual_path: str):
     last_update = datetime.now()
     print_status(elite_individual, original_individual, evaluations, t_start)
 
-    while datetime.now() - t_start < DURATION and not should_stop:
+    while not should_stop:
         if datetime.now() - last_update > UPDATE_INTERVAL:
             print_status(elite_individual, original_individual, evaluations, t_start)
             last_update = datetime.now()
@@ -90,7 +90,7 @@ def local_search(individual_path: str):
     if should_stop:
         logger.info("Search interrupted by user. Waiting for remaining evaluations to finish...")
     else:
-        logger.info("Finished main loop. Waiting for remaining evaluations to finish")
+        logger.info("Search completed. Waiting for remaining evaluations to finish")
 
     while not all(individual.is_evaluation_ready for individual in population):
         sleep(1)
@@ -111,8 +111,6 @@ def print_status(
     elite_individual: Individual, original_individual: Individual, evaluations: int, t_start: datetime
 ) -> None:
     time_elapsed = datetime.now() - t_start
-    time_left = DURATION - time_elapsed
-    time_progress = time_elapsed.total_seconds() / DURATION.total_seconds()
     gene_distance = (
         sum((elite_individual.genes[i] - original_individual.genes[i]) ** 2 for i in range(elite_individual.n_genes))
         ** 0.5
@@ -122,9 +120,7 @@ def print_status(
     distance_str = f"distance={gene_distance:5.2f}"
     elite_score_str = f"elite_score={elite_individual.get_fitness():8.2f}"
     elapsed_str = f"elapsed={time_elapsed.total_seconds() / 60:5.2f}m"
-    left_str = f"left={time_left.total_seconds() / 60:5.2f}m"
-    progress_str = f"({time_progress:5.2%})"
-    tokens = [evals_str, distance_str, elite_score_str, elapsed_str, left_str, progress_str]
+    tokens = [evals_str, distance_str, elite_score_str, elapsed_str]
     logger.info("   ".join(tokens))
 
 
