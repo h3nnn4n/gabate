@@ -63,7 +63,7 @@ def local_search(individual_path: str):
 
                 individual.set_genes(elite_individual.genes)
                 mutate_individual(individual)
-                individual.trigger_fitness_evaluation()
+                individual.trigger_fitness_evaluation(force=True)
 
         sleep(1)
 
