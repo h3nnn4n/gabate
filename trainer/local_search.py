@@ -1,8 +1,10 @@
 import json
 import logging
+import os
 import random
 from datetime import datetime, timedelta
 from time import sleep
+from uuid import uuid4
 
 import config
 from agent import Individual, load_agent
@@ -13,6 +15,7 @@ STEP_SIZE = config.GENE_STEP_SIZE  # type: ignore
 DURATION = timedelta(minutes=5)
 
 UPDATE_INTERVAL = timedelta(seconds=10)
+RUN_ID = str(uuid4())[:8]
 
 
 def local_search(individual_path: str):
@@ -54,6 +57,7 @@ def local_search(individual_path: str):
                 if individual.get_fitness() > elite_individual.get_fitness():
                     elite_individual = individual.clone()
                     print_status(elite_individual, original_individual, evaluations, t_start)
+                    store_elite(elite_individual, evaluations, elite_individual.get_fitness())
 
                     logger.debug(f"New elite individual: {index_} {json.dumps(individual.get_raw_fitness())}")
                 else:
@@ -104,3 +108,11 @@ def mutate_individual(individual: Individual) -> None:
     direction = random.choice([-1, 1])
     genes[random_gene_index] += direction * STEP_SIZE
     individual.set_genes(genes)
+
+
+def store_elite(individual: Individual, generation_count: int, elite_score: float) -> None:
+    base_path = "results/local_search/"
+    os.makedirs(base_path, exist_ok=True)
+
+    with open(f"{base_path}/elite_individual__{RUN_ID}__{generation_count}_score_{elite_score}.json", "wt") as f:
+        f.write(json.dumps(individual.settings, indent=2))
