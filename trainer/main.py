@@ -4,6 +4,7 @@ from evaluator import evaluator
 from forever_search import forever_search
 from genetic_algorithm import genetic_algorithm
 from grid_searcher import grid_searcher
+from local_search import local_search
 from logging_config import setup_logging
 from random_search import random_search
 from record_breaker import record_breaker
@@ -22,7 +23,15 @@ def main():
         type=str,
         nargs="?",
         help="The training mode to use to train gabate.",
-        choices=["genetic_algorithm", "random_search", "forever_search", "evaluator", "grid_searcher", "record_breaker"],
+        choices=[
+            "genetic_algorithm",
+            "random_search",
+            "forever_search",
+            "evaluator",
+            "grid_searcher",
+            "record_breaker",
+            "local_search",
+        ],
     )
     parser.add_argument(
         "--individual",
@@ -61,6 +70,8 @@ def main():
             grid_searcher(args.individual)
         case "record_breaker":
             record_breaker(args.individual)
+        case "local_search":
+            local_search(args.individual)
         case _:
             raise ValueError(f"Invalid mode: {args.mode}")
 
