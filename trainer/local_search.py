@@ -84,13 +84,16 @@ def local_search(individual_path: str):
     logger.info(f"Elite individual: {json.dumps(elite_individual.get_raw_fitness())}")
 
 
-def print_status(elite_individual: Individual, original_individual: Individual, evaluations: int, t_start: datetime) -> None:
+def print_status(
+    elite_individual: Individual, original_individual: Individual, evaluations: int, t_start: datetime
+) -> None:
     time_elapsed = datetime.now() - t_start
     time_left = DURATION - time_elapsed
     time_progress = time_elapsed.total_seconds() / DURATION.total_seconds()
-    gene_distance = sum(
-        (elite_individual.genes[i] - original_individual.genes[i]) ** 2 for i in range(elite_individual.n_genes)
-    ) ** 0.5
+    gene_distance = (
+        sum((elite_individual.genes[i] - original_individual.genes[i]) ** 2 for i in range(elite_individual.n_genes))
+        ** 0.5
+    )
 
     evals_str = f"{evaluations=:6d}"
     distance_str = f"distance={gene_distance:5.2f}"
