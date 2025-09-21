@@ -84,7 +84,7 @@ class Agent:
 
         self._dirty_fitness = True
 
-    def _get_scores(self):
+    def _get_scores(self, block: bool = True) -> t.Optional[list[float]]:
         values = []
 
         logger.debug(f"getting scores for {self.id=} {self._dirty_fitness}")
@@ -123,6 +123,10 @@ class Agent:
             if len(values) == self.n_evals:
                 break
 
+            if not block:
+                logger.debug(f"not blocking, returning None found {len(values)} of {self.n_evals} results")
+                return None
+
         assert all(results_by_index.values()), f"Not all results were received: {results_by_index}"
         assert len(values) == len(
             self.pending_results
@@ -133,13 +137,21 @@ class Agent:
         logger.debug(f"got {len(scores)} scores for {self.id=}")
         return scores
 
-    def get_fitness(self):
+    def get_fitness(self, block: bool = True) -> t.Optional[dict[str, float]]:
         if self._dirty_fitness:
-            self._scores = self._get_scores()
+            maybe_scores = self._get_scores(block)
+
+            if not block and maybe_scores is None:
+                return None
+
+            self._scores = maybe_scores
             self._dirty_fitness = False
 
             if not self._scores:
                 raise ValueError("agent hasn't been evaluated yet")
+
+        assert self._scores is not None, "scores are not set"
+        assert len(self._scores) == self.n_evals, f"Not all results were received: {len(self._scores)} != {self.n_evals}"
 
         scores = self._scores
 
@@ -190,8 +202,10 @@ class Individual:
     def trigger_fitness_evaluation(self, force: bool = False) -> None:
         self._agent.trigger_eval(force)
 
-    def get_fitness(self):
-        result = self._agent.get_fitness()
+    def get_fitness(self) -> float:
+        result = self._agent.get_fitness(block=True)
+
+        assert result is not None, "get_fitness returned None"
 
         # Short circuit fitness to zero if IA fails to score anything during any evals
         if result["min"] == 0:
@@ -212,7 +226,14 @@ class Individual:
                 raise ValueError(f"{config.FITNESS_MODE} is not a valid option")  # type: ignore
 
     def get_raw_fitness(self) -> dict[str, float]:
-        return self._agent.get_fitness()
+        result = self._agent.get_fitness(block=True)
+        assert result is not None, "get_raw_fitness returned None"
+        return result
+    
+    @property
+    def is_evaluation_ready(self) -> bool:
+        result = self._agent.get_fitness(block=False)
+        return result is not None
 
     def clone(self):
         copy_agent = self._agent.clone()
