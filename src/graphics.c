@@ -19,6 +19,9 @@
  ******************************************************************************/
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "graphics.h"
 #include "overlay.h"
@@ -30,8 +33,67 @@
 
 /*#define __use_sdl*/
 
-/*#define __save_frames*/
+#define __save_png_frames
 /*#define __render_window*/
+
+#ifdef __save_png_frames
+#include <png.h>
+#include <errno.h>
+
+static uint32_t frame_counter = 0;
+
+void create_output_directory() {
+    struct stat st = {0};
+    if (stat("output", &st) == -1) {
+        mkdir("output", 0755);
+    }
+}
+
+void write_png_file(const char* filename, uint32_t* buffer, int width, int height) {
+    FILE* fp = fopen(filename, "wb");
+    if (!fp) return;
+
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) {
+        fclose(fp);
+        return;
+    }
+
+    png_infop info = png_create_info_struct(png);
+    if (!info) {
+        png_destroy_write_struct(&png, NULL);
+        fclose(fp);
+        return;
+    }
+
+    if (setjmp(png_jmpbuf(png))) {
+        png_destroy_write_struct(&png, &info);
+        fclose(fp);
+        return;
+    }
+
+    png_init_io(png, fp);
+    png_set_IHDR(png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+                 PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+    png_write_info(png, info);
+
+    png_bytep row = malloc(3 * width * sizeof(png_byte));
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            uint32_t pixel = buffer[y * width + x];
+            row[x * 3 + 0] = (pixel >> 16) & 0xFF;
+            row[x * 3 + 1] = (pixel >> 8) & 0xFF;
+            row[x * 3 + 2] = pixel & 0xFF;
+        }
+        png_write_row(png, row);
+    }
+
+    free(row);
+    png_write_end(png, NULL);
+    png_destroy_write_struct(&png, &info);
+    fclose(fp);
+}
+#endif
 
 #ifdef __use_sdl
 
@@ -81,6 +143,20 @@ void sdl_init() {
 }
 
 void flip_screen(_cpu_info *cpu) {
+#ifdef __save_png_frames
+    static int output_dir_created = 0;
+    if (!output_dir_created) {
+        create_output_directory();
+        output_dir_created = 1;
+    }
+
+    char filename[256];
+    sprintf(filename, "output/frame_%06d.png", frame_counter);
+    frame_counter++;
+
+    write_png_file(filename, pixels, screenx, screeny);
+#endif
+
 #ifdef __save_frames
     if (can_write_file_control()) {
         char name[256];
@@ -225,11 +301,54 @@ void sdl_quit() { SDL_Quit(); }
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-void      flip_screen(_cpu_info *cpu) {}
-void      sdl_init() {}
+static uint32_t *headless_buffer;
+static int headless_screenx = 160;
+static int headless_screeny = 144;
+
+void flip_screen(_cpu_info *cpu) {
+#ifdef __save_png_frames
+    static int output_dir_created = 0;
+    if (!output_dir_created) {
+        create_output_directory();
+        output_dir_created = 1;
+    }
+
+    if (headless_buffer) {
+        char filename[256];
+        sprintf(filename, "output/frame_%06d.png", frame_counter);
+        frame_counter++;
+
+        write_png_file(filename, headless_buffer, headless_screenx, headless_screeny);
+    }
+#endif
+}
+
+void sdl_init() {
+#ifdef __save_png_frames
+    headless_buffer = malloc(sizeof(uint32_t) * headless_screenx * headless_screeny);
+    memset(headless_buffer, 0, headless_screenx * headless_screeny * sizeof(uint32_t));
+#endif
+}
+
 void      input_update(_cpu_info *cpu) {}
-void      sdl_quit() {}
-uint32_t *get_frame_buffer() { return NULL; }
+
+void sdl_quit() {
+#ifdef __save_png_frames
+    if (headless_buffer) {
+        free(headless_buffer);
+        headless_buffer = NULL;
+    }
+#endif
+}
+
+uint32_t *get_frame_buffer() {
+#ifdef __save_png_frames
+    return headless_buffer;
+#else
+    return NULL;
+#endif
+}
+
 void      draw_rectangle_overlay(int x, int y, int x2, int y2, int r, int g, int b) {}
 void      draw_text_overlay(char *text, int x, int y, int r, int g, int b) {}
 void      draw_text_with_bg_overlay(char *text, int x, int y, int r, int g, int b) {}

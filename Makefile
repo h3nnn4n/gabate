@@ -18,7 +18,7 @@ INCLUDES = -Isrc/ \
 
 OPTIMIZATION=-O3
 
-LDFLAGS += -lpcg_random -lcjson -lm -lSDL2_ttf `sdl2-config --libs`
+LDFLAGS += -lpcg_random -lcjson -lm -lSDL2_ttf -lpng `sdl2-config --libs`
 CFLAGS += -Wall -Wextra -pedantic -std=gnu11 $(OPTIMIZATION) $(OPTIONS) $(INCLUDES)
 
 UNAME_S := $(shell uname -s)
@@ -36,7 +36,6 @@ CFLAGS += `sdl2-config --cflags`
 CC = gcc
 
 C_FILES := $(wildcard src/*.c) \
-           $(wildcard src/**/*.c) \
            $(wildcard deps/pcg-c/extras/*.c) \
            $(wildcard deps/jenkins_hash/*.c)
 C_FILES_TEST := $(wildcard test/*.c)
