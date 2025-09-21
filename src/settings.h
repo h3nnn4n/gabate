@@ -34,6 +34,7 @@ typedef struct {
     char   *feature_set_name;
     bool    debug_mode;
     bool    capture_output;
+    char   *capture_output_dir;
 } _agent_config;
 
 bool           pong();

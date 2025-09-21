@@ -1,4 +1,5 @@
 {
+  "capture_output": true,
   "agent": {
     "run_id": "run_123_foo_bar",
     "agent_id": "agent_spam_eggs",

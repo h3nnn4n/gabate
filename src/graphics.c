@@ -31,6 +31,7 @@
 #include "other_window.h"
 #include "rev.h"
 #include "settings.h"
+#include "utils.h"
 
 /*#define __use_sdl*/
 
@@ -46,10 +47,28 @@ static uint32_t frame_counter = 0;
 void create_output_directory() {
     struct stat st = {0};
 
-    char path[256];
-    snprintf(path, sizeof(path), "output/%s/", get_agent_config()->run_id);
+    char *path = get_agent_config()->capture_output_dir;
+
     if (stat(path, &st) == -1) {
+        printf_debug("creating output directory %s\n", path);
+
+        char *p = path;
+        while (*p) {
+            if (*p == '/') {
+                *p = '\0';
+                if (stat(path, &st) == -1) {
+                    mkdir(path, 0755);
+                    printf_debug("created output directory %s\n", path);
+                }
+                *p = '/';
+            }
+            p++;
+        }
+
         mkdir(path, 0755);
+        printf_debug("created output directory %s\n", path);
+    } else {
+        printf_debug("output directory %s already exists\n", path);
     }
 }
 
@@ -313,7 +332,7 @@ void flip_screen(_cpu_info *cpu) {
 #ifdef __save_png_frames
     if (headless_buffer) {
         char filename[256];
-        sprintf(filename, "output/frame_%06d.png", frame_counter);
+        sprintf(filename, "%s/frame_%06d.png", get_agent_config()->capture_output_dir, frame_counter);
         frame_counter++;
 
         write_png_file(filename, headless_buffer, headless_screenx, headless_screeny);
@@ -324,6 +343,7 @@ void flip_screen(_cpu_info *cpu) {
 void sdl_init() {
 #ifdef __save_png_frames
     if (get_agent_config()->capture_output) {
+        printf_debug("capture_output is true\n");
         headless_buffer = malloc(sizeof(uint32_t) * headless_screenx * headless_screeny);
         memset(headless_buffer, 0, headless_screenx * headless_screeny * sizeof(uint32_t));
         create_output_directory();

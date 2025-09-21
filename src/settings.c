@@ -121,6 +121,12 @@ void load_settings(char *setting_str) {
     if (agent_config.capture_output && agent_config.run_id == NULL) {
         fprintf(stderr, "run_id not set. Aborting.\n");
         abort();
+    } else if (agent_config.capture_output && agent_config.run_id != NULL) {
+        uint16_t string_length = strlen(agent_config.run_id) + strlen("output/") + 1;
+        string_length += strlen("output/") + 1;
+
+        agent_config.capture_output_dir = (char *)malloc(sizeof(char) * string_length);
+        snprintf(agent_config.capture_output_dir, string_length, "output/%s", agent_config.run_id);
     }
 }
 
