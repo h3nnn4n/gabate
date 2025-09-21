@@ -22,6 +22,7 @@ FITNESS_MODE = str(config("FITNESS_MODE", default="max", cast=str))
 N_GENES = int(config("N_GENES", default=14 * 3, cast=int))
 FEATURE_SET_NAME = str(config("FEATURE_SET_NAME", default="LELmark", cast=str))
 GENE_RANGE = float(config("GENE_RANGE", default=5.0, cast=float))
+GENE_STEP_SIZE = float(config("GENE_STEP_SIZE", default=1.0, cast=float))
 
 ## Infrastructure settings
 

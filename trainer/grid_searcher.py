@@ -12,7 +12,7 @@ from logging_config import get_logger
 logger = get_logger(__name__)
 
 GRID_SEARCH_RANGE = config.GENE_RANGE  # type: ignore
-GRID_SEARCH_STEP = 0.5
+GRID_SEARCH_STEP = config.GENE_STEP_SIZE  # type: ignore
 
 RUN_ID = str(uuid4())[:8]
 
