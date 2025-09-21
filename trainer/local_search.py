@@ -40,8 +40,8 @@ def local_search(individual_path: str):
         time_left = DURATION - time_elapsed
         time_progress = time_elapsed.total_seconds() / DURATION.total_seconds()
         gene_distance = sum(
-            abs(elite_individual.genes[i] - original_individual.genes[i]) for i in range(elite_individual.n_genes)
-        )
+            (elite_individual.genes[i] - original_individual.genes[i]) ** 2 for i in range(elite_individual.n_genes)
+        ) ** 0.5
         logger.info(
             f"{evaluations=:6d}  distance={gene_distance:5.2f}  elite_score={elite_individual.get_fitness():8.2f}  elapsed={time_elapsed.total_seconds() / 60:5.2f}m left={time_left.total_seconds() / 60:5.2f}m ({time_progress:5.2%})"
         )
