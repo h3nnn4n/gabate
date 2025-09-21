@@ -6,7 +6,7 @@ from uuid import uuid4
 from tqdm import tqdm
 
 import config
-from agent import Individual
+from agent import Individual, load_agent
 from logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -18,29 +18,9 @@ RUN_ID = str(uuid4())[:8]
 
 
 def grid_searcher(individual_path: str):
-    individual = load_agent(individual_path)
+    individual = load_agent(individual_path, evaluate=True)
 
     run_grid_search(individual)
-
-
-def load_agent(individual_path: str):
-    with open(individual_path, "r") as f:
-        agent_settings = json.load(f)
-
-    genes = agent_settings["weights"]
-
-    logger.info(f"Evaluating initial individual {RUN_ID=}")
-
-    individual = Individual()
-    individual.set_genes(genes)
-    individual.trigger_fitness_evaluation()
-    fitness = individual.get_raw_fitness()
-
-    logger.info("initial fitness:")
-    logger.info(f"{fitness}")
-    logger.info("")
-
-    return individual
 
 
 def run_grid_search(individual: Individual):

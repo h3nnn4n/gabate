@@ -1,9 +1,8 @@
-import json
 import threading
 import uuid
 
 import config
-from agent import Individual
+from agent import load_agent
 from logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -25,17 +24,6 @@ def record_breaker(individual_path: str) -> None:
 
     for thread in threads:
         thread.join()
-
-
-def load_agent(individual_path: str) -> Individual:
-    with open(individual_path, "r") as f:
-        agent_settings = json.load(f)
-
-    genes = agent_settings["weights"]
-
-    individual = Individual()
-    individual.set_genes(genes)
-    return individual
 
 
 def loop(individual_path: str) -> None:

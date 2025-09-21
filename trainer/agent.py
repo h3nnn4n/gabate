@@ -225,3 +225,18 @@ class Individual:
     @property
     def settings(self) -> dict[str, t.Any]:
         return self._agent.settings
+
+
+def load_agent(individual_path: str, evaluate: bool = False) -> Individual:
+    with open(individual_path, "r") as f:
+        agent_settings = json.load(f)
+
+    genes = agent_settings["weights"]
+
+    individual = Individual()
+    individual.set_genes(genes)
+
+    if evaluate:
+        individual.get_fitness()
+
+    return individual
