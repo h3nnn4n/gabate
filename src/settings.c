@@ -88,7 +88,7 @@ void load_settings(char *setting_str) {
         abort();
     }
 
-    cJSON *run_id = cJSON_GetObjectItem(agent, "run_id");
+    cJSON *run_id = cJSON_GetObjectItemCaseSensitive(json, "run_id");
     if (run_id != NULL) {
         agent_config.run_id = (char *)malloc(sizeof(char) * (strlen(run_id->valuestring) + 1));
         snprintf(agent_config.run_id, strlen(run_id->valuestring) + 1, "%s", run_id->valuestring);
