@@ -311,12 +311,6 @@ static int headless_screeny = 144;
 
 void flip_screen(_cpu_info *cpu) {
 #ifdef __save_png_frames
-    static int output_dir_created = 0;
-    if (!output_dir_created) {
-        create_output_directory();
-        output_dir_created = 1;
-    }
-
     if (headless_buffer) {
         char filename[256];
         sprintf(filename, "output/frame_%06d.png", frame_counter);
@@ -332,6 +326,7 @@ void sdl_init() {
     if (get_agent_config()->capture_output) {
         headless_buffer = malloc(sizeof(uint32_t) * headless_screenx * headless_screeny);
         memset(headless_buffer, 0, headless_screenx * headless_screeny * sizeof(uint32_t));
+        create_output_directory();
     }
 #endif
 }
