@@ -45,19 +45,20 @@ def local_search(individual_path: str):
             print_status(elite_individual, original_individual, evaluations, t_start)
             last_update = datetime.now()
 
-        for individual in population:
+        for index_, individual in enumerate(population):
             is_ready = individual.is_evaluation_ready
             if is_ready:
+                logger.debug(f"Individual {index_} is ready")
                 evaluations += 1
 
                 if individual.get_fitness() > elite_individual.get_fitness():
                     elite_individual = individual.clone()
                     print_status(elite_individual, original_individual, evaluations, t_start)
 
-                    logger.debug(f"New elite individual: {json.dumps(individual.get_raw_fitness())}")
+                    logger.debug(f"New elite individual: {index_} {json.dumps(individual.get_raw_fitness())}")
                 else:
                     logger.debug(
-                        f"Individual {individual.get_fitness()} isnt better than elite {elite_individual.get_fitness()}"
+                        f"Individual {index_} {individual.get_fitness()} isnt better than elite {elite_individual.get_fitness()}"
                     )
 
                 individual.set_genes(elite_individual.genes)
