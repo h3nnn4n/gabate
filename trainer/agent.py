@@ -189,8 +189,8 @@ class Individual:
             return
 
         self._dirty_fitness = True
-        self.genes = genes
-        self._agent.set_weights(genes)
+        self.genes = copy(genes)
+        self._agent.set_weights(self.genes)
 
     def evaluate_fitness(self, force: bool = False) -> None:
         self._agent.set_weights(self.genes)
